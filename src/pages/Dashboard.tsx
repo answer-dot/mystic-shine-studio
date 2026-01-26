@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ReviewForm } from '@/components/ReviewForm';
 import { useUserReviews, useUserCoupons } from '@/hooks/useReviews';
+import { CourseLearningSection } from '@/components/dashboard/CourseLearningSection';
 import { 
   BookOpen, 
   MessageSquare, 
@@ -24,7 +26,8 @@ import {
   Lock,
   Star,
   Gift,
-  Ticket
+  Ticket,
+  FolderOpen
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -62,6 +65,8 @@ const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
 
   // Fetch user reviews
   const { data: userReviews } = useUserReviews(user?.id);
@@ -245,8 +250,23 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full max-w-md grid-cols-2">
+              <TabsTrigger value="overview" className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4" />
+                내 강의
+              </TabsTrigger>
+              <TabsTrigger value="learning" className="flex items-center gap-2">
+                <Play className="w-4 h-4" />
+                학습하기
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Overview Tab */}
+            <TabsContent value="overview">
+              {/* Main Content Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Courses Section - Takes 2 columns */}
             <div className="lg:col-span-2 space-y-6">
               <div className="flex items-center justify-between">
@@ -323,7 +343,14 @@ const Dashboard = () => {
                             </div>
                             
                             {isEnrolled ? (
-                              <Button className="w-full sm:w-auto" size="sm">
+                              <Button 
+                                className="w-full sm:w-auto" 
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedCourseId(course.id);
+                                  setActiveTab('learning');
+                                }}
+                              >
                                 <Play className="w-4 h-4 mr-2" />
                                 학습 계속하기
                               </Button>
@@ -332,7 +359,7 @@ const Dashboard = () => {
                                 variant="outline" 
                                 className="w-full sm:w-auto" 
                                 size="sm"
-                                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                                onClick={() => navigate('/')}
                               >
                                 <Lock className="w-4 h-4 mr-2" />
                                 수강 신청
@@ -518,6 +545,51 @@ const Dashboard = () => {
               </Card>
             </div>
           </div>
+            </TabsContent>
+
+            {/* Learning Tab */}
+            <TabsContent value="learning">
+              {selectedCourseId && courses ? (
+                (() => {
+                  const selectedCourse = courses.find(c => c.id === selectedCourseId);
+                  if (!selectedCourse) return null;
+                  const isEnrolled = enrolledCourseIds.includes(selectedCourse.id);
+                  return (
+                    <div className="space-y-4">
+                      <Button 
+                        variant="ghost" 
+                        onClick={() => setActiveTab('overview')}
+                        className="mb-2"
+                      >
+                        <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
+                        강의 목록으로
+                      </Button>
+                      <CourseLearningSection
+                        courseId={selectedCourse.id}
+                        courseTitle={selectedCourse.title}
+                        curriculum={selectedCourse.curriculum as any[] || []}
+                        isEnrolled={isEnrolled}
+                      />
+                    </div>
+                  );
+                })()
+              ) : (
+                <Card className="bg-card border-border">
+                  <CardContent className="py-12 text-center text-muted-foreground">
+                    <Play className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p>학습할 강의를 선택해주세요</p>
+                    <Button 
+                      variant="link" 
+                      className="mt-2 text-primary"
+                      onClick={() => setActiveTab('overview')}
+                    >
+                      강의 목록 보기 <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 

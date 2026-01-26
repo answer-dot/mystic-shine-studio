@@ -20,6 +20,7 @@ import { InquiriesSection } from '@/components/admin/InquiriesSection';
 import { SecuritySection } from '@/components/admin/SecuritySection';
 import { CoursesSection } from '@/components/admin/CoursesSection';
 import { ReviewsSection } from '@/components/admin/ReviewsSection';
+import { MaterialsSection } from '@/components/admin/MaterialsSection';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -339,6 +340,8 @@ const Admin = () => {
         );
       case 'reviews':
         return <ReviewsSection />;
+      case 'materials':
+        return <MaterialsSection />;
       case 'inquiries':
         return (
           <InquiriesSection onUnreadCountChange={setUnreadInquiries} />
