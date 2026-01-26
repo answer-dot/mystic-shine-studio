@@ -405,7 +405,7 @@ const Admin = () => {
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-64"
         )}
       >
-        <div className="p-6 lg:p-8 max-w-6xl">
+        <div className="p-4 lg:p-8 max-w-6xl">
           {renderSection()}
         </div>
       </main>

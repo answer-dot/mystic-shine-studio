@@ -51,12 +51,14 @@ export const AdminSidebar = ({
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-0 h-full bg-gray-900 z-50 flex flex-col transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
+        "fixed left-0 h-full bg-gray-900 z-50 flex flex-col transition-all duration-300",
+        "top-14 lg:top-0", // Mobile: below header, Desktop: from top
+        "w-64 lg:w-auto",
+        collapsed ? "lg:w-16" : "lg:w-64"
       )}
     >
-      {/* Header */}
-      <div className="p-4 border-b border-gray-800 flex items-center gap-3">
+      {/* Header - Hidden on mobile (shown in main header) */}
+      <div className="hidden lg:flex p-4 border-b border-gray-800 items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center flex-shrink-0">
           <Sparkles className="w-5 h-5 text-white" />
         </div>
@@ -88,18 +90,15 @@ export const AdminSidebar = ({
               )}
             >
               <Icon className="w-5 h-5 flex-shrink-0" />
-              {!collapsed && (
-                <>
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {showBadge && (
-                    <span className="w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
-                      {unreadInquiries > 9 ? '9+' : unreadInquiries}
-                    </span>
-                  )}
-                </>
-              )}
-              {collapsed && showBadge && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
+              {/* Always show labels on mobile, respect collapsed on desktop */}
+              <span className={cn("flex-1 text-left", collapsed && "lg:hidden")}>
+                {item.label}
+              </span>
+              {showBadge && (
+                <span className={cn(
+                  "w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center",
+                  collapsed && "lg:absolute lg:-top-1 lg:-right-1 lg:w-4 lg:h-4 lg:text-[10px]"
+                )}>
                   {unreadInquiries > 9 ? '9+' : unreadInquiries}
                 </span>
               )}
@@ -110,11 +109,12 @@ export const AdminSidebar = ({
 
       {/* Footer */}
       <div className="p-3 border-t border-gray-800 space-y-2">
+        {/* Collapse toggle - Desktop only */}
         <Button
           variant="ghost"
           size="sm"
           onClick={onToggleCollapse}
-          className="w-full justify-start gap-3 text-gray-400 hover:text-white hover:bg-gray-800"
+          className="hidden lg:flex w-full justify-start gap-3 text-gray-400 hover:text-white hover:bg-gray-800"
         >
           {collapsed ? (
             <ChevronRight className="w-5 h-5" />
@@ -132,7 +132,7 @@ export const AdminSidebar = ({
           className="w-full justify-start gap-3 text-gray-400 hover:text-red-400 hover:bg-gray-800"
         >
           <LogOut className="w-5 h-5" />
-          {!collapsed && <span>로그아웃</span>}
+          <span className={cn(collapsed && "lg:hidden")}>로그아웃</span>
         </Button>
       </div>
     </aside>
