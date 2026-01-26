@@ -23,20 +23,16 @@ export const InstructorSection = () => {
           <div className="glass-card rounded-2xl p-6 sm:p-10 overflow-hidden">
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-center">
               
-              {/* Profile Image - Vertical Rectangle */}
+              {/* Profile Image - Clean Rectangle with Hover Effect */}
               <div className="w-full lg:w-2/5 flex flex-col items-center">
-                <div className="relative">
-                  <div className="w-52 sm:w-64 aspect-[3/4] rounded-2xl overflow-hidden border-2 border-primary/40 shadow-xl">
+                <div className="relative group/image">
+                  <div className="w-52 sm:w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 group-hover/image:shadow-xl group-hover/image:shadow-primary/20 group-hover/image:scale-[1.02] border border-transparent group-hover/image:border-primary/30">
                     <img 
                       src={profileImage} 
                       alt={settings.instructorName || '강사 프로필'}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/image:scale-105"
                     />
                   </div>
-                  
-                  {/* Decorations */}
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-primary rounded-full opacity-60" />
-                  <div className="absolute -bottom-1 -left-3 w-6 h-6 bg-orange-500 rounded-full opacity-40" />
                 </div>
 
                 {/* Stats - Centered below image on mobile, stays here on desktop */}
