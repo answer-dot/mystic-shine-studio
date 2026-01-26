@@ -36,26 +36,26 @@ export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerPr
   }, [targetDate]);
 
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
-    <div className={`flex flex-col items-center ${compact ? '' : 'min-w-[60px] sm:min-w-[80px]'}`}>
+    <div className={`flex flex-col items-center ${compact ? '' : 'min-w-[48px] sm:min-w-[70px] md:min-w-[80px]'}`}>
       <div className={`
-        ${compact ? 'text-xl sm:text-2xl px-2 py-1' : 'text-3xl sm:text-5xl px-4 py-3 sm:px-6 sm:py-4'}
-        font-bold text-primary bg-card rounded-xl border border-border shadow-elevated
-        animate-count-pulse
+        ${compact ? 'text-xl sm:text-2xl px-2 py-1' : 'text-2xl sm:text-4xl md:text-5xl px-2 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4'}
+        font-bold text-primary bg-card rounded-lg sm:rounded-xl border border-border shadow-elevated
+        animate-count-pulse w-full text-center
       `}>
         {String(value).padStart(2, '0')}
       </div>
-      <span className={`${compact ? 'text-xs' : 'text-xs sm:text-sm'} text-muted-foreground mt-2 uppercase tracking-wider`}>
+      <span className={`${compact ? 'text-xs' : 'text-[10px] sm:text-xs md:text-sm'} text-muted-foreground mt-1 sm:mt-2 uppercase tracking-wider`}>
         {label}
       </span>
     </div>
   );
 
   const Separator = () => (
-    <span className={`${compact ? 'text-xl' : 'text-3xl sm:text-5xl'} font-bold text-primary self-start mt-3 sm:mt-4`}>:</span>
+    <span className={`${compact ? 'text-xl' : 'text-xl sm:text-3xl md:text-5xl'} font-bold text-primary self-start mt-2 sm:mt-3 md:mt-4`}>:</span>
   );
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-4">
+    <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4 w-full">
       <TimeBlock value={timeLeft.days} label="일" />
       <Separator />
       <TimeBlock value={timeLeft.hours} label="시간" />
