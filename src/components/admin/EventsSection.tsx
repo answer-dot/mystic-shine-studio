@@ -22,12 +22,12 @@ export const EventsSection = ({
 }: EventsSectionProps) => {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">이벤트</h1>
-          <p className="text-gray-600">특별 이벤트 및 웨비나를 관리합니다</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">이벤트</h1>
+          <p className="text-sm lg:text-base text-gray-600">특별 이벤트 및 웨비나를 관리합니다</p>
         </div>
-        <Button variant="outline" onClick={onAdd} className="border-orange-300 text-orange-600 hover:bg-orange-50">
+        <Button variant="outline" onClick={onAdd} className="border-orange-300 text-orange-600 hover:bg-orange-50 w-full sm:w-auto">
           <Plus className="w-4 h-4 mr-2" />
           이벤트 추가
         </Button>

@@ -21,8 +21,8 @@ export const SecuritySection = ({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">보안</h1>
-        <p className="text-gray-600">관리자 접근 보안을 관리합니다</p>
+        <h1 className="text-xl lg:text-2xl font-bold text-gray-900">보안</h1>
+        <p className="text-sm lg:text-base text-gray-600">관리자 접근 보안을 관리합니다</p>
       </div>
 
       <Card className="bg-white border-gray-200 shadow-sm">

@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   Settings, 
@@ -12,7 +12,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Star,
-  BookOpen
+  BookOpen,
+  ExternalLink
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -48,6 +49,8 @@ export const AdminSidebar = ({
   onLogout,
   unreadInquiries
 }: AdminSidebarProps) => {
+  const navigate = useNavigate();
+  
   return (
     <aside 
       className={cn(
@@ -64,7 +67,7 @@ export const AdminSidebar = ({
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="font-bold text-sm truncate text-white">관리자</h1>
+            <h1 className="font-bold text-sm truncate text-white">관리자센터</h1>
             <p className="text-xs text-gray-400 truncate">{siteName}</p>
           </div>
         )}
@@ -109,6 +112,16 @@ export const AdminSidebar = ({
 
       {/* Footer */}
       <div className="p-3 border-t border-gray-800 space-y-2">
+        {/* View Site Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="w-full justify-start gap-3 text-orange-400 hover:text-orange-300 hover:bg-gray-800"
+        >
+          <ExternalLink className="w-5 h-5" />
+          <span className={cn(collapsed && "lg:hidden")}>사이트 보기</span>
+        </Button>
         {/* Collapse toggle - Desktop only */}
         <Button
           variant="ghost"

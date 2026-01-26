@@ -84,12 +84,12 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">문의 내역</h1>
-          <p className="text-gray-600">고객 문의를 확인하고 관리합니다</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">문의 내역</h1>
+          <p className="text-sm lg:text-base text-gray-600">고객 문의를 확인하고 관리합니다</p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchInquiries} disabled={loading} className="border-gray-300 text-gray-700 hover:bg-gray-100">
+        <Button variant="outline" size="sm" onClick={fetchInquiries} disabled={loading} className="border-gray-300 text-gray-700 hover:bg-gray-100 w-full sm:w-auto">
           <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           새로고침
         </Button>

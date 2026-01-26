@@ -235,11 +235,9 @@ export const CoursesSection = () => {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">강의 관리</h1>
-            <p className="text-gray-600">로딩 중...</p>
-          </div>
+        <div>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">강의 관리</h1>
+          <p className="text-sm lg:text-base text-gray-600">로딩 중...</p>
         </div>
       </div>
     );
@@ -247,17 +245,17 @@ export const CoursesSection = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="space-y-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">강의 관리</h1>
-          <p className="text-gray-600">코스 목록을 관리합니다 (멀티 코스 지원)</p>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">강의 관리</h1>
+          <p className="text-sm lg:text-base text-gray-600">코스 목록을 관리합니다 (멀티 코스 지원)</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
               onClick={openCreateDialog}
-              className="border-orange-300 text-orange-600 hover:bg-orange-50"
+              className="border-orange-300 text-orange-600 hover:bg-orange-50 w-full sm:w-auto"
             >
               <Plus className="w-4 h-4 mr-2" />
               새 강의 추가
