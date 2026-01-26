@@ -193,7 +193,9 @@ export type Database = {
           content: string
           course_id: string | null
           created_at: string
+          customer_name: string | null
           id: string
+          is_admin_uploaded: boolean | null
           is_approved: boolean
           is_hidden: boolean
           photo_url: string | null
@@ -205,7 +207,9 @@ export type Database = {
           content: string
           course_id?: string | null
           created_at?: string
+          customer_name?: string | null
           id?: string
+          is_admin_uploaded?: boolean | null
           is_approved?: boolean
           is_hidden?: boolean
           photo_url?: string | null
@@ -217,7 +221,9 @@ export type Database = {
           content?: string
           course_id?: string | null
           created_at?: string
+          customer_name?: string | null
           id?: string
+          is_admin_uploaded?: boolean | null
           is_approved?: boolean
           is_hidden?: boolean
           photo_url?: string | null

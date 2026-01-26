@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { Star, Quote, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+import { Star, Quote, ChevronLeft, ChevronRight, Camera, ZoomIn } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { useApprovedReviews } from '@/hooks/useReviews';
 import { cn } from '@/lib/utils';
+import { ImageLightbox } from '@/components/ui/image-lightbox';
 
 export const TestimonialsSection = () => {
   const { settings } = useSettings();
@@ -295,6 +296,8 @@ interface TestimonialCardProps {
 }
 
 const TestimonialCard = ({ testimonial, isCenter }: TestimonialCardProps) => {
+  const [showLightbox, setShowLightbox] = useState(false);
+
   return (
     <div 
       className={cn(
@@ -337,9 +340,29 @@ const TestimonialCard = ({ testimonial, isCenter }: TestimonialCardProps) => {
         "{testimonial.content}"
       </p>
 
+      {/* Photo with Lightbox (if review has a photo) */}
+      {testimonial.photoUrl && isCenter && (
+        <div 
+          className="relative mb-4 mx-auto max-w-[200px] rounded-lg overflow-hidden border border-primary/20 cursor-zoom-in group"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowLightbox(true);
+          }}
+        >
+          <img 
+            src={testimonial.photoUrl} 
+            alt="후기 이미지"
+            className="w-full h-32 object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+            <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+          </div>
+        </div>
+      )}
+
       {/* Author - Centered */}
       <div className="flex flex-col items-center gap-3">
-        {testimonial.photoUrl ? (
+        {testimonial.photoUrl && !isCenter ? (
           <div className={cn(
             "rounded-full overflow-hidden border-2 border-primary/30",
             isCenter ? "w-12 h-12" : "w-10 h-10"
@@ -380,6 +403,16 @@ const TestimonialCard = ({ testimonial, isCenter }: TestimonialCardProps) => {
           </p>
         </div>
       </div>
+
+      {/* Lightbox for photo */}
+      {testimonial.photoUrl && (
+        <ImageLightbox
+          src={testimonial.photoUrl}
+          alt="후기 이미지"
+          isOpen={showLightbox}
+          onClose={() => setShowLightbox(false)}
+        />
+      )}
     </div>
   );
 };

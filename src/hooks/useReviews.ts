@@ -11,6 +11,8 @@ export interface Review {
   photo_url: string | null;
   is_approved: boolean;
   is_hidden: boolean;
+  is_admin_uploaded?: boolean;
+  customer_name?: string | null;
   created_at: string;
   updated_at: string;
   // Joined data

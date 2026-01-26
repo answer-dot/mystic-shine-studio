@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Star, Eye, EyeOff, Check, X, ChevronDown, ChevronUp, User } from 'lucide-react';
+import { Star, Eye, EyeOff, Check, X, User, ImagePlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +9,8 @@ import { useAllReviews, useUpdateReviewStatus, type Review } from '@/hooks/useRe
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { AdminReviewGallery } from './AdminReviewGallery';
+import { ZoomableImage } from '@/components/ui/image-lightbox';
 
 export const ReviewsSection = () => {
   const { data: reviews, isLoading } = useAllReviews();
@@ -16,6 +18,7 @@ export const ReviewsSection = () => {
   
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showGalleryUpload, setShowGalleryUpload] = useState(false);
 
   const pendingReviews = reviews?.filter(r => !r.is_approved && !r.is_hidden) || [];
   const approvedReviews = reviews?.filter(r => r.is_approved) || [];
@@ -34,6 +37,13 @@ export const ReviewsSection = () => {
     setShowDetailModal(true);
   };
 
+  // Get display name - prefer customer_name for admin uploads
+  const getDisplayName = (review: Review) => {
+    if (review.customer_name) return review.customer_name;
+    const hash = review.user_id.slice(0, 8);
+    return `수강생 ${hash.slice(0, 4).toUpperCase()}`;
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -48,10 +58,19 @@ export const ReviewsSection = () => {
 
   return (
     <div className="space-y-6 lg:space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl lg:text-2xl font-bold text-gray-900">리뷰 관리</h1>
-        <p className="text-sm lg:text-base text-gray-600">수강생 후기를 승인하고 관리합니다</p>
+      {/* Header with Gallery Upload Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">리뷰 관리</h1>
+          <p className="text-sm lg:text-base text-gray-600">수강생 후기를 승인하고 관리합니다</p>
+        </div>
+        <Button
+          onClick={() => setShowGalleryUpload(true)}
+          className="gap-2"
+        >
+          <ImagePlus className="w-4 h-4" />
+          갤러리 후기 등록
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -94,6 +113,7 @@ export const ReviewsSection = () => {
                 <ReviewItem
                   key={review.id}
                   review={review}
+                  displayName={getDisplayName(review)}
                   onOpenDetail={() => openDetail(review)}
                   onApprove={() => handleApprove(review.id, true)}
                   onHide={() => handleHide(review.id, true)}
@@ -118,6 +138,7 @@ export const ReviewsSection = () => {
                 <ReviewItem
                   key={review.id}
                   review={review}
+                  displayName={getDisplayName(review)}
                   onOpenDetail={() => openDetail(review)}
                   onApprove={() => handleApprove(review.id, !review.is_approved)}
                   onHide={() => handleHide(review.id, !review.is_hidden)}
@@ -128,14 +149,22 @@ export const ReviewsSection = () => {
             <div className="py-12 text-center text-gray-500">
               <Star className="w-12 h-12 mx-auto mb-4 opacity-30" />
               <p>등록된 후기가 없습니다</p>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => setShowGalleryUpload(true)}
+              >
+                <ImagePlus className="w-4 h-4 mr-2" />
+                첫 번째 후기 등록하기
+              </Button>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Detail Modal */}
+      {/* Detail Modal with Lightbox */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className="max-w-lg bg-white">
+        <DialogContent className="max-w-lg bg-white max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-gray-900">후기 상세</DialogTitle>
             <DialogDescription>
@@ -150,8 +179,17 @@ export const ReviewsSection = () => {
                   <User className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium text-gray-900">사용자 ID</p>
-                  <p className="text-xs text-gray-500 truncate max-w-[200px]">{selectedReview.user_id}</p>
+                  <p className="font-medium text-gray-900">{getDisplayName(selectedReview)}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-gray-500">
+                      {format(new Date(selectedReview.created_at), 'M월 d일', { locale: ko })} 작성
+                    </p>
+                    {selectedReview.is_admin_uploaded && (
+                      <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+                        관리자 등록
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -176,13 +214,13 @@ export const ReviewsSection = () => {
                 <p className="text-gray-700 whitespace-pre-wrap">{selectedReview.content}</p>
               </div>
 
-              {/* Photo */}
+              {/* Photo with Lightbox */}
               {selectedReview.photo_url && (
                 <div className="rounded-lg overflow-hidden border border-gray-200">
-                  <img
+                  <ZoomableImage
                     src={selectedReview.photo_url}
                     alt="Review photo"
-                    className="w-full h-48 object-cover"
+                    className="w-full h-48"
                   />
                 </div>
               )}
@@ -225,26 +263,27 @@ export const ReviewsSection = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Gallery Upload Dialog */}
+      <AdminReviewGallery
+        open={showGalleryUpload}
+        onOpenChange={setShowGalleryUpload}
+      />
     </div>
   );
-};
-
-// Generate anonymous display name from user_id
-const getDisplayName = (userId: string) => {
-  const hash = userId.slice(0, 8);
-  return `수강생 ${hash.slice(0, 4).toUpperCase()}`;
 };
 
 // Individual Review Item Component
 interface ReviewItemProps {
   review: Review;
+  displayName: string;
   onOpenDetail: () => void;
   onApprove: () => void;
   onHide: () => void;
   isPending?: boolean;
 }
 
-const ReviewItem = ({ review, onOpenDetail, onApprove, onHide, isPending }: ReviewItemProps) => {
+const ReviewItem = ({ review, displayName, onOpenDetail, onApprove, onHide, isPending }: ReviewItemProps) => {
   return (
     <div
       className={cn(
@@ -253,15 +292,19 @@ const ReviewItem = ({ review, onOpenDetail, onApprove, onHide, isPending }: Revi
       )}
       onClick={onOpenDetail}
     >
-      {/* Avatar */}
-      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-        <User className="w-5 h-5 text-primary" />
+      {/* Avatar or Image Thumbnail */}
+      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        {review.photo_url ? (
+          <img src={review.photo_url} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <User className="w-5 h-5 text-primary" />
+        )}
       </div>
 
       {/* Name + Stars Only (Simplified) */}
-      <div className="flex-1 min-w-0 flex items-center gap-3">
+      <div className="flex-1 min-w-0 flex items-center gap-3 flex-wrap">
         <span className="font-medium text-gray-900 text-sm truncate min-w-[80px]">
-          {getDisplayName(review.user_id)}
+          {displayName}
         </span>
         <div className="flex">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -277,6 +320,12 @@ const ReviewItem = ({ review, onOpenDetail, onApprove, onHide, isPending }: Revi
         <span className="text-xs text-gray-400">
           {format(new Date(review.created_at), 'M.d', { locale: ko })}
         </span>
+        {/* Admin Badge */}
+        {review.is_admin_uploaded && (
+          <Badge variant="outline" className="text-xs bg-blue-50 text-blue-600 border-blue-200">
+            관리자
+          </Badge>
+        )}
         {/* Status Badge */}
         <Badge
           variant="outline"
