@@ -19,8 +19,8 @@ export const CurriculumSection = () => {
   };
 
   return (
-    <section id="curriculum" className="py-20 sm:py-28">
-      <div className="section-container">
+    <section id="curriculum" className="py-20 sm:py-28 bg-black">
+      <div className="section-container px-6">
         {/* Section header */}
         <div className="text-center mb-12">
           <span className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
@@ -35,7 +35,7 @@ export const CurriculumSection = () => {
 
         {/* Accordion */}
         <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="space-y-4">
+          <Accordion type="single" collapsible className="space-y-5">
             {settings.curriculum.map((item, index) => {
               const hasPreviewLessons = item.lessons?.some(l => l.isPreview) || item.isPreview;
               
@@ -43,23 +43,23 @@ export const CurriculumSection = () => {
                 <AccordionItem 
                   key={item.id} 
                   value={item.id}
-                  className="glass-card rounded-xl border-border overflow-hidden"
+                  className="bg-[#1A1A1A] rounded-xl border border-primary/40 overflow-hidden"
                 >
-                  <AccordionTrigger className="px-4 sm:px-6 py-4 sm:py-5 hover:no-underline hover:bg-secondary/50 transition-colors [&[data-state=open]>svg]:rotate-180">
+                  <AccordionTrigger className="px-5 sm:px-7 py-5 sm:py-6 hover:no-underline hover:bg-white/5 transition-colors [&[data-state=open]>svg]:rotate-180">
                     <div className="flex items-center gap-3 sm:gap-4 text-left flex-1">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary-foreground font-bold text-sm sm:text-base">{index + 1}</span>
+                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0 shadow-lg">
+                        <span className="text-black font-bold text-sm sm:text-base">{index + 1}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <h3 className="font-semibold text-foreground text-sm sm:text-base">{item.title}</h3>
                           {hasPreviewLessons && (
-                            <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
+                            <span className="px-3 py-1 rounded-full bg-primary text-black text-xs font-bold shadow-md">
                               맛보기
                             </span>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 mt-1.5 text-sm text-muted-foreground">
                           <Clock className="w-4 h-4" />
                           <span>{item.duration}</span>
                           {item.lessons && item.lessons.length > 0 && (
@@ -72,14 +72,14 @@ export const CurriculumSection = () => {
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-4 sm:px-6 pb-5">
-                    <div className="sm:pl-14 space-y-4">
+                  <AccordionContent className="px-5 sm:px-7 pb-6 bg-[#0D0D0D]">
+                    <div className="sm:pl-14 space-y-4 pt-2">
                       {/* Chapter Description */}
                       <p className="text-muted-foreground">{item.description}</p>
                       
                       {/* Lessons List */}
                       {item.lessons && item.lessons.length > 0 && (
-                        <div className="space-y-2 mt-4">
+                        <div className="space-y-3 mt-4">
                           <h4 className="text-sm font-medium text-foreground/80 mb-3">📚 강의 목차</h4>
                           {item.lessons.map((lesson, lessonIndex) => {
                             const isPlaying = playingLessonId === lesson.id;
@@ -89,21 +89,21 @@ export const CurriculumSection = () => {
                               <div key={lesson.id} className="space-y-2">
                                 <div
                                   className={cn(
-                                    "flex items-center gap-3 p-3 rounded-lg transition-all",
+                                    "flex items-center gap-3 p-4 rounded-lg transition-all border",
                                     lesson.isPreview 
-                                      ? "bg-secondary/50 hover:bg-secondary cursor-pointer" 
-                                      : "bg-secondary/20"
+                                      ? "bg-[#1A1A1A] hover:bg-[#222222] cursor-pointer border-primary/30" 
+                                      : "bg-[#111111] border-transparent"
                                   )}
                                   onClick={() => canPlay && toggleLessonVideo(lesson.id)}
                                 >
                                   <div className={cn(
                                     "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
                                     lesson.isPreview 
-                                      ? "bg-gradient-to-br from-primary to-orange-500" 
+                                      ? "bg-gradient-to-br from-primary to-orange-500 shadow-md" 
                                       : "bg-muted"
                                   )}>
                                     {lesson.isPreview ? (
-                                      <Play className="w-4 h-4 text-primary-foreground" />
+                                      <Play className="w-4 h-4 text-black" />
                                     ) : (
                                       <Lock className="w-4 h-4 text-muted-foreground" />
                                     )}
@@ -120,10 +120,10 @@ export const CurriculumSection = () => {
                                     <span className="text-xs text-muted-foreground">{lesson.duration}</span>
                                     {lesson.isPreview && (
                                       <span className={cn(
-                                        "text-xs font-medium px-2 py-0.5 rounded transition-colors",
+                                        "text-xs font-bold px-3 py-1 rounded-full transition-colors border",
                                         isPlaying 
-                                          ? "bg-primary text-primary-foreground" 
-                                          : "bg-primary/20 text-primary"
+                                          ? "bg-primary text-black border-primary" 
+                                          : "bg-transparent text-primary border-primary hover:bg-primary/10"
                                       )}>
                                         {isPlaying ? '닫기' : '미리보기'}
                                       </span>
