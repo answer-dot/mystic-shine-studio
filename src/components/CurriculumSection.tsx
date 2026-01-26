@@ -45,14 +45,14 @@ export const CurriculumSection = () => {
                   value={item.id}
                   className="glass-card rounded-xl border-border overflow-hidden"
                 >
-                  <AccordionTrigger className="px-6 py-5 hover:no-underline hover:bg-secondary/50 transition-colors [&[data-state=open]>svg]:rotate-180">
-                    <div className="flex items-center gap-4 text-left flex-1">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
-                        <span className="text-primary-foreground font-bold">{index + 1}</span>
+                  <AccordionTrigger className="px-4 sm:px-6 py-4 sm:py-5 hover:no-underline hover:bg-secondary/50 transition-colors [&[data-state=open]>svg]:rotate-180">
+                    <div className="flex items-center gap-3 sm:gap-4 text-left flex-1">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
+                        <span className="text-primary-foreground font-bold text-sm sm:text-base">{index + 1}</span>
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-foreground">{item.title}</h3>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-semibold text-foreground text-sm sm:text-base">{item.title}</h3>
                           {hasPreviewLessons && (
                             <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
                               맛보기
@@ -72,8 +72,8 @@ export const CurriculumSection = () => {
                       </div>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-5">
-                    <div className="pl-14 space-y-4">
+                  <AccordionContent className="px-4 sm:px-6 pb-5">
+                    <div className="sm:pl-14 space-y-4">
                       {/* Chapter Description */}
                       <p className="text-muted-foreground">{item.description}</p>
                       
