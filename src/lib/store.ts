@@ -59,8 +59,8 @@ const defaultSettings: SiteSettings = {
       isPreview: true,
       previewVideoUrl: "",
       lessons: [
-        { id: "1-1", title: "타로 카드의 역사와 구성", duration: "15분", isPreview: true, videoUrl: "" },
-        { id: "1-2", title: "메이저 아르카나 개요", duration: "20분", isPreview: true, videoUrl: "" },
+        { id: "1-1", title: "타로 카드의 역사와 구성", duration: "15분", isPreview: true, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
+        { id: "1-2", title: "메이저 아르카나 개요", duration: "20분", isPreview: true, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" },
         { id: "1-3", title: "0번 바보~10번 운명의 수레바퀴", duration: "45분", isPreview: false },
         { id: "1-4", title: "11번 정의~21번 세계", duration: "45분", isPreview: false },
       ]
@@ -72,7 +72,7 @@ const defaultSettings: SiteSettings = {
       duration: "4주",
       isPreview: false,
       lessons: [
-        { id: "2-1", title: "슈트의 이해: 완드, 컵, 소드, 펜타클", duration: "30분", isPreview: true, videoUrl: "" },
+        { id: "2-1", title: "슈트의 이해: 완드, 컵, 소드, 펜타클", duration: "30분", isPreview: true, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" },
         { id: "2-2", title: "숫자 카드 1~10 해석법", duration: "40분", isPreview: false },
         { id: "2-3", title: "코트 카드: 페이지, 나이트, 퀸, 킹", duration: "35분", isPreview: false },
       ]
@@ -84,7 +84,7 @@ const defaultSettings: SiteSettings = {
       duration: "3주",
       isPreview: false,
       lessons: [
-        { id: "3-1", title: "원카드 & 쓰리카드 스프레드", duration: "25분", isPreview: true, videoUrl: "" },
+        { id: "3-1", title: "원카드 & 쓰리카드 스프레드", duration: "25분", isPreview: true, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" },
         { id: "3-2", title: "켈틱 크로스 스프레드", duration: "40분", isPreview: false },
         { id: "3-3", title: "실전 리딩 연습", duration: "50분", isPreview: false },
       ]
@@ -123,9 +123,20 @@ const defaultSettings: SiteSettings = {
 };
 
 const STORAGE_KEY = 'tarot-site-settings';
+const STORAGE_VERSION = 'v2'; // Increment to reset localStorage with new defaults
+const VERSION_KEY = 'tarot-site-version';
 
 export const getSettings = (): SiteSettings => {
   if (typeof window === 'undefined') return defaultSettings;
+  
+  // Check version - if outdated, clear and use defaults
+  const storedVersion = localStorage.getItem(VERSION_KEY);
+  if (storedVersion !== STORAGE_VERSION) {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem(VERSION_KEY, STORAGE_VERSION);
+    return defaultSettings;
+  }
+  
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) return defaultSettings;
   try {
