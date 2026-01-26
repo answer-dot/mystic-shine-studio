@@ -39,6 +39,7 @@ export interface EventItem {
   date: string;
   status: 'ongoing' | 'upcoming' | 'ended';
   spots: number;
+  imageUrl?: string;
 }
 
 const defaultSettings: SiteSettings = {
@@ -111,7 +112,8 @@ const defaultSettings: SiteSettings = {
       description: "타로의 세계로 첫 발을 내딛는 분들을 위한 무료 온라인 세션. 기초 개념과 첫 리딩 체험을 제공합니다.",
       date: "2025-02-01",
       status: "ongoing",
-      spots: 50
+      spots: 50,
+      imageUrl: ""
     },
     {
       id: "2",
@@ -119,7 +121,8 @@ const defaultSettings: SiteSettings = {
       description: "이하늘 교수와 함께하는 프라이빗 멘토링. 개인 맞춤형 피드백과 심화 학습을 경험하세요.",
       date: "2025-02-20",
       status: "upcoming",
-      spots: 5
+      spots: 5,
+      imageUrl: ""
     }
   ]
 };
