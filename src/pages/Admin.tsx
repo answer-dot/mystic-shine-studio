@@ -141,7 +141,7 @@ const Admin = () => {
   const addCurriculumItem = () => {
     setCurriculum([
       ...curriculum,
-      { id: Date.now().toString(), title: '', description: '', duration: '' }
+      { id: Date.now().toString(), title: '', description: '', duration: '', lessons: [] }
     ]);
   };
 
