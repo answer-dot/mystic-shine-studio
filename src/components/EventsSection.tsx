@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 
 // Default placeholder for events without images
-const defaultEventImage = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&h=400&fit=crop&q=80";
+const defaultEventImage = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&h=600&fit=crop&q=80";
 
 export const EventsSection = () => {
   const { settings } = useSettings();
@@ -11,7 +11,7 @@ export const EventsSection = () => {
   const getStatusBadge = (status: string) => {
     if (status === 'ongoing') {
       return (
-        <span className="relative px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/20 text-green-400 border border-green-500/40">
+        <span className="relative px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/20 text-green-400 border border-green-500/40 backdrop-blur-sm">
           {/* Neon glow effect */}
           <span className="absolute inset-0 rounded-full bg-green-500/30 blur-md animate-pulse" />
           <span className="relative flex items-center gap-1.5">
@@ -24,7 +24,7 @@ export const EventsSection = () => {
     
     if (status === 'upcoming') {
       return (
-        <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/40">
+        <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/40 backdrop-blur-sm">
           <span className="flex items-center gap-1.5">
             <Sparkles className="w-3 h-3" />
             예정
@@ -34,7 +34,7 @@ export const EventsSection = () => {
     }
     
     return (
-      <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
+      <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-muted/80 text-muted-foreground border border-border backdrop-blur-sm">
         종료
       </span>
     );
@@ -55,7 +55,7 @@ export const EventsSection = () => {
           {settings.events.map((event) => (
             <div 
               key={event.id}
-              className="group relative rounded-2xl overflow-hidden border border-primary/20 bg-card shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
+              className="group relative rounded-2xl overflow-hidden border border-primary/20 shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
               style={{
                 boxShadow: event.status === 'ongoing' 
                   ? '0 0 30px rgba(var(--primary), 0.15), 0 10px 40px -10px rgba(0,0,0,0.3)' 
@@ -64,53 +64,49 @@ export const EventsSection = () => {
             >
               {/* Premium gold border glow for ongoing events */}
               {event.status === 'ongoing' && (
-                <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none" />
+                <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none z-20" />
               )}
 
-              <div className="flex flex-col lg:flex-row">
-                {/* Image Section - Left side */}
-                <div className="lg:w-2/5 relative overflow-hidden">
-                  <div className="aspect-[4/3] lg:aspect-auto lg:h-full">
-                    <img 
-                      src={event.imageUrl || defaultEventImage}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-card lg:bg-gradient-to-r lg:from-transparent lg:to-card" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-card/80 via-transparent to-transparent lg:hidden" />
-                  </div>
-                  
-                  {/* Status badge - positioned on image */}
-                  <div className="absolute top-4 left-4">
-                    {getStatusBadge(event.status)}
-                  </div>
+              {/* Full Background Image */}
+              <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] lg:aspect-[3/1]">
+                <img 
+                  src={event.imageUrl || defaultEventImage}
+                  alt={event.title}
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                
+                {/* Dark gradient overlay - bottom to top for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
+                
+                {/* Floating Status Badge - Top Left */}
+                <div className="absolute top-4 left-4 z-10">
+                  {getStatusBadge(event.status)}
                 </div>
 
-                {/* Content Section - Right side */}
-                <div className="lg:w-3/5 p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
+                {/* Content Overlay - Bottom */}
+                <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
                   {/* Date */}
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                  <div className="flex items-center gap-2 text-sm text-white/80 mb-3">
                     <Calendar className="w-4 h-4 text-primary" />
                     <span>{new Date(event.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                   </div>
                   
                   {/* Title - Large & Bold */}
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 group-hover:text-primary transition-colors duration-300 leading-tight">
+                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-white group-hover:text-primary transition-colors duration-300 leading-tight">
                     {event.title}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-muted-foreground text-base sm:text-lg leading-relaxed mb-6">
+                  <p className="text-white/80 text-base sm:text-lg leading-relaxed mb-6 max-w-3xl">
                     {event.description}
                   </p>
 
                   {/* Footer: Spots + CTA */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-border/50">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-white/20">
                     <div className="flex items-center gap-2 text-sm">
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 border border-border">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
                         <Users className="w-4 h-4 text-primary" />
-                        <span className="text-foreground font-medium">잔여 {event.spots}석</span>
+                        <span className="text-white font-medium">잔여 {event.spots}석</span>
                       </div>
                       {event.spots <= 10 && event.status !== 'ended' && (
                         <span className="text-red-400 text-xs font-medium animate-pulse">마감임박!</span>
