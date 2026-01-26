@@ -86,23 +86,23 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">문의 내역</h1>
-          <p className="text-muted-foreground">고객 문의를 확인하고 관리합니다</p>
+          <h1 className="text-2xl font-bold text-gray-900">문의 내역</h1>
+          <p className="text-gray-600">고객 문의를 확인하고 관리합니다</p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchInquiries} disabled={loading}>
+        <Button variant="outline" size="sm" onClick={fetchInquiries} disabled={loading} className="border-gray-300 text-gray-700 hover:bg-gray-100">
           <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
           새로고침
         </Button>
       </div>
 
       {loading ? (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-gray-500">
           <RefreshCw className="w-8 h-8 mx-auto mb-4 animate-spin" />
           <p>문의 내역을 불러오는 중...</p>
         </div>
       ) : inquiries.length === 0 ? (
-        <Card className="border-border/50">
-          <CardContent className="py-12 text-center text-muted-foreground">
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardContent className="py-12 text-center text-gray-500">
             <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>아직 문의 내역이 없습니다</p>
           </CardContent>
@@ -112,18 +112,18 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
           {inquiries.map((inquiry) => (
             <Card 
               key={inquiry.id} 
-              className={`border-border/50 ${!inquiry.is_read ? 'border-l-4 border-l-primary' : ''}`}
+              className={`bg-white border-gray-200 shadow-sm ${!inquiry.is_read ? 'border-l-4 border-l-orange-500' : ''}`}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-base flex items-center gap-2">
+                    <CardTitle className="text-base flex items-center gap-2 text-gray-900">
                       {inquiry.name}
                       {!inquiry.is_read && (
-                        <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded">NEW</span>
+                        <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded font-medium">NEW</span>
                       )}
                     </CardTitle>
-                    <CardDescription className="flex items-center gap-4 mt-1">
+                    <CardDescription className="flex items-center gap-4 mt-1 text-gray-600">
                       <span className="flex items-center gap-1">
                         <Mail className="w-3 h-3" />
                         {inquiry.email}
@@ -136,19 +136,20 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
                       )}
                     </CardDescription>
                   </div>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-gray-500">
                     {format(new Date(inquiry.created_at), 'yyyy.MM.dd HH:mm', { locale: ko })}
                   </span>
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm whitespace-pre-wrap mb-4">{inquiry.message}</p>
+                <p className="text-sm whitespace-pre-wrap mb-4 text-gray-700">{inquiry.message}</p>
                 <div className="flex gap-2">
                   {!inquiry.is_read && (
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => markAsRead(inquiry.id)}
+                      className="border-gray-300 text-gray-700 hover:bg-gray-100"
                     >
                       <Check className="w-4 h-4 mr-1" />
                       읽음
@@ -157,7 +158,7 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-destructive hover:text-destructive"
+                    className="text-red-500 hover:text-red-600 hover:bg-red-50"
                     onClick={() => deleteInquiry(inquiry.id)}
                   >
                     <Trash2 className="w-4 h-4 mr-1" />

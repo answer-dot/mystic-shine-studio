@@ -47,19 +47,19 @@ export const AdminSidebar = ({
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-0 h-full bg-card border-r border-border z-50 flex flex-col transition-all duration-300",
+        "fixed left-0 top-0 h-full bg-gray-900 z-50 flex flex-col transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="p-4 border-b border-border flex items-center gap-3">
+      <div className="p-4 border-b border-gray-800 flex items-center gap-3">
         <div className="w-10 h-10 rounded-xl bg-gradient-gold flex items-center justify-center flex-shrink-0">
-          <Sparkles className="w-5 h-5 text-primary-foreground" />
+          <Sparkles className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
           <div className="overflow-hidden">
-            <h1 className="font-bold text-sm truncate">관리자</h1>
-            <p className="text-xs text-muted-foreground truncate">{siteName}</p>
+            <h1 className="font-bold text-sm truncate text-white">관리자</h1>
+            <p className="text-xs text-gray-400 truncate">{siteName}</p>
           </div>
         )}
       </div>
@@ -76,11 +76,11 @@ export const AdminSidebar = ({
               key={item.id}
               onClick={() => onSectionChange(item.id)}
               className={cn(
-                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
-                "hover:bg-secondary/80",
+                "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative",
+                "hover:bg-gray-800",
                 isActive 
-                  ? "bg-primary text-primary-foreground" 
-                  : "text-muted-foreground hover:text-foreground"
+                  ? "bg-gradient-gold text-white" 
+                  : "text-gray-400 hover:text-white"
               )}
             >
               <Icon className="w-5 h-5 flex-shrink-0" />
@@ -88,14 +88,14 @@ export const AdminSidebar = ({
                 <>
                   <span className="flex-1 text-left">{item.label}</span>
                   {showBadge && (
-                    <span className="w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-xs flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
                       {unreadInquiries > 9 ? '9+' : unreadInquiries}
                     </span>
                   )}
                 </>
               )}
               {collapsed && showBadge && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[10px] flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
                   {unreadInquiries > 9 ? '9+' : unreadInquiries}
                 </span>
               )}
@@ -105,12 +105,12 @@ export const AdminSidebar = ({
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-border space-y-2">
+      <div className="p-3 border-t border-gray-800 space-y-2">
         <Button
           variant="ghost"
           size="sm"
           onClick={onToggleCollapse}
-          className="w-full justify-start gap-3"
+          className="w-full justify-start gap-3 text-gray-400 hover:text-white hover:bg-gray-800"
         >
           {collapsed ? (
             <ChevronRight className="w-5 h-5" />
@@ -125,7 +125,7 @@ export const AdminSidebar = ({
           variant="ghost"
           size="sm"
           onClick={onLogout}
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
+          className="w-full justify-start gap-3 text-gray-400 hover:text-red-400 hover:bg-gray-800"
         >
           <LogOut className="w-5 h-5" />
           {!collapsed && <span>로그아웃</span>}

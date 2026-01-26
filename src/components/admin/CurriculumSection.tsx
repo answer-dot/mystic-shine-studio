@@ -24,18 +24,18 @@ export const CurriculumSection = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">커리큘럼</h1>
-          <p className="text-muted-foreground">강의 챕터와 내용을 관리합니다</p>
+          <h1 className="text-2xl font-bold text-gray-900">커리큘럼</h1>
+          <p className="text-gray-600">강의 챕터와 내용을 관리합니다</p>
         </div>
-        <Button variant="outline" onClick={onAdd} className="border-primary/30">
+        <Button variant="outline" onClick={onAdd} className="border-orange-300 text-orange-600 hover:bg-orange-50">
           <Plus className="w-4 h-4 mr-2" />
           챕터 추가
         </Button>
       </div>
 
       {curriculum.length === 0 ? (
-        <Card className="border-border/50">
-          <CardContent className="py-12 text-center text-muted-foreground">
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardContent className="py-12 text-center text-gray-500">
             <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>아직 커리큘럼이 없습니다</p>
             <p className="text-sm">위의 "챕터 추가" 버튼을 클릭해 시작하세요</p>
@@ -44,14 +44,14 @@ export const CurriculumSection = ({
       ) : (
         <div className="space-y-4">
           {curriculum.map((item, index) => (
-            <Card key={item.id} className="border-border/30">
+            <Card key={item.id} className="bg-white border-gray-200 shadow-sm">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base text-primary">챕터 {index + 1}</CardTitle>
+                  <CardTitle className="text-base text-orange-600">챕터 {index + 1}</CardTitle>
                   <Button 
                     variant="ghost" 
                     size="icon" 
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                     onClick={() => onDelete(item.id)}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -61,31 +61,31 @@ export const CurriculumSection = ({
               <CardContent className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="text-xs text-muted-foreground">제목</label>
+                    <label className="text-xs text-gray-500">제목</label>
                     <Input
                       value={item.title}
                       onChange={(e) => onUpdate(item.id, 'title', e.target.value)}
                       placeholder="챕터 제목"
-                      className="border-border/50"
+                      className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-xs text-muted-foreground">기간</label>
+                    <label className="text-xs text-gray-500">기간</label>
                     <Input
                       value={item.duration}
                       onChange={(e) => onUpdate(item.id, 'duration', e.target.value)}
                       placeholder="예: 4주"
-                      className="border-border/50"
+                      className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
                   <div className="space-y-2 sm:col-span-2">
-                    <label className="text-xs text-muted-foreground">설명</label>
+                    <label className="text-xs text-gray-500">설명</label>
                     <Textarea
                       value={item.description}
                       onChange={(e) => onUpdate(item.id, 'description', e.target.value)}
                       placeholder="챕터 설명"
                       rows={2}
-                      className="border-border/50 resize-none"
+                      className="bg-white border-gray-300 text-gray-900 resize-none focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
                 </div>
@@ -95,7 +95,7 @@ export const CurriculumSection = ({
 
           <Button variant="gold" onClick={onSave}>
             <Save className="w-4 h-4 mr-2" />
-            저장
+            저장하기
           </Button>
         </div>
       )}

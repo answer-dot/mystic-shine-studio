@@ -183,14 +183,14 @@ const Admin = () => {
   // Login screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Card className="w-full max-w-sm border-primary/20">
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <Card className="w-full max-w-sm bg-white border-gray-200 shadow-lg">
           <CardHeader className="text-center pb-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-gold flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-primary-foreground" />
+              <Shield className="w-8 h-8 text-white" />
             </div>
-            <CardTitle className="text-2xl">관리자 로그인</CardTitle>
-            <CardDescription>PIN을 입력해주세요</CardDescription>
+            <CardTitle className="text-2xl text-gray-900">관리자 로그인</CardTitle>
+            <CardDescription className="text-gray-600">PIN을 입력해주세요</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input
@@ -199,16 +199,16 @@ const Admin = () => {
               value={pin}
               onChange={(e) => setPin(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-              className="text-center text-lg tracking-widest"
+              className="text-center text-lg tracking-widest bg-white border-gray-300 text-gray-900"
             />
             {pinError && <p className="text-sm text-destructive text-center">{pinError}</p>}
             <Button variant="gold" className="w-full" onClick={handleLogin}>
               로그인
             </Button>
-            <Button variant="ghost" className="w-full" onClick={() => navigate('/')}>
+            <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-900" onClick={() => navigate('/')}>
               홈으로 돌아가기
             </Button>
-            <p className="text-xs text-muted-foreground text-center pt-2">
+            <p className="text-xs text-gray-500 text-center pt-2">
               기본 PIN: 1234
             </p>
           </CardContent>
@@ -306,26 +306,27 @@ const Admin = () => {
 
   // Admin dashboard with sidebar
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-card border-b border-border z-50 flex items-center justify-between px-4">
+      <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4 shadow-sm">
         <Button
           variant="ghost"
           size="icon"
+          className="text-gray-700 hover:bg-gray-100"
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
         >
           {mobileSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
-        <span className="font-semibold">{settings.siteName}</span>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
-          사이트
+        <span className="font-semibold text-gray-900">{settings.siteName}</span>
+        <Button variant="gold" size="sm" onClick={() => navigate('/')}>
+          사이트 보기
         </Button>
       </header>
 
       {/* Mobile Sidebar Overlay */}
       {mobileSidebarOpen && (
         <div 
-          className="lg:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+          className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => setMobileSidebarOpen(false)}
         />
       )}
@@ -349,7 +350,7 @@ const Admin = () => {
       {/* Main Content */}
       <main 
         className={cn(
-          "min-h-screen pt-14 lg:pt-0 transition-all duration-300",
+          "min-h-screen pt-14 lg:pt-0 transition-all duration-300 bg-gray-50",
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-64"
         )}
       >
