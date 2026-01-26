@@ -7,6 +7,7 @@ import { TestimonialsSection } from '@/components/TestimonialsSection';
 import { EventsSection } from '@/components/EventsSection';
 import { FAQSection } from '@/components/FAQSection';
 import { PricingSection } from '@/components/PricingSection';
+import { ContactSection } from '@/components/ContactSection';
 import { Footer } from '@/components/Footer';
 import { SocialProofToast } from '@/components/SocialProofToast';
 
@@ -23,6 +24,7 @@ const Index = () => {
         <EventsSection />
         <FAQSection />
         <PricingSection />
+        <ContactSection />
       </main>
       <Footer />
       <SocialProofToast />
