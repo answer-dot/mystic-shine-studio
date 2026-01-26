@@ -67,42 +67,42 @@ export const EventsSection = () => {
                 <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none z-20" />
               )}
 
-              {/* Full Background Image */}
-              <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] lg:aspect-[3/1]">
+              {/* Full Background Image - Taller on mobile for content visibility */}
+              <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9]">
                 <img 
                   src={event.imageUrl || defaultEventImage}
                   alt={event.title}
                   className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 
-                {/* Dark gradient overlay - bottom to top for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
+                {/* Dark gradient overlay - stronger on mobile for text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30 sm:from-black/90 sm:via-black/50 sm:to-black/20" />
                 
                 {/* Floating Status Badge - Top Left */}
-                <div className="absolute top-4 left-4 z-10">
+                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
                   {getStatusBadge(event.status)}
                 </div>
 
                 {/* Content Overlay - Bottom */}
-                <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 lg:p-10">
+                <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-8 lg:p-10">
                   {/* Date */}
-                  <div className="flex items-center gap-2 text-sm text-white/80 mb-3">
-                    <Calendar className="w-4 h-4 text-primary" />
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-white/80 mb-2 sm:mb-3">
+                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
                     <span>{new Date(event.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                   </div>
                   
-                  {/* Title - Large & Bold */}
-                  <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 text-white group-hover:text-primary transition-colors duration-300 leading-tight">
+                  {/* Title - Responsive sizing */}
+                  <h3 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white group-hover:text-primary transition-colors duration-300 leading-tight">
                     {event.title}
                   </h3>
                   
-                  {/* Description */}
-                  <p className="text-white/80 text-base sm:text-lg leading-relaxed mb-6 max-w-3xl">
+                  {/* Description - Line clamped on mobile */}
+                  <p className="text-white/80 text-sm sm:text-lg leading-relaxed mb-4 sm:mb-6 max-w-3xl line-clamp-3 sm:line-clamp-none">
                     {event.description}
                   </p>
 
                   {/* Footer: Spots + CTA */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-4 border-t border-white/20">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-white/20">
                     <div className="flex items-center gap-2 text-sm">
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
                         <Users className="w-4 h-4 text-primary" />
@@ -117,11 +117,11 @@ export const EventsSection = () => {
                       variant={event.status === 'ended' ? 'outline' : 'gold'} 
                       size="lg"
                       disabled={event.status === 'ended'}
-                      className="w-full sm:w-auto text-base px-8 group/btn"
+                      className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 group/btn"
                     >
                       {event.status === 'ended' ? '종료됨' : '신청하기'}
                       {event.status !== 'ended' && (
-                        <ArrowRight className="w-5 h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                       )}
                     </Button>
                   </div>
