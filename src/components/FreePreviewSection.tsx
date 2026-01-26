@@ -32,52 +32,49 @@ export const FreePreviewSection = () => {
 
         {/* Video Preview Card */}
         <div className="max-w-4xl mx-auto px-4 sm:px-0">
-          <div className="relative">
-            {/* Video Container */}
-            <div className="glass-card rounded-2xl overflow-hidden shadow-2xl">
-              {/* Video Area */}
-              <div className="relative aspect-video bg-black rounded-2xl overflow-hidden">
-                {isPlaying ? (
-                  <VideoPlayer
-                    src={previewData.videoUrl}
-                    autoPlay
-                    className="w-full h-full"
-                    onEnded={() => setIsPlaying(false)}
+          <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
+            {/* Video Area */}
+            <div className="relative aspect-video bg-black">
+              {isPlaying ? (
+                <VideoPlayer
+                  src={previewData.videoUrl}
+                  autoPlay
+                  className="w-full h-full"
+                  onEnded={() => setIsPlaying(false)}
+                />
+              ) : (
+                <>
+                  {/* Thumbnail */}
+                  <img
+                    src={previewThumbnail}
+                    alt="강의 미리보기"
+                    className="w-full h-full object-cover"
                   />
-                ) : (
-                  <>
-                    {/* Thumbnail */}
-                    <img
-                      src={previewThumbnail}
-                      alt="강의 미리보기"
-                      className="w-full h-full object-cover"
-                    />
-                    
-                    {/* Play Button Overlay */}
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center bg-black/30 cursor-pointer group"
-                      onClick={() => setIsPlaying(true)}
-                    >
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-primary/50">
-                        <Play className="w-7 h-7 sm:w-9 sm:h-9 text-primary-foreground ml-1" fill="currentColor" />
-                      </div>
+                  
+                  {/* Play Button Overlay */}
+                  <div 
+                    className="absolute inset-0 flex items-center justify-center cursor-pointer group"
+                    onClick={() => setIsPlaying(true)}
+                  >
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:scale-110">
+                      <Play className="w-6 h-6 sm:w-7 sm:h-7 text-black ml-0.5" fill="currentColor" />
                     </div>
-                  </>
-                )}
-              </div>
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Floating Info Bar - overlapping the video */}
-            <div className="relative -mt-8 sm:-mt-10 mx-3 sm:mx-6 z-10">
-              <div className="backdrop-blur-xl bg-background/80 border border-border/50 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+            {/* Info Bar - positioned at bottom, overlapping video */}
+            <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-10">
+              <div className="backdrop-blur-md bg-black/60 rounded-xl sm:rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <span className="text-primary text-xs sm:text-sm font-semibold">
                     {previewData.chapter}
                   </span>
-                  <h3 className="text-base sm:text-xl font-bold text-foreground mt-0.5 sm:mt-1 truncate">
+                  <h3 className="text-sm sm:text-lg font-bold text-white mt-0.5 truncate">
                     {previewData.title}
                   </h3>
-                  <div className="flex items-center gap-2 mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/70">
                     <span>{previewData.duration}</span>
                     <span>•</span>
                     <span className="text-primary font-medium">{previewData.badge}</span>
@@ -85,12 +82,15 @@ export const FreePreviewSection = () => {
                 </div>
                 
                 <button
-                  onClick={() => setIsPlaying(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsPlaying(true);
+                  }}
                   className={cn(
-                    "px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300",
-                    "bg-gradient-to-r from-primary to-orange-500 text-primary-foreground",
+                    "px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300",
+                    "bg-gradient-to-r from-primary to-orange-400 text-black",
                     "hover:shadow-lg hover:shadow-primary/30 hover:scale-105",
-                    "flex-shrink-0 w-full sm:w-auto text-center"
+                    "flex-shrink-0 whitespace-nowrap"
                   )}
                 >
                   지금 시청하기
