@@ -368,10 +368,8 @@ const Admin = () => {
         >
           {mobileSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
-        <span className="font-semibold text-gray-900">{settings.siteName}</span>
-        <Button variant="gold" size="sm" onClick={() => navigate('/')}>
-          사이트 보기
-        </Button>
+        <span className="font-semibold text-gray-900">관리자센터</span>
+        <div className="w-10" /> {/* Spacer for centering */}
       </header>
 
       {/* Mobile Sidebar Overlay */}
