@@ -1,22 +1,39 @@
 import { Calendar, Users, ArrowRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Default placeholder for events without images
 const defaultEventImage = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&h=600&fit=crop&q=80";
 
 export const EventsSection = () => {
   const { settings } = useSettings();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleApplyClick = () => {
+    if (!user) {
+      // Redirect to signup if not logged in
+      navigate('/auth?mode=signup');
+    } else {
+      // Scroll to contact section for logged-in users
+      const contactSection = document.getElementById('contact');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     if (status === 'ongoing') {
       return (
-        <span className="relative px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/20 text-green-400 border border-green-500/40 backdrop-blur-sm">
+        <span className="relative inline-flex items-center whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-green-500/20 text-green-400 border border-green-500/40 backdrop-blur-sm">
           {/* Neon glow effect */}
           <span className="absolute inset-0 rounded-full bg-green-500/30 blur-md animate-pulse" />
-          <span className="relative flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            진행중
+          <span className="relative inline-flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
+            <span>진행중</span>
           </span>
         </span>
       );
@@ -24,17 +41,17 @@ export const EventsSection = () => {
     
     if (status === 'upcoming') {
       return (
-        <span className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/40 backdrop-blur-sm">
-          <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3 h-3" />
-            예정
+        <span className="inline-flex items-center whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/20 text-primary border border-primary/40 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1.5">
+            <Sparkles className="w-3 h-3 flex-shrink-0" />
+            <span>예정</span>
           </span>
         </span>
       );
     }
     
     return (
-      <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-muted/80 text-muted-foreground border border-border backdrop-blur-sm">
+      <span className="inline-flex items-center whitespace-nowrap px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-medium bg-muted/80 text-muted-foreground border border-border backdrop-blur-sm">
         종료
       </span>
     );
@@ -118,6 +135,7 @@ export const EventsSection = () => {
                       size="lg"
                       disabled={event.status === 'ended'}
                       className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 group/btn"
+                      onClick={event.status !== 'ended' ? handleApplyClick : undefined}
                     >
                       {event.status === 'ended' ? '종료됨' : '신청하기'}
                       {event.status !== 'ended' && (
