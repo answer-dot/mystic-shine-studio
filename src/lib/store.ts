@@ -12,6 +12,15 @@ export interface SiteSettings {
   originalPrice: string;
   curriculum: CurriculumItem[];
   events: EventItem[];
+  testimonials: TestimonialItem[];
+}
+
+export interface TestimonialItem {
+  id: string;
+  name: string;
+  role: string;
+  content: string;
+  rating: number;
 }
 
 export interface LessonItem {
@@ -124,6 +133,29 @@ const defaultSettings: SiteSettings = {
       spots: 5,
       imageUrl: ""
     }
+  ],
+  testimonials: [
+    {
+      id: "1",
+      name: "박지현",
+      role: "직장인 / 수강 6개월",
+      content: "이 강의를 듣고 제 삶이 정말 많이 바뀌었어요. 타로를 통해 저 자신을 더 깊이 이해하게 되었고, 지금은 부업으로 리딩도 하고 있어요. 정말 감사합니다!",
+      rating: 5,
+    },
+    {
+      id: "2",
+      name: "김민수",
+      role: "프리랜서 / 수강 1년",
+      content: "체계적인 커리큘럼과 이하늘 교수님의 따뜻한 피드백 덕분에 전문 리더로 성장할 수 있었습니다. 월 수입이 300만원을 넘었어요!",
+      rating: 5,
+    },
+    {
+      id: "3",
+      name: "이서연",
+      role: "주부 / 수강 3개월",
+      content: "처음에는 반신반의했는데, 지금은 친구들에게 리딩해주는 게 제 취미가 됐어요. 이렇게 쉽게 배울 수 있을 줄 몰랐습니다.",
+      rating: 5,
+    },
   ]
 };
 

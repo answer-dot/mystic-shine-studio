@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getSettings, saveSettings, SiteSettings, CurriculumItem, EventItem } from '@/lib/store';
+import { getSettings, saveSettings, SiteSettings, CurriculumItem, EventItem, TestimonialItem } from '@/lib/store';
 import { supabase } from '@/integrations/supabase/client';
 
 // Keys that we store in the database
@@ -15,6 +15,7 @@ const DB_SETTINGS_KEYS = [
   'originalPrice',
   'curriculum',
   'events',
+  'testimonials',
 ] as const;
 
 export const useSettings = () => {

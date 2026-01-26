@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSettings } from '@/hooks/useSettings';
-import { verifyPin, updateAdminPin, CurriculumItem, EventItem } from '@/lib/store';
+import { verifyPin, updateAdminPin, CurriculumItem, EventItem, TestimonialItem } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -15,6 +15,7 @@ import { DashboardSection } from '@/components/admin/DashboardSection';
 import { GeneralSection, InstructorSection } from '@/components/admin/SettingsSections';
 import { CurriculumSection } from '@/components/admin/CurriculumSection';
 import { EventsSection } from '@/components/admin/EventsSection';
+import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
 import { InquiriesSection } from '@/components/admin/InquiriesSection';
 import { SecuritySection } from '@/components/admin/SecuritySection';
 
@@ -42,6 +43,7 @@ const Admin = () => {
   const [originalPrice, setOriginalPrice] = useState('');
   const [curriculum, setCurriculum] = useState<CurriculumItem[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
 
@@ -60,6 +62,7 @@ const Admin = () => {
       setOriginalPrice(settings.originalPrice);
       setCurriculum(settings.curriculum);
       setEvents(settings.events);
+      setTestimonials(settings.testimonials || []);
     }
   }, [isAuthenticated, settings]);
 
@@ -113,6 +116,14 @@ const Admin = () => {
     toast({
       title: "저장 완료",
       description: "이벤트가 저장되었습니다.",
+    });
+  };
+
+  const handleSaveTestimonials = () => {
+    updateSettings({ testimonials });
+    toast({
+      title: "저장 완료",
+      description: "수강생 후기가 저장되었습니다.",
     });
   };
 
@@ -183,6 +194,23 @@ const Admin = () => {
 
   const deleteEventItem = (id: string) => {
     setEvents(events.filter(item => item.id !== id));
+  };
+
+  const addTestimonialItem = () => {
+    setTestimonials([
+      ...testimonials,
+      { id: Date.now().toString(), name: '', role: '', content: '', rating: 5 }
+    ]);
+  };
+
+  const updateTestimonialItem = (id: string, field: keyof TestimonialItem, value: string | number) => {
+    setTestimonials(testimonials.map(item => 
+      item.id === id ? { ...item, [field]: value } : item
+    ));
+  };
+
+  const deleteTestimonialItem = (id: string) => {
+    setTestimonials(testimonials.filter(item => item.id !== id));
   };
 
   const handleSectionChange = (section: string) => {
@@ -293,6 +321,16 @@ const Admin = () => {
             onUpdate={updateEventItem}
             onDelete={deleteEventItem}
             onSave={handleSaveEvents}
+          />
+        );
+      case 'testimonials':
+        return (
+          <TestimonialsSection
+            testimonials={testimonials}
+            onAdd={addTestimonialItem}
+            onUpdate={updateTestimonialItem}
+            onDelete={deleteTestimonialItem}
+            onSave={handleSaveTestimonials}
           />
         );
       case 'inquiries':
