@@ -17,11 +17,8 @@ export const EventsSection = () => {
       // Redirect to signup if not logged in
       navigate('/auth?mode=signup');
     } else {
-      // Scroll to contact section for logged-in users
-      const contactSection = document.getElementById('contact');
-      if (contactSection) {
-        contactSection.scrollIntoView({ behavior: 'smooth' });
-      }
+      // Logged-in users go to dashboard
+      navigate('/dashboard');
     }
   };
 

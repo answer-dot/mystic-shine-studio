@@ -38,6 +38,63 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          created_at: string
+          curriculum: Json | null
+          description: string | null
+          duration: string | null
+          features: Json | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          is_published: boolean | null
+          order_index: number | null
+          original_price: string | null
+          price: string | null
+          short_description: string | null
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          curriculum?: Json | null
+          description?: string | null
+          duration?: string | null
+          features?: Json | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          order_index?: number | null
+          original_price?: string | null
+          price?: string | null
+          short_description?: string | null
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          curriculum?: Json | null
+          description?: string | null
+          duration?: string | null
+          features?: Json | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          is_published?: boolean | null
+          order_index?: number | null
+          original_price?: string | null
+          price?: string | null
+          short_description?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           created_at: string
@@ -118,6 +175,41 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      user_courses: {
+        Row: {
+          completed_at: string | null
+          course_id: string
+          enrolled_at: string
+          id: string
+          progress: Json | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          course_id: string
+          enrolled_at?: string
+          id?: string
+          progress?: Json | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          course_id?: string
+          enrolled_at?: string
+          id?: string
+          progress?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

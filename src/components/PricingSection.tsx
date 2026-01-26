@@ -2,9 +2,23 @@ import { Check, Shield, Zap, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
 import { useSettings } from '@/hooks/useSettings';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const PricingSection = () => {
   const { settings } = useSettings();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRegisterClick = () => {
+    if (user) {
+      // Logged in: go to dashboard
+      navigate('/dashboard');
+    } else {
+      // Not logged in: go to signup
+      navigate('/auth?mode=signup');
+    }
+  };
 
   const features = [
     "14주 완성 체계적 커리큘럼",
@@ -77,8 +91,8 @@ export const PricingSection = () => {
               </div>
 
               {/* CTA */}
-              <Button variant="hero" size="xl" className="w-full">
-                지금 등록하기
+              <Button variant="hero" size="xl" className="w-full" onClick={handleRegisterClick}>
+                {user ? '내 강의실 가기' : '지금 등록하기'}
               </Button>
 
               {/* Trust badges */}

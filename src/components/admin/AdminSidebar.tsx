@@ -11,7 +11,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Star
+  Star,
+  BookOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -30,6 +31,7 @@ const menuItems = [
   { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
   { id: 'general', label: '일반 설정', icon: Settings },
   { id: 'instructor', label: '강사 관리', icon: Users },
+  { id: 'courses', label: '강의 관리', icon: BookOpen },
   { id: 'curriculum', label: '커리큘럼', icon: FileText },
   { id: 'events', label: '이벤트', icon: Calendar },
   { id: 'testimonials', label: '수강생 후기', icon: Star },
