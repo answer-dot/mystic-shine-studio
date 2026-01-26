@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSettings } from '@/hooks/useSettings';
-import { verifyPin, CurriculumItem, EventItem } from '@/lib/store';
+import { verifyPin, updateAdminPin, CurriculumItem, EventItem } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -63,8 +63,9 @@ const Admin = () => {
     }
   }, [isAuthenticated, settings]);
 
-  const handleLogin = () => {
-    if (verifyPin(pin)) {
+  const handleLogin = async () => {
+    const isValid = await verifyPin(pin);
+    if (isValid) {
       setIsAuthenticated(true);
       setPinError('');
     } else {
@@ -115,7 +116,7 @@ const Admin = () => {
     });
   };
 
-  const handleChangePin = () => {
+  const handleChangePin = async () => {
     if (newPin.length < 4) {
       toast({
         title: "오류",
@@ -132,13 +133,22 @@ const Admin = () => {
       });
       return;
     }
-    updateSettings({ adminPin: newPin });
-    setNewPin('');
-    setConfirmPin('');
-    toast({
-      title: "PIN 변경 완료",
-      description: "새로운 PIN으로 변경되었습니다.",
-    });
+    
+    const success = await updateAdminPin(newPin);
+    if (success) {
+      setNewPin('');
+      setConfirmPin('');
+      toast({
+        title: "PIN 변경 완료",
+        description: "새로운 PIN으로 변경되었습니다.",
+      });
+    } else {
+      toast({
+        title: "오류",
+        description: "PIN 변경에 실패했습니다. 다시 시도해주세요.",
+        variant: "destructive",
+      });
+    }
   };
 
   const addCurriculumItem = () => {

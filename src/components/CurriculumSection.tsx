@@ -33,9 +33,9 @@ export const CurriculumSection = () => {
           </p>
         </div>
 
-        {/* Accordion */}
+        {/* Accordion - Chapter Cards */}
         <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="space-y-5">
+          <Accordion type="single" collapsible className="space-y-6">
             {settings.curriculum.map((item, index) => {
               const hasPreviewLessons = item.lessons?.some(l => l.isPreview) || item.isPreview;
               
@@ -43,7 +43,7 @@ export const CurriculumSection = () => {
                 <AccordionItem 
                   key={item.id} 
                   value={item.id}
-                  className="bg-[#1A1A1A] rounded-xl border border-primary/40 overflow-hidden"
+                  className="bg-[#1A1A1A] rounded-2xl border border-primary/40 overflow-hidden shadow-lg shadow-black/20"
                 >
                   <AccordionTrigger className="px-5 sm:px-7 py-5 sm:py-6 hover:no-underline hover:bg-white/5 transition-colors [&[data-state=open]>svg]:rotate-180">
                     <div className="flex items-center gap-3 sm:gap-4 text-left flex-1">
@@ -131,18 +131,18 @@ export const CurriculumSection = () => {
                                   </div>
                                 </div>
                                 
-                                {/* Inline Video Player */}
+                                {/* Inline Video Player - Enhanced padding */}
                                 {canPlay && (
                                   <div className={cn(
                                     "overflow-hidden transition-all duration-300",
-                                    isPlaying ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                                    isPlaying ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
                                   )}>
                                     {isPlaying && (
-                                      <div className="p-2">
+                                      <div className="p-4 sm:p-6 bg-black/30 rounded-xl mt-2">
                                         <VideoPlayer
                                           src={lesson.videoUrl!}
                                           showLabel="미리보기"
-                                          className="rounded-lg"
+                                          className="rounded-xl shadow-xl"
                                         />
                                       </div>
                                     )}

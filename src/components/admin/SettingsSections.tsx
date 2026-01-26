@@ -54,62 +54,65 @@ export const GeneralSection = ({
           </CardTitle>
           <CardDescription className="text-gray-600">사이트 이름과 웨비나 정보를 설정합니다</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">사이트 이름</label>
-              <Input
-                value={siteName}
-                onChange={(e) => setSiteName(e.target.value)}
-                placeholder="사이트 이름"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
-              />
-              <p className="text-xs text-gray-500">헤더에 표시되는 사이트 이름입니다</p>
+        <CardContent className="space-y-5">
+          {/* Horizontal layout for labels and inputs */}
+          <div className="grid gap-4">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 w-24 flex-shrink-0">사이트 이름</label>
+              <div className="flex-1">
+                <Input
+                  value={siteName}
+                  onChange={(e) => setSiteName(e.target.value)}
+                  placeholder="사이트 이름"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">헤더에 표시되는 사이트 이름입니다</p>
+              </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">웨비나 날짜</label>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 w-24 flex-shrink-0">웨비나 날짜</label>
               <Input
                 type="datetime-local"
                 value={webinarDate.slice(0, 16)}
                 onChange={(e) => setWebinarDate(e.target.value)}
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 flex-1"
               />
             </div>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">잔여 좌석</label>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 w-24 flex-shrink-0">잔여 좌석</label>
               <Input
                 type="number"
                 value={remainingSeats}
                 onChange={(e) => setRemainingSeats(Number(e.target.value))}
                 min={0}
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 w-32"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">판매가</label>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 w-24 flex-shrink-0">판매가</label>
               <Input
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="₩490,000"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 w-40"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">정가</label>
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium text-gray-700 w-24 flex-shrink-0">정가</label>
               <Input
                 value={originalPrice}
                 onChange={(e) => setOriginalPrice(e.target.value)}
                 placeholder="₩890,000"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 w-40"
               />
             </div>
           </div>
-          <Button variant="gold" onClick={onSave}>
-            <Save className="w-4 h-4 mr-2" />
-            저장하기
-          </Button>
+          <div className="pt-2">
+            <Button variant="gold" onClick={onSave}>
+              <Save className="w-4 h-4 mr-2" />
+              저장하기
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
