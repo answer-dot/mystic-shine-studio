@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,14 @@ export const TestimonialsSection = () => {
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  
+  // Touch/Swipe state
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Minimum swipe distance to trigger navigation (in pixels)
+  const minSwipeDistance = 50;
 
   // Get the indices for the visible slides (previous, current, next)
   const getVisibleIndices = useCallback(() => {
@@ -42,6 +50,37 @@ export const TestimonialsSection = () => {
 
   const goToNext = () => {
     goToSlide((currentIndex + 1) % testimonials.length);
+  };
+
+  // Touch event handlers for swipe gestures
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    
+    const distance = touchStartX.current - touchEndX.current;
+    const isSwipe = Math.abs(distance) > minSwipeDistance;
+    
+    if (isSwipe) {
+      if (distance > 0) {
+        // Swiped left -> go to next
+        goToNext();
+      } else {
+        // Swiped right -> go to previous
+        goToPrev();
+      }
+    }
+    
+    // Reset touch values
+    touchStartX.current = null;
+    touchEndX.current = null;
   };
 
   if (testimonials.length === 0) {
@@ -83,8 +122,14 @@ export const TestimonialsSection = () => {
           <p className="text-muted-foreground">이미 수천 명이 변화를 경험했습니다</p>
         </div>
 
-        {/* Carousel Container */}
-        <div className="relative max-w-6xl mx-auto px-4">
+        {/* Carousel Container with Touch Support */}
+        <div 
+          ref={containerRef}
+          className="relative max-w-6xl mx-auto px-4 touch-pan-y"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Navigation Buttons */}
           <button 
             onClick={goToPrev}
@@ -103,7 +148,7 @@ export const TestimonialsSection = () => {
           </button>
 
           {/* Slides Container */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 py-8">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 py-8 select-none">
             {/* Previous Slide */}
             <div 
               className="hidden sm:block w-1/4 flex-shrink-0 cursor-pointer"
@@ -135,8 +180,13 @@ export const TestimonialsSection = () => {
             </div>
           </div>
 
+          {/* Swipe Hint for Mobile */}
+          <p className="text-center text-xs text-muted-foreground sm:hidden mb-2">
+            ← 좌우로 스와이프 →
+          </p>
+
           {/* Dot Indicators */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-2 mt-4 sm:mt-6">
             {testimonials.map((_, index) => (
               <button
                 key={index}
