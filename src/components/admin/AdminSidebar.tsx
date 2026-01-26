@@ -13,10 +13,12 @@ import {
   ChevronRight,
   Star,
   BookOpen,
-  ExternalLink
+  ExternalLink,
+  MessageCircle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useNewReviewsCount } from '@/hooks/useReviews';
 
 interface AdminSidebarProps {
   currentSection: string;
@@ -36,6 +38,7 @@ const menuItems = [
   { id: 'curriculum', label: '커리큘럼', icon: FileText },
   { id: 'events', label: '이벤트', icon: Calendar },
   { id: 'testimonials', label: '수강생 후기', icon: Star },
+  { id: 'reviews', label: '리뷰 관리', icon: MessageCircle },
   { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
   { id: 'security', label: '보안', icon: Shield },
 ];
@@ -50,6 +53,7 @@ export const AdminSidebar = ({
   unreadInquiries
 }: AdminSidebarProps) => {
   const navigate = useNavigate();
+  const { data: newReviewsCount = 0 } = useNewReviewsCount();
   
   return (
     <aside 
@@ -78,7 +82,9 @@ export const AdminSidebar = ({
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentSection === item.id;
-          const showBadge = item.id === 'inquiries' && unreadInquiries > 0;
+          const showBadge = (item.id === 'inquiries' && unreadInquiries > 0) || 
+                           (item.id === 'reviews' && newReviewsCount > 0);
+          const badgeCount = item.id === 'inquiries' ? unreadInquiries : newReviewsCount;
           
           return (
             <button
@@ -102,7 +108,7 @@ export const AdminSidebar = ({
                   "w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center",
                   collapsed && "lg:absolute lg:-top-1 lg:-right-1 lg:w-4 lg:h-4 lg:text-[10px]"
                 )}>
-                  {unreadInquiries > 9 ? '9+' : unreadInquiries}
+                  {badgeCount > 9 ? '9+' : badgeCount}
                 </span>
               )}
             </button>

@@ -19,6 +19,7 @@ import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
 import { InquiriesSection } from '@/components/admin/InquiriesSection';
 import { SecuritySection } from '@/components/admin/SecuritySection';
 import { CoursesSection } from '@/components/admin/CoursesSection';
+import { ReviewsSection } from '@/components/admin/ReviewsSection';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -336,6 +337,8 @@ const Admin = () => {
             onSave={handleSaveTestimonials}
           />
         );
+      case 'reviews':
+        return <ReviewsSection />;
       case 'inquiries':
         return (
           <InquiriesSection onUnreadCountChange={setUnreadInquiries} />

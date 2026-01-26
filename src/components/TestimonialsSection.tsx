@@ -1,11 +1,45 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { Star, Quote, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { useApprovedReviews } from '@/hooks/useReviews';
 import { cn } from '@/lib/utils';
 
 export const TestimonialsSection = () => {
   const { settings } = useSettings();
-  const testimonials = settings.testimonials || [];
+  const { data: userReviews } = useApprovedReviews();
+  const adminTestimonials = settings.testimonials || [];
+  
+  // Combine admin testimonials with approved user reviews
+  const testimonials = useMemo(() => {
+    const adminItems = adminTestimonials.map(t => ({
+      id: t.id,
+      name: t.name,
+      role: t.role,
+      content: t.content,
+      rating: t.rating,
+      photoUrl: undefined as string | undefined,
+      isUserReview: false,
+    }));
+    
+    const userItems = (userReviews || []).map(r => ({
+      id: r.id,
+      name: `수강생`, // Anonymous for privacy
+      role: '수료생',
+      content: r.content,
+      rating: r.rating,
+      photoUrl: r.photo_url || undefined,
+      isUserReview: true,
+    }));
+    
+    // Interleave admin and user reviews
+    const combined = [...adminItems];
+    userItems.forEach((item, index) => {
+      const insertIndex = Math.min((index + 1) * 2, combined.length);
+      combined.splice(insertIndex, 0, item);
+    });
+    
+    return combined;
+  }, [adminTestimonials, userReviews]);
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -254,6 +288,8 @@ interface TestimonialCardProps {
     role: string;
     content: string;
     rating: number;
+    photoUrl?: string;
+    isUserReview?: boolean;
   };
   isCenter: boolean;
 }
@@ -303,21 +339,39 @@ const TestimonialCard = ({ testimonial, isCenter }: TestimonialCardProps) => {
 
       {/* Author - Centered */}
       <div className="flex flex-col items-center gap-3">
-        <div 
-          className={cn(
-            "w-12 h-12 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-primary-foreground font-bold text-lg",
-            !isCenter && "w-10 h-10 text-base"
-          )}
-        >
-          {testimonial.name[0]}
-        </div>
-        <div className="text-center">
-          <p className={cn(
-            "font-semibold",
-            isCenter ? "text-base" : "text-sm"
+        {testimonial.photoUrl ? (
+          <div className={cn(
+            "rounded-full overflow-hidden border-2 border-primary/30",
+            isCenter ? "w-12 h-12" : "w-10 h-10"
           )}>
-            {testimonial.name}
-          </p>
+            <img 
+              src={testimonial.photoUrl} 
+              alt={testimonial.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : (
+          <div 
+            className={cn(
+              "rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-primary-foreground font-bold",
+              isCenter ? "w-12 h-12 text-lg" : "w-10 h-10 text-base"
+            )}
+          >
+            {testimonial.name[0]}
+          </div>
+        )}
+        <div className="text-center">
+          <div className="flex items-center justify-center gap-1">
+            <p className={cn(
+              "font-semibold",
+              isCenter ? "text-base" : "text-sm"
+            )}>
+              {testimonial.name}
+            </p>
+            {testimonial.isUserReview && (
+              <Camera className="w-3 h-3 text-primary" />
+            )}
+          </div>
           <p className={cn(
             "text-muted-foreground",
             isCenter ? "text-sm" : "text-xs"

@@ -1,5 +1,10 @@
-import { Users, DollarSign, MessageSquare, Ticket, TrendingUp, Eye } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, DollarSign, MessageSquare, Ticket, TrendingUp, Eye, Star, User } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { useAllReviews } from '@/hooks/useReviews';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface DashboardSectionProps {
   stats: {
@@ -12,6 +17,10 @@ interface DashboardSectionProps {
 }
 
 export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) => {
+  const { data: reviews } = useAllReviews();
+  const recentReviews = reviews?.slice(0, 5) || [];
+  const pendingReviewsCount = reviews?.filter(r => !r.is_approved && !r.is_hidden).length || 0;
+
   const statCards = [
     {
       title: '총 회원 수',
@@ -36,11 +45,12 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
       onClick: () => onNavigate('inquiries'),
     },
     {
-      title: '잔여 좌석',
-      value: stats.remainingSeats.toString(),
-      icon: Ticket,
-      color: 'text-purple-500',
-      bgColor: 'bg-purple-500/10',
+      title: '대기 중인 리뷰',
+      value: pendingReviewsCount.toString(),
+      icon: Star,
+      color: 'text-yellow-500',
+      bgColor: 'bg-yellow-500/10',
+      onClick: () => onNavigate('reviews'),
     },
   ];
 
@@ -130,6 +140,78 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
           </CardContent>
         </Card>
       </div>
+
+      {/* Recent Reviews Section */}
+      <Card className="bg-white border-gray-200 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-lg text-gray-900 flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-500" />
+              최근 리뷰
+            </CardTitle>
+            <CardDescription>최근 등록된 수강생 후기</CardDescription>
+          </div>
+          {pendingReviewsCount > 0 && (
+            <Badge 
+              className="bg-orange-100 text-orange-700 border-orange-200 cursor-pointer hover:bg-orange-200"
+              onClick={() => onNavigate('reviews')}
+            >
+              {pendingReviewsCount}개 대기 중
+            </Badge>
+          )}
+        </CardHeader>
+        <CardContent>
+          {recentReviews.length > 0 ? (
+            <div className="space-y-3">
+              {recentReviews.map((review) => (
+                <div 
+                  key={review.id}
+                  className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                  onClick={() => onNavigate('reviews')}
+                >
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="flex">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={cn(
+                              "w-3 h-3",
+                              i < review.rating ? "fill-primary text-primary" : "text-gray-200"
+                            )}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-xs text-gray-400">
+                        {format(new Date(review.created_at), 'M.d', { locale: ko })}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-xs",
+                          review.is_approved && "bg-green-50 text-green-700 border-green-200",
+                          !review.is_approved && !review.is_hidden && "bg-orange-50 text-orange-700 border-orange-200"
+                        )}
+                      >
+                        {review.is_approved ? '승인' : '대기'}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-700 line-clamp-1">{review.content}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-8 text-center text-gray-500">
+              <Star className="w-10 h-10 mx-auto mb-2 opacity-30" />
+              <p className="text-sm">등록된 리뷰가 없습니다</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

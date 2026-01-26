@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ReviewForm } from '@/components/ReviewForm';
+import { useUserReviews, useUserCoupons } from '@/hooks/useReviews';
 import { 
   BookOpen, 
   MessageSquare, 
@@ -19,8 +21,14 @@ import {
   Mail,
   Calendar,
   Play,
-  Lock
+  Lock,
+  Star,
+  Gift,
+  Ticket
 } from 'lucide-react';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 
 interface Course {
   id: string;
@@ -53,6 +61,13 @@ interface Profile {
 const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
+  const [showReviewForm, setShowReviewForm] = useState(false);
+
+  // Fetch user reviews
+  const { data: userReviews } = useUserReviews(user?.id);
+  
+  // Fetch user coupons
+  const { data: userCoupons } = useUserCoupons(user?.id);
 
   // Redirect to auth if not logged in
   useEffect(() => {
@@ -146,6 +161,7 @@ const Dashboard = () => {
 
   const enrolledCourseIds = enrollments?.map(e => e.course_id) || [];
   const displayName = profile?.display_name || user.email?.split('@')[0] || '회원';
+  const validCoupons = userCoupons?.filter(c => !c.is_used && new Date(c.expires_at) > new Date()) || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -171,7 +187,7 @@ const Dashboard = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             <Card className="bg-card border-border">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
@@ -179,7 +195,7 @@ const Dashboard = () => {
                     <BookOpen className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">수강 중인 강의</p>
+                    <p className="text-sm text-muted-foreground">수강 중</p>
                     <p className="text-2xl font-bold">{enrolledCourseIds.length}</p>
                   </div>
                 </div>
@@ -193,7 +209,7 @@ const Dashboard = () => {
                     <GraduationCap className="w-6 h-6 text-green-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">완료한 강의</p>
+                    <p className="text-sm text-muted-foreground">완료</p>
                     <p className="text-2xl font-bold">{enrollments?.filter(e => e.completed_at).length || 0}</p>
                   </div>
                 </div>
@@ -203,12 +219,26 @@ const Dashboard = () => {
             <Card className="bg-card border-border">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                    <MessageSquare className="w-6 h-6 text-blue-500" />
+                  <div className="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                    <Star className="w-6 h-6 text-yellow-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">문의 내역</p>
-                    <p className="text-2xl font-bold">{inquiries?.length || 0}</p>
+                    <p className="text-sm text-muted-foreground">내 후기</p>
+                    <p className="text-2xl font-bold">{userReviews?.length || 0}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-card border-border">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
+                    <Ticket className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">쿠폰</p>
+                    <p className="text-2xl font-bold">{validCoupons.length}</p>
                   </div>
                 </div>
               </CardContent>
@@ -333,6 +363,66 @@ const Dashboard = () => {
 
             {/* Right Sidebar */}
             <div className="space-y-6">
+              {/* Write Review Card */}
+              <Card className="bg-gradient-to-br from-primary/10 to-orange-500/10 border-primary/20">
+                <CardContent className="p-6 text-center">
+                  <Gift className="w-10 h-10 text-primary mx-auto mb-3" />
+                  <h3 className="font-bold mb-2">후기 작성하고 쿠폰 받기!</h3>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    솔직한 후기를 남기시면 10% 할인 쿠폰을 드려요
+                  </p>
+                  <Button 
+                    className="w-full"
+                    onClick={() => setShowReviewForm(!showReviewForm)}
+                  >
+                    <Star className="w-4 h-4 mr-2" />
+                    {showReviewForm ? '닫기' : '후기 작성하기'}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Review Form */}
+              {showReviewForm && (
+                <ReviewForm onSuccess={() => setShowReviewForm(false)} />
+              )}
+
+              {/* My Coupons */}
+              {validCoupons.length > 0 && (
+                <Card className="bg-card border-border">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Ticket className="w-5 h-5 text-primary" />
+                      내 쿠폰
+                    </CardTitle>
+                    <CardDescription>사용 가능한 쿠폰 {validCoupons.length}장</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {validCoupons.map((coupon) => (
+                      <div
+                        key={coupon.id}
+                        className="p-3 rounded-lg bg-gradient-to-r from-primary/5 to-orange-500/5 border border-primary/20"
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-bold text-primary">
+                            {coupon.discount_type === 'percentage' 
+                              ? `${coupon.discount_value}% 할인`
+                              : `₩${coupon.discount_value.toLocaleString()} 할인`
+                            }
+                          </span>
+                          <Badge variant="outline" className="text-xs">
+                            {coupon.reason === 'review_reward' ? '후기 보상' : coupon.reason}
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-mono">{coupon.code}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {format(new Date(coupon.expires_at), 'yyyy.M.d', { locale: ko })}까지
+                        </p>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Profile Card */}
               <Card className="bg-card border-border">
                 <CardHeader>
