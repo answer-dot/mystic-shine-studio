@@ -10,7 +10,8 @@ import {
   Sparkles,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Star
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -31,6 +32,7 @@ const menuItems = [
   { id: 'instructor', label: '강사 관리', icon: Users },
   { id: 'curriculum', label: '커리큘럼', icon: FileText },
   { id: 'events', label: '이벤트', icon: Calendar },
+  { id: 'testimonials', label: '수강생 후기', icon: Star },
   { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
   { id: 'security', label: '보안', icon: Shield },
 ];
