@@ -161,7 +161,7 @@ export const verifyPin = async (pin: string): Promise<boolean> => {
     .from('admin_settings')
     .select('value')
     .eq('key', 'admin_pin')
-    .single();
+    .maybeSingle();
   
   if (error || !data) {
     // Fallback to localStorage if database fails
