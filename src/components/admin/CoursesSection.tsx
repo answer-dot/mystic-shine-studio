@@ -261,10 +261,10 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
             <DialogHeader>
-              <DialogTitle>{editingCourse ? '강의 수정' : '새 강의 추가'}</DialogTitle>
-              <DialogDescription>
+              <DialogTitle className="text-gray-900">{editingCourse ? '강의 수정' : '새 강의 추가'}</DialogTitle>
+              <DialogDescription className="text-gray-600">
                 강의 정보를 입력하세요
               </DialogDescription>
             </DialogHeader>
@@ -272,94 +272,103 @@ export const CoursesSection = () => {
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>강의 제목 *</Label>
+                  <Label className="text-gray-700">강의 제목 *</Label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="타로 마스터 과정"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>슬러그 (URL) *</Label>
+                  <Label className="text-gray-700">슬러그 (URL) *</Label>
                   <Input
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
                     placeholder="tarot-master"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label>짧은 설명</Label>
+                <Label className="text-gray-700">짧은 설명</Label>
                 <Input
                   value={formData.short_description}
                   onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
                   placeholder="타로의 신비로운 세계에 입문하세요"
+                  className="bg-white border-gray-300 text-gray-900"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>상세 설명</Label>
+                <Label className="text-gray-700">상세 설명</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="강의에 대한 자세한 설명..."
                   rows={3}
+                  className="bg-white border-gray-300 text-gray-900"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>이미지 URL</Label>
+                <Label className="text-gray-700">이미지 URL</Label>
                 <Input
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   placeholder="https://..."
+                  className="bg-white border-gray-300 text-gray-900"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label>가격</Label>
+                  <Label className="text-gray-700">가격</Label>
                   <Input
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     placeholder="₩490,000"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>원래 가격</Label>
+                  <Label className="text-gray-700">원래 가격</Label>
                   <Input
                     value={formData.original_price}
                     onChange={(e) => setFormData({ ...formData, original_price: e.target.value })}
                     placeholder="₩890,000"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>기간</Label>
+                  <Label className="text-gray-700">기간</Label>
                   <Input
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                     placeholder="14주"
+                    className="bg-white border-gray-300 text-gray-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label>포함 항목</Label>
+                <Label className="text-gray-700">포함 항목</Label>
                 <div className="flex gap-2">
                   <Input
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
                     placeholder="예: 평생 무제한 영상 시청"
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
+                    className="bg-white border-gray-300 text-gray-900"
                   />
-                  <Button type="button" variant="outline" onClick={addFeature}>
+                  <Button type="button" variant="outline" onClick={addFeature} className="border-gray-300 text-gray-700">
                     추가
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {formData.features.map((feature, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1">
+                    <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-700">
                       {feature}
                       <button onClick={() => removeFeature(index)}>
                         <X className="w-3 h-3" />
@@ -375,14 +384,14 @@ export const CoursesSection = () => {
                     checked={formData.is_published}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
                   />
-                  <Label>공개</Label>
+                  <Label className="text-gray-700">공개</Label>
                 </div>
                 <div className="flex items-center gap-2">
                   <Switch
                     checked={formData.is_featured}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
                   />
-                  <Label>추천 강의</Label>
+                  <Label className="text-gray-700">추천 강의</Label>
                 </div>
               </div>
             </div>
@@ -459,10 +468,10 @@ export const CoursesSection = () => {
 
                   {/* Edit Button Only */}
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
                     onClick={() => openEditDialog(course)}
-                    className="flex-shrink-0 h-9 w-9 lg:h-10 lg:w-10"
+                    className="flex-shrink-0 h-9 w-9 lg:h-10 lg:w-10 border-gray-300 text-gray-700 hover:bg-orange-50 hover:border-orange-300 hover:text-orange-600"
                   >
                     <Edit className="w-4 h-4 lg:w-5 lg:h-5" />
                   </Button>

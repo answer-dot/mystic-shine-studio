@@ -93,10 +93,12 @@ export const CurriculumSection = ({
             </Card>
           ))}
 
-          <Button variant="gold" onClick={onSave}>
-            <Save className="w-4 h-4 mr-2" />
-            저장하기
-          </Button>
+          <div className="flex justify-end">
+            <Button variant="gold" onClick={onSave}>
+              <Save className="w-4 h-4 mr-2" />
+              저장하기
+            </Button>
+          </div>
         </div>
       )}
     </div>
