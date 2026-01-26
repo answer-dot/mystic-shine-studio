@@ -1,14 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Settings, Save, LogOut, Calendar, Users, FileText, 
-  Shield, HelpCircle, Plus, Trash2, Sparkles
+  Shield, HelpCircle, Plus, Trash2, Sparkles, Upload, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useSettings } from '@/hooks/useSettings';
 import { verifyPin, CurriculumItem, EventItem } from '@/lib/store';
+import defaultInstructorImage from '@/assets/instructor-profile.jpg';
 import { useToast } from '@/hooks/use-toast';
 import {
   Tooltip,
@@ -37,12 +38,14 @@ const Admin = () => {
   const [instructorName, setInstructorName] = useState('');
   const [instructorTitle, setInstructorTitle] = useState('');
   const [instructorBio, setInstructorBio] = useState('');
+  const [instructorImageUrl, setInstructorImageUrl] = useState('');
   const [price, setPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [curriculum, setCurriculum] = useState<CurriculumItem[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Initialize form with settings
   useEffect(() => {
@@ -54,6 +57,7 @@ const Admin = () => {
       setInstructorName(settings.instructorName);
       setInstructorTitle(settings.instructorTitle);
       setInstructorBio(settings.instructorBio);
+      setInstructorImageUrl(settings.instructorImageUrl);
       setPrice(settings.price);
       setOriginalPrice(settings.originalPrice);
       setCurriculum(settings.curriculum);
@@ -89,11 +93,39 @@ const Admin = () => {
       instructorName,
       instructorTitle,
       instructorBio,
+      instructorImageUrl,
     });
     toast({
       title: "저장 완료",
       description: "강사 정보가 저장되었습니다.",
     });
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "파일 크기 초과",
+          description: "이미지는 5MB 이하로 업로드해주세요.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setInstructorImageUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setInstructorImageUrl('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   const handleSaveCurriculum = () => {
@@ -344,6 +376,48 @@ const Admin = () => {
             <div className="glass-card rounded-xl p-6">
               <h2 className="text-lg font-semibold mb-6">강사 정보</h2>
               <div className="space-y-6">
+                {/* Image Upload */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">프로필 이미지</label>
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 bg-secondary flex-shrink-0">
+                      <img 
+                        src={instructorImageUrl || defaultInstructorImage}
+                        alt="강사 프로필"
+                        className="w-full h-full object-cover"
+                      />
+                      {instructorImageUrl && (
+                        <button
+                          onClick={handleRemoveImage}
+                          className="absolute top-0 right-0 w-6 h-6 bg-destructive rounded-full flex items-center justify-center hover:bg-destructive/80 transition-colors"
+                        >
+                          <X className="w-3 h-3 text-destructive-foreground" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        이미지 업로드
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        권장: 정사각형, 최대 5MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
                 <div>
                   <label className="text-sm font-medium mb-2 block">강사 이름</label>
                   <Input

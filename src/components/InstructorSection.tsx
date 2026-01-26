@@ -1,9 +1,11 @@
 import { Award, Users, BookOpen, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
+import defaultInstructorImage from '@/assets/instructor-profile.jpg';
 
 export const InstructorSection = () => {
   const { settings } = useSettings();
+  const profileImage = settings.instructorImageUrl || defaultInstructorImage;
 
   return (
     <section id="instructor" className="py-20 sm:py-28 bg-gradient-to-b from-surface-overlay to-background">
@@ -25,14 +27,11 @@ export const InstructorSection = () => {
               <div className="w-full lg:w-1/3 flex justify-center">
                 <div className="relative">
                   <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-primary/30 shadow-xl">
-                    <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                      <div className="text-center">
-                        <div className="w-20 h-20 mx-auto mb-2 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
-                          <span className="text-3xl">👩‍💼</span>
-                        </div>
-                        <span className="text-xs text-muted-foreground">강사 프로필 이미지</span>
-                      </div>
-                    </div>
+                    <img 
+                      src={profileImage} 
+                      alt={settings.instructorName || '강사 프로필'}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   
                   {/* Decorations */}

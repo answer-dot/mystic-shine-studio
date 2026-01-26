@@ -7,6 +7,7 @@ export interface SiteSettings {
   instructorName: string;
   instructorTitle: string;
   instructorBio: string;
+  instructorImageUrl: string;
   price: string;
   originalPrice: string;
   curriculum: CurriculumItem[];
@@ -48,6 +49,7 @@ const defaultSettings: SiteSettings = {
   instructorName: "이하늘 교수",
   instructorTitle: "타로 마스터 & 심리상담사",
   instructorBio: "15년 이상의 타로 리딩 경력을 가진 전문가로, 심리학 박사 학위를 보유하고 있습니다. 수천 명의 수강생을 배출하며 타로를 통한 자기 이해와 성장을 돕고 있습니다.",
+  instructorImageUrl: "",
   price: "₩490,000",
   originalPrice: "₩890,000",
   curriculum: [
