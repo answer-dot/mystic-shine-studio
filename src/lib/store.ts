@@ -13,11 +13,22 @@ export interface SiteSettings {
   events: EventItem[];
 }
 
+export interface LessonItem {
+  id: string;
+  title: string;
+  duration: string;
+  isPreview: boolean;
+  videoUrl?: string;
+}
+
 export interface CurriculumItem {
   id: string;
   title: string;
   description: string;
   duration: string;
+  isPreview?: boolean;
+  previewVideoUrl?: string;
+  lessons: LessonItem[];
 }
 
 export interface EventItem {
@@ -44,25 +55,51 @@ const defaultSettings: SiteSettings = {
       id: "1",
       title: "1단계: 타로의 기초",
       description: "메이저 아르카나 22장의 의미와 상징 체계를 깊이 있게 학습합니다.",
-      duration: "4주"
+      duration: "4주",
+      isPreview: true,
+      previewVideoUrl: "",
+      lessons: [
+        { id: "1-1", title: "타로 카드의 역사와 구성", duration: "15분", isPreview: true, videoUrl: "" },
+        { id: "1-2", title: "메이저 아르카나 개요", duration: "20분", isPreview: true, videoUrl: "" },
+        { id: "1-3", title: "0번 바보~10번 운명의 수레바퀴", duration: "45분", isPreview: false },
+        { id: "1-4", title: "11번 정의~21번 세계", duration: "45분", isPreview: false },
+      ]
     },
     {
       id: "2",
       title: "2단계: 마이너 아르카나",
       description: "56장의 마이너 카드와 4가지 슈트의 에너지를 이해합니다.",
-      duration: "4주"
+      duration: "4주",
+      isPreview: false,
+      lessons: [
+        { id: "2-1", title: "슈트의 이해: 완드, 컵, 소드, 펜타클", duration: "30분", isPreview: true, videoUrl: "" },
+        { id: "2-2", title: "숫자 카드 1~10 해석법", duration: "40분", isPreview: false },
+        { id: "2-3", title: "코트 카드: 페이지, 나이트, 퀸, 킹", duration: "35분", isPreview: false },
+      ]
     },
     {
       id: "3",
       title: "3단계: 스프레드 실전",
       description: "다양한 스프레드 기법과 실제 리딩 연습을 진행합니다.",
-      duration: "3주"
+      duration: "3주",
+      isPreview: false,
+      lessons: [
+        { id: "3-1", title: "원카드 & 쓰리카드 스프레드", duration: "25분", isPreview: true, videoUrl: "" },
+        { id: "3-2", title: "켈틱 크로스 스프레드", duration: "40분", isPreview: false },
+        { id: "3-3", title: "실전 리딩 연습", duration: "50분", isPreview: false },
+      ]
     },
     {
       id: "4",
       title: "4단계: 심화 & 비즈니스",
       description: "전문 리더로서의 역량 강화와 비즈니스 운영 방법을 배웁니다.",
-      duration: "3주"
+      duration: "3주",
+      isPreview: false,
+      lessons: [
+        { id: "4-1", title: "직관력 강화 훈련", duration: "30분", isPreview: false },
+        { id: "4-2", title: "상담 윤리와 커뮤니케이션", duration: "25분", isPreview: false },
+        { id: "4-3", title: "타로 비즈니스 운영 전략", duration: "35분", isPreview: false },
+      ]
     }
   ],
   events: [
