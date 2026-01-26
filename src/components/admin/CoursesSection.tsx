@@ -387,30 +387,46 @@ export const CoursesSection = () => {
               </div>
             </div>
 
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                취소
-              </Button>
-              <Button onClick={handleSubmit}>
-                <Save className="w-4 h-4 mr-2" />
-                {editingCourse ? '수정' : '추가'}
-              </Button>
+            <div className="flex justify-between items-center pt-4 border-t">
+              {editingCourse ? (
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    if (confirm('정말 삭제하시겠습니까?')) {
+                      deleteMutation.mutate(editingCourse.id);
+                      setIsDialogOpen(false);
+                    }
+                  }}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  삭제
+                </Button>
+              ) : (
+                <div />
+              )}
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  취소
+                </Button>
+                <Button onClick={handleSubmit}>
+                  <Save className="w-4 h-4 mr-2" />
+                  {editingCourse ? '수정' : '추가'}
+                </Button>
+              </div>
             </div>
           </DialogContent>
         </Dialog>
       </div>
 
       {courses && courses.length > 0 ? (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {courses.map((course) => (
-            <Card key={course.id} className="bg-white border-gray-200 shadow-sm">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex-shrink-0">
-                    <GripVertical className="w-5 h-5 text-gray-400" />
-                  </div>
-                  
-                  <div className="w-20 h-14 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+            <Card key={course.id} className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="p-3 lg:p-4">
+                <div className="flex items-center gap-3 lg:gap-4">
+                  {/* Course Image */}
+                  <div className="w-16 h-12 lg:w-20 lg:h-14 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     {course.image_url ? (
                       <img 
                         src={course.image_url} 
@@ -419,81 +435,37 @@ export const CoursesSection = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <BookOpen className="w-6 h-6 text-gray-400" />
+                        <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 text-gray-400" />
                       </div>
                     )}
                   </div>
 
+                  {/* Course Title */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-gray-900 truncate">{course.title}</h3>
+                    <h3 className="font-semibold text-gray-900 truncate text-sm lg:text-base">{course.title}</h3>
+                    {/* Show status indicators as small text on mobile */}
+                    <div className="flex items-center gap-2 mt-0.5 text-xs text-gray-500">
+                      <span className={course.is_published ? 'text-green-600' : 'text-gray-400'}>
+                        {course.is_published ? '공개' : '비공개'}
+                      </span>
                       {course.is_featured && (
-                        <Badge className="bg-orange-100 text-orange-700 border-orange-200">
-                          <Star className="w-3 h-3 mr-1" />
-                          추천
-                        </Badge>
+                        <>
+                          <span>•</span>
+                          <span className="text-orange-600">추천</span>
+                        </>
                       )}
-                      {course.is_published ? (
-                        <Badge className="bg-green-100 text-green-700 border-green-200">
-                          <Eye className="w-3 h-3 mr-1" />
-                          공개
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary">
-                          <EyeOff className="w-3 h-3 mr-1" />
-                          비공개
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-500 truncate">{course.short_description || course.description}</p>
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                      <span>{course.duration}</span>
-                      <span>•</span>
-                      <span className="text-orange-600 font-medium">{course.price}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => togglePublished(course)}
-                      title={course.is_published ? '비공개로 전환' : '공개로 전환'}
-                    >
-                      {course.is_published ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => toggleFeatured(course)}
-                      title={course.is_featured ? '추천 해제' : '추천 설정'}
-                    >
-                      <Star className={`w-4 h-4 ${course.is_featured ? 'fill-orange-500 text-orange-500' : ''}`} />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDialog(course)}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        if (confirm('정말 삭제하시겠습니까?')) {
-                          deleteMutation.mutate(course.id);
-                        }
-                      }}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  {/* Edit Button Only */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => openEditDialog(course)}
+                    className="flex-shrink-0 h-9 w-9 lg:h-10 lg:w-10"
+                  >
+                    <Edit className="w-4 h-4 lg:w-5 lg:h-5" />
+                  </Button>
                 </div>
               </CardContent>
             </Card>
