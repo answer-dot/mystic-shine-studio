@@ -221,16 +221,16 @@ export const InstructorSection = ({
           <div className="space-y-3">
             <label className="text-sm font-medium text-gray-700">프로필 이미지</label>
             <div className="flex items-center gap-6">
-              <div className="relative w-32 h-40 rounded-2xl overflow-hidden border-2 border-orange-300 bg-gray-100 flex-shrink-0">
+              <div className="relative w-28 h-28 rounded-full overflow-hidden border-2 border-orange-300 bg-gray-100 flex-shrink-0">
                 <img 
                   src={instructorImageUrl || defaultInstructorImage}
                   alt="강사 프로필"
-                  className="w-full h-full object-cover object-top"
+                  className="w-full h-full object-cover"
                 />
                 {instructorImageUrl && (
                   <button
                     onClick={handleRemoveImage}
-                    className="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                    className="absolute top-0 right-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
                   >
                     <X className="w-3 h-3 text-white" />
                   </button>
