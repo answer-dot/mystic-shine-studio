@@ -1,4 +1,4 @@
-import { Calendar, Plus, Trash2, Save } from 'lucide-react';
+import { Calendar, Plus, Trash2, Save, Image } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -69,6 +69,33 @@ export const EventsSection = ({
                       className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
                     />
                   </div>
+                  
+                  {/* Image URL Field */}
+                  <div className="space-y-2 sm:col-span-2">
+                    <label className="text-xs text-gray-500 flex items-center gap-1">
+                      <Image className="w-3 h-3" />
+                      이벤트 이미지 URL
+                    </label>
+                    <Input
+                      value={item.imageUrl || ''}
+                      onChange={(e) => onUpdate(item.id, 'imageUrl', e.target.value)}
+                      placeholder="https://example.com/event-image.jpg"
+                      className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                    />
+                    {item.imageUrl && (
+                      <div className="mt-2 relative w-full max-w-xs aspect-[4/3] rounded-lg overflow-hidden border border-gray-200">
+                        <img 
+                          src={item.imageUrl} 
+                          alt="Event preview" 
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&h=200&fit=crop&q=80';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
                   <div className="space-y-2">
                     <label className="text-xs text-gray-500">날짜</label>
                     <Input
