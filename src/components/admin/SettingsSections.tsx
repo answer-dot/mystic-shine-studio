@@ -107,7 +107,7 @@ export const GeneralSection = ({
               />
             </div>
           </div>
-          <div className="pt-2">
+          <div className="pt-2 flex justify-end">
             <Button variant="gold" onClick={onSave}>
               <Save className="w-4 h-4 mr-2" />
               저장하기
@@ -187,43 +187,45 @@ export const InstructorSection = ({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 lg:space-y-8">
-          {/* Image Upload - Vertical layout on mobile */}
+          {/* Image Upload - Side by side on tablet/desktop, vertical on mobile */}
           <div className="space-y-4">
             <label className="text-sm font-medium text-gray-700">프로필 이미지</label>
-            <div className="relative w-24 h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-orange-300 bg-gray-100">
-              <img 
-                src={instructorImageUrl || defaultInstructorImage}
-                alt="강사 프로필"
-                className="w-full h-full object-cover"
-              />
-              {instructorImageUrl && (
-                <button
-                  onClick={handleRemoveImage}
-                  className="absolute top-0 right-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+              <div className="relative w-24 h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden border-2 border-orange-300 bg-gray-100 flex-shrink-0">
+                <img 
+                  src={instructorImageUrl || defaultInstructorImage}
+                  alt="강사 프로필"
+                  className="w-full h-full object-cover"
+                />
+                {instructorImageUrl && (
+                  <button
+                    onClick={handleRemoveImage}
+                    className="absolute top-0 right-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <X className="w-3 h-3 text-white" />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <Button 
+                  variant="outline" 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-100"
                 >
-                  <X className="w-3 h-3 text-white" />
-                </button>
-              )}
-            </div>
-            <div className="space-y-2">
-              <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                onClick={() => fileInputRef.current?.click()}
-                className="border-gray-300 text-gray-700 hover:bg-gray-100"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                이미지 업로드
-              </Button>
-              <p className="text-xs text-gray-500">
-                권장: 정사각형 이미지, 최대 5MB
-              </p>
+                  <Upload className="w-4 h-4 mr-2" />
+                  이미지 업로드
+                </Button>
+                <p className="text-xs text-gray-500">
+                  권장: 정사각형 이미지, 최대 5MB
+                </p>
+              </div>
             </div>
           </div>
           
@@ -259,10 +261,12 @@ export const InstructorSection = ({
             />
           </div>
 
-          <Button variant="gold" onClick={onSave}>
-            <Save className="w-4 h-4 mr-2" />
-            저장하기
-          </Button>
+          <div className="flex justify-end">
+            <Button variant="gold" onClick={onSave}>
+              <Save className="w-4 h-4 mr-2" />
+              저장하기
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
