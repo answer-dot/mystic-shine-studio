@@ -1,18 +1,30 @@
 import { useState } from 'react';
-import { Play, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Play, Sparkles, Lock } from 'lucide-react';
 import { VideoPlayer } from '@/components/VideoPlayer';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import previewThumbnail from '@/assets/tarot-preview-thumbnail.jpg';
 
 export const FreePreviewSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const previewData = {
     chapter: 'Chapter 1',
-    title: '타로 카드의 세계로 초대',
+    title: '지식 창업의 시작',
     duration: '15:32',
     badge: '무료 공개',
     videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  };
+
+  const handleWatchClick = () => {
+    if (user) {
+      setIsPlaying(true);
+    } else {
+      navigate('/auth');
+    }
   };
 
   return (
@@ -54,7 +66,7 @@ export const FreePreviewSection = () => {
                   {/* Play Button Overlay */}
                   <div 
                     className="absolute inset-0 flex items-center justify-center cursor-pointer group"
-                    onClick={() => setIsPlaying(true)}
+                    onClick={handleWatchClick}
                   >
                     <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-primary to-orange-400 flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:scale-110">
                       <Play className="w-6 h-6 sm:w-7 sm:h-7 text-black ml-0.5" fill="currentColor" />
@@ -84,7 +96,7 @@ export const FreePreviewSection = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    setIsPlaying(true);
+                    handleWatchClick();
                   }}
                   className={cn(
                     "px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300",
@@ -100,8 +112,9 @@ export const FreePreviewSection = () => {
           </div>
 
           {/* Additional Info */}
-          <p className="text-center text-muted-foreground text-sm mt-6">
-            🔓 로그인 없이 바로 시청 가능합니다
+          <p className="text-center text-muted-foreground text-sm mt-6 flex items-center justify-center gap-2">
+            <Lock className="w-4 h-4" />
+            로그인 후 풀버전 감상 가능합니다
           </p>
         </div>
       </div>
