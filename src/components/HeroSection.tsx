@@ -37,18 +37,18 @@ export const HeroSection = () => {
           </p>
 
           {/* Stats */}
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-12 mb-8 sm:mb-10 animate-fade-in px-4">
-            <div className="flex items-center gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-6 md:gap-12 mb-8 sm:mb-10 animate-fade-in px-2 sm:px-4">
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              <span className="text-sm sm:text-base text-muted-foreground"><span className="font-bold text-foreground">2,847</span> 수강생</span>
+              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">2,847</span> 수강생</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
               <Star className="w-4 h-4 sm:w-5 sm:h-5 text-primary fill-primary" />
-              <span className="text-sm sm:text-base text-muted-foreground"><span className="font-bold text-foreground">4.9</span> 평점</span>
+              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">4.9</span> 평점</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              <span className="text-sm sm:text-base text-muted-foreground"><span className="font-bold text-foreground">14주</span> 과정</span>
+              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">14주</span> 과정</span>
             </div>
           </div>
 
@@ -64,7 +64,7 @@ export const HeroSection = () => {
           </div>
 
           {/* Urgency */}
-          <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-xl mx-auto mb-8 sm:mb-10 animate-fade-in mx-4 sm:mx-auto">
+          <div className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-6 md:p-8 max-w-xl mb-8 sm:mb-10 animate-fade-in mx-4 sm:mx-auto">
             <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
               <span className="text-destructive font-semibold animate-pulse text-sm sm:text-base">🔥 마감 임박!</span>
               <span className="text-xs sm:text-sm text-muted-foreground">
