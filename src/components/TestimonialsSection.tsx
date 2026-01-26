@@ -9,13 +9,14 @@ export const TestimonialsSection = () => {
   
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
   
-  // Touch/Swipe state
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
+  // Touch/Swipe & Mouse Drag state
+  const startX = useRef<number | null>(null);
+  const currentX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Minimum swipe distance to trigger navigation (in pixels)
+  // Minimum swipe/drag distance to trigger navigation (in pixels)
   const minSwipeDistance = 50;
 
   // Get the indices for the visible slides (previous, current, next)
@@ -52,35 +53,66 @@ export const TestimonialsSection = () => {
     goToSlide((currentIndex + 1) % testimonials.length);
   };
 
-  // Touch event handlers for swipe gestures
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.targetTouches[0].clientX;
-    touchEndX.current = null;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    touchEndX.current = e.targetTouches[0].clientX;
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX.current || !touchEndX.current) return;
+  // Process swipe/drag end
+  const processSwipeEnd = () => {
+    if (startX.current === null || currentX.current === null) return;
     
-    const distance = touchStartX.current - touchEndX.current;
+    const distance = startX.current - currentX.current;
     const isSwipe = Math.abs(distance) > minSwipeDistance;
     
     if (isSwipe) {
       if (distance > 0) {
-        // Swiped left -> go to next
+        // Swiped/dragged left -> go to next
         goToNext();
       } else {
-        // Swiped right -> go to previous
+        // Swiped/dragged right -> go to previous
         goToPrev();
       }
     }
     
-    // Reset touch values
-    touchStartX.current = null;
-    touchEndX.current = null;
+    // Reset values
+    startX.current = null;
+    currentX.current = null;
+  };
+
+  // Touch event handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    startX.current = e.targetTouches[0].clientX;
+    currentX.current = null;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    currentX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    processSwipeEnd();
+  };
+
+  // Mouse event handlers for drag
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Prevent default to avoid text selection
+    e.preventDefault();
+    setIsDragging(true);
+    startX.current = e.clientX;
+    currentX.current = null;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    currentX.current = e.clientX;
+  };
+
+  const handleMouseUp = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    processSwipeEnd();
+  };
+
+  const handleMouseLeave = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+    processSwipeEnd();
   };
 
   if (testimonials.length === 0) {
@@ -122,13 +154,20 @@ export const TestimonialsSection = () => {
           <p className="text-muted-foreground">이미 수천 명이 변화를 경험했습니다</p>
         </div>
 
-        {/* Carousel Container with Touch Support */}
+        {/* Carousel Container with Touch & Mouse Drag Support */}
         <div 
           ref={containerRef}
-          className="relative max-w-6xl mx-auto px-4 touch-pan-y"
+          className={cn(
+            "relative max-w-6xl mx-auto px-4 touch-pan-y",
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          )}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          onMouseDown={handleMouseDown}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
         >
           {/* Navigation Buttons */}
           <button 
