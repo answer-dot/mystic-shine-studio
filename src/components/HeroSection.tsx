@@ -2,12 +2,26 @@ import { ArrowRight, Users, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
 import { useSettings } from '@/hooks/useSettings';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export const HeroSection = () => {
   const { settings } = useSettings();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
-  const scrollToPricing = () => {
-    document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+  const handleCTAClick = () => {
+    if (user) {
+      // Logged in: go to dashboard
+      navigate('/dashboard');
+    } else {
+      // Not logged in: go to signup
+      navigate('/auth?mode=signup');
+    }
+  };
+
+  const scrollToCurriculum = () => {
+    document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -54,11 +68,11 @@ export const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 animate-fade-in px-4">
-            <Button variant="hero" size="xl" className="w-full sm:w-auto" onClick={scrollToPricing}>
-              무료 체험 시작
+            <Button variant="hero" size="xl" className="w-full sm:w-auto" onClick={handleCTAClick}>
+              {user ? '내 강의실 가기' : '무료 체험 시작'}
               <ArrowRight className="w-5 h-5" />
             </Button>
-            <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={() => document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' })}>
+            <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
               커리큘럼 보기
             </Button>
           </div>

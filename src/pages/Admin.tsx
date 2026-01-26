@@ -18,6 +18,7 @@ import { EventsSection } from '@/components/admin/EventsSection';
 import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
 import { InquiriesSection } from '@/components/admin/InquiriesSection';
 import { SecuritySection } from '@/components/admin/SecuritySection';
+import { CoursesSection } from '@/components/admin/CoursesSection';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -303,6 +304,8 @@ const Admin = () => {
             onSave={handleSaveInstructor}
           />
         );
+      case 'courses':
+        return <CoursesSection />;
       case 'curriculum':
         return (
           <CurriculumSection
