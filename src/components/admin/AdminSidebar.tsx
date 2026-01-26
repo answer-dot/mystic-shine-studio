@@ -14,7 +14,8 @@ import {
   Star,
   BookOpen,
   ExternalLink,
-  MessageCircle
+  MessageCircle,
+  FolderOpen
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -36,6 +37,7 @@ const menuItems = [
   { id: 'instructor', label: '강사 관리', icon: Users },
   { id: 'courses', label: '강의 관리', icon: BookOpen },
   { id: 'curriculum', label: '커리큘럼', icon: FileText },
+  { id: 'materials', label: '자료실', icon: FolderOpen },
   { id: 'events', label: '이벤트', icon: Calendar },
   { id: 'testimonials', label: '수강생 후기', icon: Star },
   { id: 'reviews', label: '리뷰 관리', icon: MessageCircle },
