@@ -154,7 +154,34 @@ export const saveSettings = (settings: Partial<SiteSettings>): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
 };
 
-export const verifyPin = (pin: string): boolean => {
-  const settings = getSettings();
-  return pin === settings.adminPin;
+import { supabase } from '@/integrations/supabase/client';
+
+export const verifyPin = async (pin: string): Promise<boolean> => {
+  const { data, error } = await supabase
+    .from('admin_settings')
+    .select('value')
+    .eq('key', 'admin_pin')
+    .single();
+  
+  if (error || !data) {
+    // Fallback to localStorage if database fails
+    const settings = getSettings();
+    return pin === settings.adminPin;
+  }
+  
+  return pin === data.value;
+};
+
+export const updateAdminPin = async (newPin: string): Promise<boolean> => {
+  const { error } = await supabase
+    .from('admin_settings')
+    .update({ value: newPin })
+    .eq('key', 'admin_pin');
+  
+  if (error) {
+    console.error('Failed to update PIN:', error);
+    return false;
+  }
+  
+  return true;
 };
