@@ -26,11 +26,11 @@ export const InstructorSection = () => {
               {/* Profile Image */}
               <div className="w-full lg:w-1/3 flex justify-center">
                 <div className="relative">
-                  <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden border-4 border-primary/30 shadow-xl">
+                  <div className="w-56 h-64 sm:w-64 sm:h-80 rounded-2xl overflow-hidden border-4 border-primary/30 shadow-xl bg-gradient-to-b from-gray-100 to-gray-200">
                     <img 
                       src={profileImage} 
                       alt={settings.instructorName || '강사 프로필'}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top"
                     />
                   </div>
                   
