@@ -229,6 +229,12 @@ export const ReviewsSection = () => {
   );
 };
 
+// Generate anonymous display name from user_id
+const getDisplayName = (userId: string) => {
+  const hash = userId.slice(0, 8);
+  return `수강생 ${hash.slice(0, 4).toUpperCase()}`;
+};
+
 // Individual Review Item Component
 interface ReviewItemProps {
   review: Review;
@@ -242,7 +248,7 @@ const ReviewItem = ({ review, onOpenDetail, onApprove, onHide, isPending }: Revi
   return (
     <div
       className={cn(
-        "p-4 flex items-start gap-4 hover:bg-gray-50 transition-colors cursor-pointer",
+        "p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors cursor-pointer",
         isPending && "bg-orange-50/50"
       )}
       onClick={onOpenDetail}
@@ -252,39 +258,37 @@ const ReviewItem = ({ review, onOpenDetail, onApprove, onHide, isPending }: Revi
         <User className="w-5 h-5 text-primary" />
       </div>
 
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          {/* Rating */}
-          <div className="flex">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={cn(
-                  "w-3 h-3",
-                  i < review.rating ? "fill-primary text-primary" : "text-gray-200"
-                )}
-              />
-            ))}
-          </div>
-          {/* Date */}
-          <span className="text-xs text-gray-400">
-            {format(new Date(review.created_at), 'M.d', { locale: ko })}
-          </span>
-          {/* Status Badge */}
-          <Badge
-            variant="outline"
-            className={cn(
-              "text-xs",
-              review.is_approved && "bg-green-50 text-green-700 border-green-200",
-              review.is_hidden && "bg-gray-100 text-gray-500 border-gray-200",
-              !review.is_approved && !review.is_hidden && "bg-orange-50 text-orange-700 border-orange-200"
-            )}
-          >
-            {review.is_approved ? '승인' : review.is_hidden ? '숨김' : '대기'}
-          </Badge>
+      {/* Name + Stars Only (Simplified) */}
+      <div className="flex-1 min-w-0 flex items-center gap-3">
+        <span className="font-medium text-gray-900 text-sm truncate min-w-[80px]">
+          {getDisplayName(review.user_id)}
+        </span>
+        <div className="flex">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Star
+              key={i}
+              className={cn(
+                "w-4 h-4",
+                i < review.rating ? "fill-primary text-primary" : "text-gray-200"
+              )}
+            />
+          ))}
         </div>
-        <p className="text-sm text-gray-700 line-clamp-2">{review.content}</p>
+        <span className="text-xs text-gray-400">
+          {format(new Date(review.created_at), 'M.d', { locale: ko })}
+        </span>
+        {/* Status Badge */}
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-xs",
+            review.is_approved && "bg-green-50 text-green-700 border-green-200",
+            review.is_hidden && "bg-gray-100 text-gray-500 border-gray-200",
+            !review.is_approved && !review.is_hidden && "bg-orange-50 text-orange-700 border-orange-200"
+          )}
+        >
+          {review.is_approved ? '승인' : review.is_hidden ? '숨김' : '대기'}
+        </Badge>
       </div>
 
       {/* Quick Actions */}
