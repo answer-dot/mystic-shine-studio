@@ -5,9 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Mail, Lock, User, Sparkles, FileText, Shield } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Sparkles, FileText, Shield, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSettings } from '@/hooks/useSettings';
+import { replacePlaceholders } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -20,6 +21,7 @@ export default function Auth() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(false);
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
+  const [agreedAge, setAgreedAge] = useState(false);
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const { signIn, signUp, user, loading: authLoading } = useAuth();
@@ -67,6 +69,11 @@ export default function Auth() {
           setIsSubmitting(false);
           return;
         }
+        if (!agreedAge) {
+          toast.error('만 14세 이상임을 확인해주세요');
+          setIsSubmitting(false);
+          return;
+        }
         if (!agreedTerms || !agreedPrivacy) {
           toast.error('이용약관과 개인정보처리방침에 동의해주세요');
           setIsSubmitting(false);
@@ -87,8 +94,17 @@ export default function Auth() {
     }
   };
 
-  const termsContent = settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.';
-  const privacyContent = settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.';
+  // Apply placeholders to legal documents
+  const termsContent = replacePlaceholders(
+    settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.',
+    settings
+  );
+  const privacyContent = replacePlaceholders(
+    settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.',
+    settings
+  );
+
+  const canSubmitSignup = agreedAge && agreedTerms && agreedPrivacy;
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -175,9 +191,31 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Terms & Privacy Checkboxes - Only for signup */}
+            {/* Agreement Checkboxes - Only for signup */}
             {!isLogin && (
-              <div className="space-y-3 pt-2">
+              <div className="space-y-3 pt-2 border-t border-border/50 mt-4">
+                <p className="text-xs text-muted-foreground pt-2">필수 동의 사항</p>
+                
+                {/* Age Verification - MANDATORY */}
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
+                  <Checkbox
+                    id="age"
+                    checked={agreedAge}
+                    onCheckedChange={(checked) => setAgreedAge(checked === true)}
+                    className="mt-0.5 border-amber-400 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="age" className="text-sm text-amber-900 cursor-pointer font-medium flex items-center gap-1">
+                      <UserCheck className="w-4 h-4" />
+                      <span className="text-destructive">*</span> 만 14세 이상입니다 (필수)
+                    </label>
+                    <p className="text-xs text-amber-700 mt-1">
+                      만 14세 미만의 아동은 법정대리인의 동의가 필요합니다.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Terms of Service */}
                 <div className="flex items-start gap-3">
                   <Checkbox
                     id="terms"
@@ -200,6 +238,8 @@ export default function Auth() {
                     </label>
                   </div>
                 </div>
+
+                {/* Privacy Policy */}
                 <div className="flex items-start gap-3">
                   <Checkbox
                     id="privacy"
@@ -229,7 +269,7 @@ export default function Auth() {
               type="submit"
               variant="hero"
               className="w-full mt-6"
-              disabled={isSubmitting || (!isLogin && (!agreedTerms || !agreedPrivacy))}
+              disabled={isSubmitting || (!isLogin && !canSubmitSignup)}
             >
               {isSubmitting ? '처리중...' : isLogin ? '로그인' : '회원가입'}
             </Button>
