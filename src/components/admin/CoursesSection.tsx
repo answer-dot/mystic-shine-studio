@@ -700,7 +700,7 @@ export const CoursesSection = () => {
                 <Button 
                   variant="outline" 
                   onClick={() => setIsDialogOpen(false)}
-                  className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 rounded-lg font-medium h-10"
+                  className="border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 px-6 rounded-lg font-medium h-10"
                 >
                   취소
                 </Button>
