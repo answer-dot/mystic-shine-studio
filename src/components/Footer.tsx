@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Mail, Phone, MapPin, FileText, Shield } from 'lucide-react';
+import { Sparkles, Mail, Phone, MapPin, FileText, Shield, RefreshCcw } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { replacePlaceholders } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -9,9 +10,21 @@ export const Footer = () => {
   const { settings } = useSettings();
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  const [showRefundDialog, setShowRefundDialog] = useState(false);
 
-  const termsContent = settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.';
-  const privacyContent = settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.';
+  // Apply placeholders to legal documents
+  const termsContent = replacePlaceholders(
+    settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.',
+    settings
+  );
+  const privacyContent = replacePlaceholders(
+    settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.',
+    settings
+  );
+  const refundContent = replacePlaceholders(
+    settings.refundPolicy || '환불정책 내용이 등록되지 않았습니다.',
+    settings
+  );
 
   return (
     <>
@@ -64,7 +77,15 @@ export const Footer = () => {
                     개인정보처리방침
                   </button>
                 </li>
-                <li><a href="#" className="hover:text-foreground transition-colors">환불 정책</a></li>
+                <li>
+                  <button 
+                    onClick={() => setShowRefundDialog(true)} 
+                    className="hover:text-foreground transition-colors inline-flex items-center gap-1"
+                  >
+                    <RefreshCcw className="w-3 h-3" />
+                    환불 정책
+                  </button>
+                </li>
                 <li><Link to="/admin" className="hover:text-foreground transition-colors">관리자</Link></li>
               </ul>
             </div>
@@ -75,11 +96,15 @@ export const Footer = () => {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary" />
-                  <span>{settings.csEmail || 'support@mystictarot.kr'}</span>
+                  <a href={`mailto:${settings.csEmail || 'support@mystictarot.kr'}`} className="hover:text-foreground transition-colors">
+                    {settings.csEmail || 'support@mystictarot.kr'}
+                  </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-primary" />
-                  <span>{settings.csPhone || '02-1234-5678'}</span>
+                  <a href={`tel:${settings.csPhone || '02-1234-5678'}`} className="hover:text-foreground transition-colors">
+                    {settings.csPhone || '02-1234-5678'}
+                  </a>
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
@@ -125,6 +150,23 @@ export const Footer = () => {
           <ScrollArea className="h-[60vh] pr-4">
             <div id="privacy-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
               {privacyContent}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Refund Policy Dialog */}
+      <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]" aria-describedby="refund-description">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <RefreshCcw className="w-5 h-5 text-primary" />
+              환불 정책
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div id="refund-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              {refundContent}
             </div>
           </ScrollArea>
         </DialogContent>

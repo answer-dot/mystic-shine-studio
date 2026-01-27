@@ -55,6 +55,7 @@ const Admin = () => {
   const [confirmPin, setConfirmPin] = useState('');
   const [termsOfService, setTermsOfService] = useState('');
   const [privacyPolicy, setPrivacyPolicy] = useState('');
+  const [refundPolicy, setRefundPolicy] = useState('');
 
   // Initialize form with settings
   useEffect(() => {
@@ -73,6 +74,7 @@ const Admin = () => {
       setTestimonials(settings.testimonials || []);
       setTermsOfService(settings.termsOfService || '');
       setPrivacyPolicy(settings.privacyPolicy || '');
+      setRefundPolicy(settings.refundPolicy || '');
     }
   }, [isAuthenticated, settings]);
 
@@ -149,7 +151,7 @@ const Admin = () => {
   };
 
   const handleSaveLegal = () => {
-    updateSettings({ termsOfService, privacyPolicy });
+    updateSettings({ termsOfService, privacyPolicy, refundPolicy });
     toast({
       title: "저장 완료",
       description: "약관이 저장되었습니다.",
@@ -371,6 +373,8 @@ const Admin = () => {
             setTermsOfService={setTermsOfService}
             privacyPolicy={privacyPolicy}
             setPrivacyPolicy={setPrivacyPolicy}
+            refundPolicy={refundPolicy}
+            setRefundPolicy={setRefundPolicy}
             onSave={handleSaveLegal}
           />
         );

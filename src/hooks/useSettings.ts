@@ -19,6 +19,7 @@ const DB_SETTINGS_KEYS = [
   'resendApiKey',
   'termsOfService',
   'privacyPolicy',
+  'refundPolicy',
   'csEmail',
   'csPhone',
   'csAddress',
