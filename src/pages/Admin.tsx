@@ -607,12 +607,30 @@ const Admin = () => {
         )}
       >
         <div className="p-4 lg:p-8 max-w-6xl">
-          {/* Back Button */}
+          {/* Back Button - Improved: Navigate to dashboard if no history */}
           <div className="mb-6 mt-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => window.history.back()}
+              onClick={() => {
+                // Check if there's a previous page in history
+                // If not (or if coming from outside admin), go to dashboard
+                if (currentSection !== 'dashboard') {
+                  setCurrentSection('dashboard');
+                } else if (window.history.length > 1) {
+                  // Only go back if there's actual history
+                  const referrer = document.referrer;
+                  const isFromAdminPage = referrer.includes('/admin');
+                  if (isFromAdminPage) {
+                    window.history.back();
+                  } else {
+                    // Stay in dashboard - nowhere to go
+                    navigate('/');
+                  }
+                } else {
+                  navigate('/');
+                }
+              }}
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 gap-2"
             >
               <ArrowLeft className="w-4 h-4" />

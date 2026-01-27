@@ -1,9 +1,12 @@
-import { Calendar, Plus, Trash2, Save, Image, Clock, Users } from 'lucide-react';
+import { useRef } from 'react';
+import { Calendar, Plus, Trash2, Save, Image, Clock, Users, Upload, X } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { EventItem } from '@/lib/store';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface EventsSectionProps {
   events: EventItem[];
@@ -20,6 +23,65 @@ export const EventsSection = ({
   onDelete,
   onSave,
 }: EventsSectionProps) => {
+  const { toast } = useToast();
+  const fileInputRefs = useRef<{ [key: string]: HTMLInputElement | null }>({});
+
+  // Handle image upload for each event
+  const handleImageUpload = async (eventId: string, file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "파일 크기 초과",
+        description: "이미지는 5MB 이하로 업로드해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `event-${eventId}-${Date.now()}.${fileExt}`;
+      const filePath = `events/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('event-images')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        // If bucket doesn't exist, use base64 fallback
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          onUpdate(eventId, 'imageUrl', reader.result as string);
+        };
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('event-images')
+        .getPublicUrl(filePath);
+
+      onUpdate(eventId, 'imageUrl', publicUrl);
+      toast({
+        title: "업로드 완료",
+        description: "이벤트 이미지가 업로드되었습니다.",
+      });
+    } catch (error) {
+      // Fallback to base64 for development
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onUpdate(eventId, 'imageUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (eventId: string) => {
+    onUpdate(eventId, 'imageUrl', '');
+    if (fileInputRefs.current[eventId]) {
+      fileInputRefs.current[eventId]!.value = '';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">
@@ -70,30 +132,57 @@ export const EventsSection = ({
                     />
                   </div>
                   
-                  {/* Image URL Field */}
-                  <div className="space-y-2 sm:col-span-2">
+                  {/* Image Upload Field - Full Width Display */}
+                  <div className="space-y-3 sm:col-span-2">
                     <label className="text-xs text-gray-500 flex items-center gap-1">
                       <Image className="w-3 h-3" />
-                      이벤트 이미지 URL
+                      이벤트 이미지
                     </label>
-                    <Input
-                      value={item.imageUrl || ''}
-                      onChange={(e) => onUpdate(item.id, 'imageUrl', e.target.value)}
-                      placeholder="https://example.com/event-image.jpg"
-                      className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
-                    />
+                    
+                    {/* Image Preview - Full Width */}
                     {item.imageUrl && (
-                      <div className="mt-2 relative w-full max-w-xs aspect-[4/3] rounded-lg overflow-hidden border border-gray-200">
+                      <div className="relative w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
                         <img 
                           src={item.imageUrl} 
                           alt="Event preview" 
-                          className="w-full h-full object-cover"
+                          className="w-full h-auto object-contain max-h-[400px]"
                           onError={(e) => {
-                            e.currentTarget.src = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&h=200&fit=crop&q=80';
+                            e.currentTarget.src = 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&h=400&fit=crop&q=80';
                           }}
                         />
+                        <button
+                          onClick={() => handleRemoveImage(item.id)}
+                          className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
                       </div>
                     )}
+                    
+                    {/* Upload Button */}
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        ref={(el) => { fileInputRefs.current[item.id] = el; }}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleImageUpload(item.id, file);
+                        }}
+                        className="hidden"
+                      />
+                      <Button 
+                        variant="outline" 
+                        onClick={() => fileInputRefs.current[item.id]?.click()}
+                        className="border-gray-300 text-gray-700 hover:bg-gray-100 w-full sm:w-auto"
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        {item.imageUrl ? '이미지 변경' : '이미지 업로드'}
+                      </Button>
+                      <p className="text-xs text-gray-500 flex items-center">
+                        권장: 가로형 이미지 (16:9), 최대 5MB
+                      </p>
+                    </div>
                   </div>
 
                   <div className="space-y-2">
