@@ -13,6 +13,7 @@ export interface SiteSettings {
   curriculum: CurriculumItem[];
   events: EventItem[];
   testimonials: TestimonialItem[];
+  resendApiKey: string;
 }
 
 export interface TestimonialItem {
@@ -62,6 +63,7 @@ const defaultSettings: SiteSettings = {
   instructorImageUrl: "",
   price: "₩490,000",
   originalPrice: "₩890,000",
+  resendApiKey: "",
   curriculum: [
     {
       id: "1",

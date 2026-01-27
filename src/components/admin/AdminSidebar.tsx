@@ -3,7 +3,6 @@ import {
   LayoutDashboard, 
   Settings, 
   Users, 
-  FileText, 
   Calendar, 
   MessageSquare, 
   Shield,
@@ -15,7 +14,8 @@ import {
   BookOpen,
   ExternalLink,
   MessageCircle,
-  FolderOpen
+  FolderOpen,
+  Mail
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,7 @@ const menuItems = [
   { id: 'testimonials', label: '수강생 후기', icon: Star },
   { id: 'reviews', label: '리뷰 관리', icon: MessageCircle },
   { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
+  { id: 'email', label: '이메일 설정', icon: Mail },
   { id: 'security', label: '보안', icon: Shield },
 ];
 

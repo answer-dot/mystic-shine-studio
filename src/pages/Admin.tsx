@@ -22,6 +22,7 @@ import { ReviewsSection } from '@/components/admin/ReviewsSection';
 import { MaterialsSection } from '@/components/admin/MaterialsSection';
 import { CustomersSection } from '@/components/admin/CustomersSection';
 import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
+import { EmailSettingsSection } from '@/components/admin/EmailSettingsSection';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -312,6 +313,8 @@ const Admin = () => {
         return (
           <InquiriesSection onUnreadCountChange={setUnreadInquiries} />
         );
+      case 'email':
+        return <EmailSettingsSection />;
       case 'security':
         return (
           <SecuritySection

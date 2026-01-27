@@ -16,6 +16,7 @@ const DB_SETTINGS_KEYS = [
   'curriculum',
   'events',
   'testimonials',
+  'resendApiKey',
 ] as const;
 
 export const useSettings = () => {
