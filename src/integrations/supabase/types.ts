@@ -178,6 +178,33 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_notes: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          note: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          note: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          note?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       inquiries: {
         Row: {
           created_at: string
@@ -211,25 +238,34 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          blacklist_reason: string | null
+          blacklisted_at: string | null
           created_at: string
           display_name: string | null
           id: string
+          is_blacklisted: boolean | null
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
+          blacklist_reason?: string | null
+          blacklisted_at?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          is_blacklisted?: boolean | null
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
+          blacklist_reason?: string | null
+          blacklisted_at?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
+          is_blacklisted?: boolean | null
           updated_at?: string
           user_id?: string
         }
@@ -319,6 +355,10 @@ export type Database = {
           enrolled_at: string
           id: string
           progress: Json | null
+          refund_processed_at: string | null
+          refund_reason: string | null
+          refund_requested_at: string | null
+          refund_status: string | null
           user_id: string
         }
         Insert: {
@@ -327,6 +367,10 @@ export type Database = {
           enrolled_at?: string
           id?: string
           progress?: Json | null
+          refund_processed_at?: string | null
+          refund_reason?: string | null
+          refund_requested_at?: string | null
+          refund_status?: string | null
           user_id: string
         }
         Update: {
@@ -335,6 +379,10 @@ export type Database = {
           enrolled_at?: string
           id?: string
           progress?: Json | null
+          refund_processed_at?: string | null
+          refund_reason?: string | null
+          refund_requested_at?: string | null
+          refund_status?: string | null
           user_id?: string
         }
         Relationships: [
