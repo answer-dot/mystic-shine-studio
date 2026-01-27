@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,9 @@ import {
   Search,
   StickyNote,
   History,
+  RotateCcw,
+  Award,
+  BookOpen,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -75,13 +79,21 @@ interface Inquiry {
 interface UserCourse {
   id: string;
   course_id: string;
+  user_id: string;
   enrolled_at: string;
+  completed_at: string | null;
+  progress: {
+    completedLessons?: string[];
+    certificateIssued?: boolean;
+    certificateIssuedAt?: string;
+  } | null;
   refund_status: string;
   refund_requested_at: string | null;
   refund_processed_at: string | null;
   refund_reason: string | null;
   course?: {
     title: string;
+    curriculum: unknown[];
   };
 }
 
@@ -142,12 +154,12 @@ export const CustomersSection = () => {
     // In production, you'd use an edge function for this
     setCustomerInquiries([]);
 
-    // Fetch user courses with refund info
+    // Fetch user courses with refund info and progress
     const { data: courses } = await supabase
       .from('user_courses')
       .select(`
         *,
-        course:courses(title)
+        course:courses(title, curriculum)
       `)
       .eq('user_id', profile.user_id);
     setCustomerCourses((courses || []) as UserCourse[]);
@@ -279,6 +291,50 @@ export const CustomersSection = () => {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleResetProgress = async (courseId: string, userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('user_courses')
+        .update({
+          progress: { completedLessons: [], certificateIssued: false },
+          completed_at: null,
+        })
+        .eq('id', courseId);
+
+      if (error) throw error;
+
+      toast({
+        title: '진도 초기화 완료',
+        description: '학생의 학습 진도가 초기화되었습니다.',
+      });
+
+      if (selectedCustomer) {
+        fetchCustomerDetails(selectedCustomer);
+      }
+    } catch (error) {
+      console.error('Error resetting progress:', error);
+      toast({
+        title: '오류',
+        description: '진도 초기화에 실패했습니다.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  // Helper to calculate progress from course data
+  const calculateProgress = (course: UserCourse) => {
+    const completedLessons = course.progress?.completedLessons || [];
+    const curriculum = (course.course?.curriculum as { lessons?: { id: string }[] }[]) || [];
+    const totalLessons = curriculum.reduce((acc, ch) => acc + (ch.lessons?.length || 0), 0);
+    const percentage = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
+    return {
+      completed: completedLessons.length,
+      total: totalLessons,
+      percentage,
+      certificateIssued: course.progress?.certificateIssued || false,
+    };
   };
 
   const getRefundAlertLevel = (courses: UserCourse[]) => {
@@ -531,6 +587,90 @@ export const CustomersSection = () => {
                 </CardContent>
               </Card>
 
+              {/* Course Progress Section */}
+              {customerCourses.length > 0 && (
+                <Card className="border border-gray-200 bg-white shadow-sm">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base flex items-center gap-2 text-gray-900 font-semibold">
+                      <BookOpen className="w-4 h-4" />
+                      학습 진도 현황
+                    </CardTitle>
+                    <CardDescription className="text-gray-500">
+                      학생의 학습 진도와 수료증 발급 상태를 확인합니다
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {customerCourses.map((course) => {
+                        const progressInfo = calculateProgress(course);
+                        return (
+                          <div
+                            key={course.id}
+                            className="p-4 border border-gray-200 rounded-lg bg-gray-50/50 space-y-3"
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1">
+                                <p className="font-semibold text-gray-900">
+                                  {course.course?.title || '강의'}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  등록일:{' '}
+                                  {format(new Date(course.enrolled_at), 'yyyy.MM.dd', { locale: ko })}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {progressInfo.certificateIssued && (
+                                  <Badge className="bg-green-100 text-green-700 border-green-200">
+                                    <Award className="w-3 h-3 mr-1" />
+                                    수료증 발급
+                                  </Badge>
+                                )}
+                                {course.completed_at && (
+                                  <Badge className="bg-blue-100 text-blue-700 border-blue-200">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    수료 완료
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Progress Bar */}
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">
+                                  학습 진도: {progressInfo.completed} / {progressInfo.total} 레슨
+                                </span>
+                                <span className="font-semibold text-primary">
+                                  {progressInfo.percentage}%
+                                </span>
+                              </div>
+                              <Progress value={progressInfo.percentage} className="h-2" />
+                            </div>
+
+                            {/* Reset Button */}
+                            <div className="flex justify-end pt-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 border-red-200 bg-red-50 hover:bg-red-100 font-medium"
+                                onClick={() => {
+                                  if (window.confirm('정말로 이 학생의 진도를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                                    handleResetProgress(course.id, course.user_id);
+                                  }
+                                }}
+                              >
+                                <RotateCcw className="w-3 h-3 mr-1" />
+                                진도 초기화
+                              </Button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Refund History Section */}
               {customerCourses.length > 0 && (
                 <Card className="border border-gray-200 bg-white shadow-sm">
@@ -538,7 +678,7 @@ export const CustomersSection = () => {
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base flex items-center gap-2 text-gray-900 font-semibold">
                         <RefreshCw className="w-4 h-4" />
-                        수강/환불 내역
+                        환불 내역
                       </CardTitle>
                       {getRefundAlertLevel(customerCourses) !== 'none' && (
                         <Badge
@@ -561,49 +701,55 @@ export const CustomersSection = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {customerCourses.map((course) => (
-                        <div
-                          key={course.id}
-                          className="p-4 border border-gray-200 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50/50"
-                        >
-                          <div>
-                            <p className="font-semibold text-gray-900">
-                              {course.course?.title || '강의'}
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                              등록일:{' '}
-                              {format(new Date(course.enrolled_at), 'yyyy.MM.dd', { locale: ko })}
-                            </p>
+                      {customerCourses.filter(c => c.refund_status && c.refund_status !== 'none').length > 0 ? (
+                        customerCourses.filter(c => c.refund_status && c.refund_status !== 'none').map((course) => (
+                          <div
+                            key={course.id}
+                            className="p-4 border border-gray-200 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50/50"
+                          >
+                            <div>
+                              <p className="font-semibold text-gray-900">
+                                {course.course?.title || '강의'}
+                              </p>
+                              <p className="text-xs text-gray-500 mt-1">
+                                등록일:{' '}
+                                {format(new Date(course.enrolled_at), 'yyyy.MM.dd', { locale: ko })}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <RefundStatusBadge status={course.refund_status} />
+                              {course.refund_status === 'pending' && (
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-green-700 border-green-300 bg-green-50 hover:bg-green-100 font-medium"
+                                    onClick={() =>
+                                      handleUpdateRefundStatus(course.id, 'approved')
+                                    }
+                                  >
+                                    승인
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="text-red-700 border-red-300 bg-red-50 hover:bg-red-100 font-medium"
+                                    onClick={() =>
+                                      handleUpdateRefundStatus(course.id, 'rejected')
+                                    }
+                                  >
+                                    거절
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <RefundStatusBadge status={course.refund_status} />
-                            {course.refund_status === 'pending' && (
-                              <div className="flex gap-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-green-700 border-green-300 bg-green-50 hover:bg-green-100 font-medium"
-                                  onClick={() =>
-                                    handleUpdateRefundStatus(course.id, 'approved')
-                                  }
-                                >
-                                  승인
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="text-red-700 border-red-300 bg-red-50 hover:bg-red-100 font-medium"
-                                  onClick={() =>
-                                    handleUpdateRefundStatus(course.id, 'rejected')
-                                  }
-                                >
-                                  거절
-                                </Button>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
+                          환불 요청 내역이 없습니다
+                        </p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

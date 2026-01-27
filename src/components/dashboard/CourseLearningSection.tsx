@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { VideoPlayer } from '@/components/VideoPlayer';
 import { CourseMaterialsDownload } from './CourseMaterialsDownload';
+import { CertificateDownload } from './CertificateDownload';
+import { useCourseProgress } from '@/hooks/useCourseProgress';
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +19,7 @@ import {
   Clock,
   CheckCircle,
   BookOpen,
+  Award,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -40,6 +44,8 @@ interface CourseLearningProps {
   courseTitle: string;
   curriculum: Chapter[];
   isEnrolled: boolean;
+  userName?: string;
+  completedAt?: string | null;
 }
 
 export const CourseLearningSection = ({
@@ -47,9 +53,24 @@ export const CourseLearningSection = ({
   courseTitle,
   curriculum,
   isEnrolled,
+  userName = '학습자',
+  completedAt,
 }: CourseLearningProps) => {
   const [playingLessonId, setPlayingLessonId] = useState<string | null>(null);
-  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+  
+  // Use the progress hook for enrolled users
+  const {
+    completedLessons,
+    completedCount,
+    totalLessons,
+    progressPercentage,
+    isCompleted,
+    certificateIssued,
+    certificateIssuedAt,
+    markLessonComplete,
+    issueCertificate,
+    getNextLesson,
+  } = useCourseProgress(courseId, curriculum);
 
   const toggleVideo = (lessonId: string) => {
     if (playingLessonId === lessonId) {
@@ -59,16 +80,11 @@ export const CourseLearningSection = ({
     }
   };
 
-  const markAsComplete = (lessonId: string) => {
-    setCompletedLessons((prev) => {
-      const newSet = new Set(prev);
-      newSet.add(lessonId);
-      return newSet;
-    });
+  const handleVideoEnded = (lessonId: string) => {
+    if (isEnrolled) {
+      markLessonComplete(lessonId);
+    }
   };
-
-  const totalLessons = curriculum.reduce((acc, ch) => acc + (ch.lessons?.length || 0), 0);
-  const completedCount = completedLessons.size;
 
   if (!curriculum || curriculum.length === 0) {
     return (
@@ -81,29 +97,61 @@ export const CourseLearningSection = ({
     );
   }
 
+  const nextLesson = getNextLesson();
+
   return (
     <div className="space-y-6">
+      {/* Progress & Certificate Section - Full Width on Mobile */}
+      {isEnrolled && (
+        <div className="grid grid-cols-1 gap-4">
+          <CertificateDownload
+            progressPercentage={progressPercentage}
+            isCompleted={isCompleted}
+            certificateIssued={certificateIssued}
+            certificateIssuedAt={certificateIssuedAt}
+            onIssueCertificate={issueCertificate}
+            userName={userName}
+            courseTitle={courseTitle}
+            completedAt={completedAt}
+          />
+        </div>
+      )}
+
       {/* Course Progress Header */}
-      <Card className="bg-card border-border">
+      <Card className="bg-white border-gray-200 shadow-sm">
         <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold">{courseTitle}</h2>
-              <p className="text-muted-foreground text-sm mt-1">
-                {curriculum.length}개 챕터 · {totalLessons}개 레슨
-              </p>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">{courseTitle}</h2>
+                <p className="text-gray-500 text-sm mt-1">
+                  {curriculum.length}개 챕터 · {totalLessons}개 레슨
+                </p>
+              </div>
+              {isEnrolled && totalLessons > 0 && (
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-gray-600">
+                    <span className="font-semibold text-primary">{completedCount}</span> / {totalLessons} 완료
+                  </div>
+                </div>
+              )}
             </div>
-            {isEnrolled && totalLessons > 0 && (
-              <div className="flex items-center gap-3">
-                <div className="text-sm text-muted-foreground">
-                  {completedCount} / {totalLessons} 완료
-                </div>
-                <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all"
-                    style={{ width: `${(completedCount / totalLessons) * 100}%` }}
-                  />
-                </div>
+
+            {/* Continue Learning Button */}
+            {isEnrolled && nextLesson && !isCompleted && (
+              <Button 
+                onClick={() => toggleVideo(nextLesson.lessonId)}
+                className="w-full sm:w-auto"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                이어서 학습하기: {nextLesson.lessonTitle}
+              </Button>
+            )}
+
+            {isEnrolled && isCompleted && (
+              <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
+                <Award className="w-5 h-5 text-green-600" />
+                <span className="text-green-700 font-medium">🎉 축하합니다! 모든 강의를 완료했습니다.</span>
               </div>
             )}
           </div>
@@ -112,126 +160,137 @@ export const CourseLearningSection = ({
 
       {/* Curriculum Accordion */}
       <Accordion type="single" collapsible className="space-y-4">
-        {curriculum.map((chapter, chapterIndex) => (
-          <AccordionItem
-            key={chapter.id}
-            value={chapter.id}
-            className="bg-card rounded-xl border border-border overflow-hidden"
-          >
-            <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-muted/50">
-              <div className="flex items-center gap-3 text-left">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <span className="text-sm font-bold text-primary">{chapterIndex + 1}</span>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base">{chapter.title}</h3>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="w-3 h-3" />
-                    <span>{chapter.duration}</span>
-                    <span>·</span>
-                    <span>{chapter.lessons?.length || 0}개 레슨</span>
+        {curriculum.map((chapter, chapterIndex) => {
+          // Calculate chapter completion
+          const chapterLessonIds = chapter.lessons?.map(l => l.id) || [];
+          const chapterCompletedCount = chapterLessonIds.filter(id => completedLessons.has(id)).length;
+          const chapterTotal = chapterLessonIds.length;
+          const chapterCompleted = chapterTotal > 0 && chapterCompletedCount === chapterTotal;
+
+          return (
+            <AccordionItem
+              key={chapter.id}
+              value={chapter.id}
+              className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+            >
+              <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-gray-50">
+                <div className="flex items-center gap-3 text-left flex-1">
+                  <div className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                    chapterCompleted ? "bg-green-100" : "bg-primary/10"
+                  )}>
+                    {chapterCompleted ? (
+                      <CheckCircle className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <span className="text-sm font-bold text-primary">{chapterIndex + 1}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-base text-gray-900">{chapter.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Clock className="w-3 h-3" />
+                      <span>{chapter.duration}</span>
+                      <span>·</span>
+                      <span>{chapterCompletedCount}/{chapterTotal} 완료</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 sm:px-6 pb-4">
-              {chapter.description && (
-                <p className="text-sm text-muted-foreground mb-4 pl-11">
-                  {chapter.description}
-                </p>
-              )}
-              <div className="space-y-2">
-                {chapter.lessons?.map((lesson, lessonIndex) => {
-                  const isPlaying = playingLessonId === lesson.id;
-                  const isCompleted = completedLessons.has(lesson.id);
-                  const canPlay = isEnrolled || lesson.isPreview;
-                  const hasVideo = !!lesson.videoUrl;
+              </AccordionTrigger>
+              <AccordionContent className="px-4 sm:px-6 pb-4">
+                {chapter.description && (
+                  <p className="text-sm text-gray-500 mb-4 pl-11">
+                    {chapter.description}
+                  </p>
+                )}
+                <div className="space-y-2">
+                  {chapter.lessons?.map((lesson, lessonIndex) => {
+                    const isPlaying = playingLessonId === lesson.id;
+                    const isLessonCompleted = completedLessons.has(lesson.id);
+                    const canPlay = isEnrolled || lesson.isPreview;
+                    const hasVideo = !!lesson.videoUrl;
 
-                  return (
-                    <div key={lesson.id} className="space-y-2">
-                      <div
-                        className={cn(
-                          'flex items-center gap-3 p-3 rounded-lg transition-all border',
-                          canPlay && hasVideo
-                            ? 'bg-muted/50 hover:bg-muted cursor-pointer border-transparent'
-                            : 'bg-muted/20 border-transparent',
-                          isPlaying && 'bg-primary/10 border-primary/30'
-                        )}
-                        onClick={() => canPlay && hasVideo && toggleVideo(lesson.id)}
-                      >
-                        {/* Status Icon */}
+                    return (
+                      <div key={lesson.id} className="space-y-2">
                         <div
                           className={cn(
-                            'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
-                            isCompleted
-                              ? 'bg-green-500/20'
-                              : canPlay
-                              ? 'bg-primary/10'
-                              : 'bg-muted'
+                            'flex items-center gap-3 p-3 rounded-lg transition-all border',
+                            canPlay && hasVideo
+                              ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer border-transparent'
+                              : 'bg-gray-50/50 border-transparent',
+                            isPlaying && 'bg-primary/5 border-primary/20'
                           )}
+                          onClick={() => canPlay && hasVideo && toggleVideo(lesson.id)}
                         >
-                          {isCompleted ? (
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                          ) : canPlay ? (
-                            <Play className="w-4 h-4 text-primary" />
-                          ) : (
-                            <Lock className="w-4 h-4 text-muted-foreground" />
-                          )}
-                        </div>
-
-                        {/* Lesson Info */}
-                        <div className="flex-1 min-w-0">
-                          <p
+                          {/* Status Icon */}
+                          <div
                             className={cn(
-                              'text-sm truncate',
-                              canPlay ? 'text-foreground' : 'text-muted-foreground'
+                              'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
+                              isLessonCompleted
+                                ? 'bg-green-100'
+                                : canPlay
+                                ? 'bg-primary/10'
+                                : 'bg-gray-100'
                             )}
                           >
-                            {lessonIndex + 1}. {lesson.title}
-                          </p>
-                        </div>
+                            {isLessonCompleted ? (
+                              <CheckCircle className="w-4 h-4 text-green-600" />
+                            ) : canPlay ? (
+                              <Play className="w-4 h-4 text-primary" />
+                            ) : (
+                              <Lock className="w-4 h-4 text-gray-400" />
+                            )}
+                          </div>
 
-                        {/* Duration & Tags */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <span className="text-xs text-muted-foreground">{lesson.duration}</span>
-                          {lesson.isPreview && !isEnrolled && (
-                            <Badge variant="outline" className="text-xs border-primary text-primary">
-                              미리보기
-                            </Badge>
-                          )}
-                          {canPlay && hasVideo && (
-                            <Badge
-                              variant={isPlaying ? 'default' : 'secondary'}
-                              className="text-xs"
+                          {/* Lesson Info */}
+                          <div className="flex-1 min-w-0">
+                            <p
+                              className={cn(
+                                'text-sm truncate',
+                                canPlay ? 'text-gray-900' : 'text-gray-400'
+                              )}
                             >
-                              {isPlaying ? '닫기' : '재생'}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
+                              {lessonIndex + 1}. {lesson.title}
+                            </p>
+                          </div>
 
-                      {/* Video Player */}
-                      {isPlaying && hasVideo && (
-                        <div className="ml-11 p-4 bg-black/50 rounded-xl">
-                          <VideoPlayer
-                            src={lesson.videoUrl!}
-                            showLabel={lesson.isPreview && !isEnrolled ? '미리보기' : undefined}
-                            className="rounded-lg"
-                            onEnded={() => {
-                              if (isEnrolled) {
-                                markAsComplete(lesson.id);
-                              }
-                            }}
-                          />
+                          {/* Duration & Tags */}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-xs text-gray-500">{lesson.duration}</span>
+                            {lesson.isPreview && !isEnrolled && (
+                              <Badge variant="outline" className="text-xs border-primary text-primary">
+                                미리보기
+                              </Badge>
+                            )}
+                            {canPlay && hasVideo && (
+                              <Badge
+                                variant={isPlaying ? 'default' : 'secondary'}
+                                className="text-xs"
+                              >
+                                {isPlaying ? '닫기' : '재생'}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+
+                        {/* Video Player */}
+                        {isPlaying && hasVideo && (
+                          <div className="ml-11 p-4 bg-gray-900/5 rounded-xl">
+                            <VideoPlayer
+                              src={lesson.videoUrl!}
+                              showLabel={lesson.isPreview && !isEnrolled ? '미리보기' : undefined}
+                              className="rounded-lg"
+                              onEnded={() => handleVideoEnded(lesson.id)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
 
       {/* Materials Download Section - Only for enrolled users */}
