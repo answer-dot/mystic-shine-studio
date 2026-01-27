@@ -11,93 +11,106 @@ export const InstructorSection = () => {
     <section id="instructor" className="py-20 sm:py-28 bg-gradient-to-b from-surface-overlay to-background">
       <div className="section-container">
         {/* Header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-10 sm:mb-14">
           <span className="inline-block px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
             👩‍🏫 강사 소개
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold">{settings.instructorName || '이하늘 코치'}</h2>
         </div>
 
-        {/* Main Card */}
-        <div className="max-w-4xl mx-auto">
-          <div className="glass-card rounded-2xl p-6 sm:p-10 overflow-hidden">
-            <div className="flex flex-col lg:flex-row gap-8 lg:gap-10 items-center">
+        {/* Main Card - 50:50 Split Layout */}
+        <div className="max-w-6xl mx-auto">
+          <div className="glass-card rounded-2xl overflow-hidden border border-primary/20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
               
-              {/* Profile Image - Clean Rectangle with Hover Effect */}
-              <div className="w-full lg:w-2/5 flex flex-col items-center">
-                <div className="relative group/image">
-                  <div className="w-52 sm:w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-lg transition-all duration-300 group-hover/image:shadow-xl group-hover/image:shadow-primary/20 group-hover/image:scale-[1.02] border border-transparent group-hover/image:border-primary/30">
-                    <img 
-                      src={profileImage} 
-                      alt={settings.instructorName || '강사 프로필'}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover/image:scale-105"
-                    />
-                  </div>
+              {/* Left: Profile Image - Large & Full Width on Mobile */}
+              <div className="relative bg-gradient-to-br from-card to-secondary/30">
+                {/* Mobile: Full width image */}
+                <div className="w-full aspect-[4/5] sm:aspect-[3/4] lg:aspect-square overflow-hidden">
+                  <img 
+                    src={profileImage} 
+                    alt={settings.instructorName || '강사 프로필'}
+                    className="w-full h-full object-cover object-top transition-transform duration-500 hover:scale-105"
+                  />
                 </div>
-
-                {/* Stats - Centered below image on mobile, stays here on desktop */}
-                <div className="grid grid-cols-3 gap-3 mt-6 w-full max-w-xs lg:hidden">
-                  <div className="text-center p-3 rounded-xl bg-secondary/50 border border-primary/20">
-                    <Users className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="text-lg font-bold text-foreground">15K+</p>
-                    <p className="text-xs text-muted-foreground">수강생</p>
-                  </div>
-                  <div className="text-center p-3 rounded-xl bg-secondary/50 border border-primary/20">
-                    <BookOpen className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="text-lg font-bold text-foreground">120+</p>
-                    <p className="text-xs text-muted-foreground">강의 제작</p>
-                  </div>
-                  <div className="text-center p-3 rounded-xl bg-secondary/50 border border-primary/20">
-                    <Award className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="text-lg font-bold text-foreground">5년</p>
-                    <p className="text-xs text-muted-foreground">경력</p>
+                
+                {/* Subtle overlay gradient for text readability on mobile */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent lg:hidden pointer-events-none" />
+                
+                {/* Mobile Stats Overlay - Compact grid at bottom of image */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 lg:hidden">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="text-center p-3 rounded-xl bg-black/60 backdrop-blur-sm border border-primary/30">
+                      <Users className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-lg font-bold text-white">15K+</p>
+                      <p className="text-xs text-white/70">수강생</p>
+                    </div>
+                    <div className="text-center p-3 rounded-xl bg-black/60 backdrop-blur-sm border border-primary/30">
+                      <BookOpen className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-lg font-bold text-white">120+</p>
+                      <p className="text-xs text-white/70">강의 제작</p>
+                    </div>
+                    <div className="text-center p-3 rounded-xl bg-black/60 backdrop-blur-sm border border-primary/30">
+                      <Award className="w-5 h-5 text-primary mx-auto mb-1" />
+                      <p className="text-lg font-bold text-white">5년</p>
+                      <p className="text-xs text-white/70">경력</p>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Info */}
-              <div className="flex-1 text-center lg:text-left">
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  {settings.instructorBio || '안녕하세요, 저는 지난 5년간 온라인 지식 창업을 통해 수많은 분들의 삶을 변화시켜온 이하늘입니다. 직장인에서 시작해 현재는 월 수천만원의 패시브 인컴을 만들어내는 시스템을 구축했습니다.'}
+              {/* Right: Info Section */}
+              <div className="p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-center">
+                {/* Bio */}
+                <p className="text-base sm:text-lg text-muted-foreground mb-8 leading-relaxed">
+                  {settings.instructorBio || '15년 이상의 타로 리딩 경력을 가진 전문가로, 심리학 박사 학위를 보유하고 있습니다. 수천 명의 수강생을 배출하며 타로를 통한 자기 이해와 성장을 돕고 있습니다.'}
                 </p>
 
-                {/* Stats - Desktop only, beside the content */}
-                <div className="hidden lg:grid grid-cols-3 gap-4 mb-6">
-                  <div className="text-center p-4 rounded-xl bg-secondary/50 border border-primary/20">
-                    <Users className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="text-xl font-bold text-foreground">15K+</p>
-                    <p className="text-xs text-muted-foreground">수강생</p>
+                {/* Desktop Stats - Large Cards */}
+                <div className="hidden lg:grid grid-cols-3 gap-4 mb-8">
+                  <div className="text-center p-5 rounded-xl bg-secondary/50 border border-primary/20 hover:border-primary/40 transition-colors">
+                    <Users className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-foreground">15K+</p>
+                    <p className="text-sm text-muted-foreground">수강생</p>
                   </div>
-                  <div className="text-center p-4 rounded-xl bg-secondary/50 border border-primary/20">
-                    <BookOpen className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="text-xl font-bold text-foreground">120+</p>
-                    <p className="text-xs text-muted-foreground">강의 제작</p>
+                  <div className="text-center p-5 rounded-xl bg-secondary/50 border border-primary/20 hover:border-primary/40 transition-colors">
+                    <BookOpen className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-foreground">120+</p>
+                    <p className="text-sm text-muted-foreground">강의 제작</p>
                   </div>
-                  <div className="text-center p-4 rounded-xl bg-secondary/50 border border-primary/20">
-                    <Award className="w-5 h-5 text-primary mx-auto mb-1" />
-                    <p className="text-xl font-bold text-foreground">5년</p>
-                    <p className="text-xs text-muted-foreground">경력</p>
+                  <div className="text-center p-5 rounded-xl bg-secondary/50 border border-primary/20 hover:border-primary/40 transition-colors">
+                    <Award className="w-6 h-6 text-primary mx-auto mb-2" />
+                    <p className="text-2xl font-bold text-foreground">5년</p>
+                    <p className="text-sm text-muted-foreground">경력</p>
                   </div>
                 </div>
 
                 {/* Credentials */}
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <Award className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">유튜브 구독자 10만+</span>
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3">
+                    <Award className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-muted-foreground">유튜브 구독자 10만+</span>
                   </div>
-                  <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <BookOpen className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">베스트셀러 '지식 창업의 정석' 저자</span>
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-muted-foreground">베스트셀러 '지식 창업의 정석' 저자</span>
                   </div>
-                  <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <Users className="w-4 h-4 text-primary" />
-                    <span className="text-sm text-muted-foreground">여러 기업 강연 및 컨설팅 진행</span>
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-primary flex-shrink-0" />
+                    <span className="text-muted-foreground">여러 기업 강연 및 컨설팅 진행</span>
                   </div>
                 </div>
 
-                <Button variant="goldOutline" size="lg">
-                  <MessageCircle className="w-4 h-4 mr-2" />
+                {/* CTA Button - Large with Gold Glow */}
+                <Button 
+                  variant="gold" 
+                  size="xl"
+                  className="w-full sm:w-auto px-10 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
+                  style={{
+                    boxShadow: '0 0 40px -10px hsl(var(--primary)/0.5), 0 10px 30px -10px rgba(0,0,0,0.3)'
+                  }}
+                >
+                  <MessageCircle className="w-5 h-5 mr-2" />
                   강사에게 질문하기
                 </Button>
               </div>
