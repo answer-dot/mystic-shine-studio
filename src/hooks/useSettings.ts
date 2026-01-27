@@ -28,6 +28,19 @@ const DB_SETTINGS_KEYS = [
 // Timeout for database operations
 const DB_TIMEOUT_MS = 5000;
 
+// Helper to parse JSONB value from Supabase
+const parseDbValue = (value: unknown): unknown => {
+  // If it's already a primitive (string, number, boolean), return as-is
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return value;
+  }
+  // If it's an object or array, return as-is (already parsed by Supabase)
+  if (typeof value === 'object' && value !== null) {
+    return value;
+  }
+  return value;
+};
+
 export const useSettings = () => {
   const [settings, setSettings] = useState<SiteSettings>(getSettings);
   const [isLoading, setIsLoading] = useState(true);
@@ -54,19 +67,18 @@ export const useSettings = () => {
         if (error) {
           console.warn('Failed to load settings from database, using defaults:', error);
           setError(error);
-          // Continue with local settings
           return;
         }
 
         if (data && data.length > 0) {
           const localSettings = getSettings();
           const dbSettings: Record<string, unknown> = {};
+          
           data.forEach(row => {
             const key = row.key;
             if (DB_SETTINGS_KEYS.includes(key as typeof DB_SETTINGS_KEYS[number])) {
-              // For string values stored as JSON strings, unwrap them
-              const value = row.value;
-              dbSettings[key] = typeof value === 'string' ? value : value;
+              // Parse the JSONB value properly
+              dbSettings[key] = parseDbValue(row.value);
             }
           });
           
@@ -80,7 +92,6 @@ export const useSettings = () => {
         clearTimeout(timeoutId);
         console.warn('Error loading settings, using defaults:', error);
         setError(error as Error);
-        // Continue with local settings - don't block the UI
       } finally {
         setIsLoading(false);
       }
@@ -96,7 +107,7 @@ export const useSettings = () => {
     // Save to localStorage as backup
     saveSettings(updates);
 
-    // Save to database in background (don't await)
+    // Save to database - AWAIT to ensure it completes
     try {
       const upsertPromises = Object.entries(updates).map(async ([key, value]) => {
         // Skip adminPin - it has its own table
@@ -113,10 +124,12 @@ export const useSettings = () => {
 
         if (error) {
           console.error(`Failed to save setting ${key}:`, error);
+          throw error;
         }
       });
 
       await Promise.all(upsertPromises);
+      console.log('Settings saved to database:', Object.keys(updates));
     } catch (error) {
       console.error('Error saving settings to database:', error);
     }
@@ -139,16 +152,20 @@ export const useSettings = () => {
       }
 
       if (data && data.length > 0) {
+        const localSettings = getSettings();
         const dbSettings: Record<string, unknown> = {};
+        
         data.forEach(row => {
           const key = row.key;
           if (DB_SETTINGS_KEYS.includes(key as typeof DB_SETTINGS_KEYS[number])) {
-            dbSettings[key] = row.value;
+            dbSettings[key] = parseDbValue(row.value);
           }
         });
         
-        const localSettings = getSettings();
-        setSettings({ ...localSettings, ...dbSettings } as SiteSettings);
+        const mergedSettings = { ...localSettings, ...dbSettings };
+        setSettings(mergedSettings as SiteSettings);
+        // Also update localStorage
+        saveSettings(dbSettings as Partial<SiteSettings>);
       } else {
         setSettings(getSettings());
       }

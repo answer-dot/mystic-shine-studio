@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Shield, Save } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,15 +12,15 @@ interface SecuritySectionProps {
   onChangePin: () => void;
 }
 
-export const SecuritySection = ({
+export const SecuritySection = forwardRef<HTMLDivElement, SecuritySectionProps>(({
   newPin,
   setNewPin,
   confirmPin,
   setConfirmPin,
   onChangePin,
-}: SecuritySectionProps) => {
+}, ref) => {
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       <div>
         <h1 className="text-xl lg:text-2xl font-bold text-gray-900">보안</h1>
         <p className="text-sm lg:text-base text-gray-600">관리자 접근 보안을 관리합니다</p>
@@ -65,4 +66,6 @@ export const SecuritySection = ({
       </Card>
     </div>
   );
-};
+});
+
+SecuritySection.displayName = 'SecuritySection';
