@@ -117,49 +117,50 @@ export const CourseLearningSection = ({
         </div>
       )}
 
-      {/* Course Progress Header */}
+      {/* Course Progress Header - Compact */}
       <Card className="bg-white border-gray-200 shadow-sm">
-        <CardContent className="p-4 sm:p-6">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <CardContent className="p-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{courseTitle}</h2>
-                <p className="text-gray-500 text-sm mt-1">
+                <h2 className="text-lg font-bold text-gray-900">{courseTitle}</h2>
+                <p className="text-gray-500 text-xs">
                   {curriculum.length}개 챕터 · {totalLessons}개 레슨
                 </p>
               </div>
               {isEnrolled && totalLessons > 0 && (
-                <div className="flex items-center gap-3">
-                  <div className="text-sm text-gray-600">
-                    <span className="font-semibold text-primary">{completedCount}</span> / {totalLessons} 완료
-                  </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-600">
+                    <span className="font-bold text-primary">{completedCount}</span> / {totalLessons} 완료
+                  </span>
                 </div>
               )}
             </div>
 
-            {/* Continue Learning Button */}
+            {/* Continue Learning Button - High Contrast */}
             {isEnrolled && nextLesson && !isCompleted && (
               <Button 
                 onClick={() => toggleVideo(nextLesson.lessonId)}
-                className="w-full sm:w-auto"
+                size="sm"
+                className="w-full sm:w-auto bg-primary text-primary-foreground font-bold"
               >
-                <Play className="w-4 h-4 mr-2" />
-                이어서 학습하기: {nextLesson.lessonTitle}
+                <Play className="w-3 h-3 mr-1" />
+                이어서 학습: {nextLesson.lessonTitle}
               </Button>
             )}
 
             {isEnrolled && isCompleted && (
-              <div className="flex items-center gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
-                <Award className="w-5 h-5 text-green-600" />
-                <span className="text-green-700 font-medium">🎉 축하합니다! 모든 강의를 완료했습니다.</span>
+              <div className="flex items-center gap-2 p-2 bg-green-50 rounded-md border border-green-200">
+                <Award className="w-4 h-4 text-green-600" />
+                <span className="text-green-700 font-medium text-sm">🎉 모든 강의 완료!</span>
               </div>
             )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Curriculum Accordion */}
-      <Accordion type="single" collapsible className="space-y-4">
+      {/* Curriculum Accordion - Compact */}
+      <Accordion type="single" collapsible className="space-y-2">
         {curriculum.map((chapter, chapterIndex) => {
           // Calculate chapter completion
           const chapterLessonIds = chapter.lessons?.map(l => l.id) || [];
@@ -171,38 +172,38 @@ export const CourseLearningSection = ({
             <AccordionItem
               key={chapter.id}
               value={chapter.id}
-              className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm"
+              className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm"
             >
-              <AccordionTrigger className="px-4 sm:px-6 py-4 hover:no-underline hover:bg-gray-50">
-                <div className="flex items-center gap-3 text-left flex-1">
+              <AccordionTrigger className="px-3 py-2 hover:no-underline hover:bg-gray-50">
+                <div className="flex items-center gap-2 text-left flex-1">
                   <div className={cn(
-                    "w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0",
+                    "w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-xs",
                     chapterCompleted ? "bg-green-100" : "bg-primary/10"
                   )}>
                     {chapterCompleted ? (
-                      <CheckCircle className="w-4 h-4 text-green-600" />
+                      <CheckCircle className="w-3 h-3 text-green-600" />
                     ) : (
-                      <span className="text-sm font-bold text-primary">{chapterIndex + 1}</span>
+                      <span className="text-xs font-bold text-primary">{chapterIndex + 1}</span>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-base text-gray-900">{chapter.title}</h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-500">
-                      <Clock className="w-3 h-3" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-sm text-gray-900 truncate">{chapter.title}</h3>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                      <Clock className="w-2.5 h-2.5" />
                       <span>{chapter.duration}</span>
                       <span>·</span>
-                      <span>{chapterCompletedCount}/{chapterTotal} 완료</span>
+                      <span>{chapterCompletedCount}/{chapterTotal}</span>
                     </div>
                   </div>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-4 sm:px-6 pb-4">
+              <AccordionContent className="px-3 pb-2">
                 {chapter.description && (
-                  <p className="text-sm text-gray-500 mb-4 pl-11">
+                  <p className="text-xs text-gray-500 mb-2 pl-8">
                     {chapter.description}
                   </p>
                 )}
-                <div className="space-y-2">
+                <div className="space-y-1">
                   {chapter.lessons?.map((lesson, lessonIndex) => {
                     const isPlaying = playingLessonId === lesson.id;
                     const isLessonCompleted = completedLessons.has(lesson.id);
@@ -210,21 +211,21 @@ export const CourseLearningSection = ({
                     const hasVideo = !!lesson.videoUrl;
 
                     return (
-                      <div key={lesson.id} className="space-y-2">
+                      <div key={lesson.id} className="space-y-1">
                         <div
                           className={cn(
-                            'flex items-center gap-3 p-3 rounded-lg transition-all border',
+                            'flex items-center gap-2 py-1.5 px-2 rounded-md transition-all',
                             canPlay && hasVideo
-                              ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer border-transparent'
-                              : 'bg-gray-50/50 border-transparent',
-                            isPlaying && 'bg-primary/5 border-primary/20'
+                              ? 'bg-gray-50 hover:bg-gray-100 cursor-pointer'
+                              : 'bg-gray-50/50',
+                            isPlaying && 'bg-primary/5 ring-1 ring-primary/20'
                           )}
                           onClick={() => canPlay && hasVideo && toggleVideo(lesson.id)}
                         >
-                          {/* Status Icon */}
+                          {/* Status Icon - Smaller */}
                           <div
                             className={cn(
-                              'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
+                              'w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0',
                               isLessonCompleted
                                 ? 'bg-green-100'
                                 : canPlay
@@ -233,11 +234,11 @@ export const CourseLearningSection = ({
                             )}
                           >
                             {isLessonCompleted ? (
-                              <CheckCircle className="w-4 h-4 text-green-600" />
+                              <CheckCircle className="w-3 h-3 text-green-600" />
                             ) : canPlay ? (
-                              <Play className="w-4 h-4 text-primary" />
+                              <Play className="w-2.5 h-2.5 text-primary" />
                             ) : (
-                              <Lock className="w-4 h-4 text-gray-400" />
+                              <Lock className="w-2.5 h-2.5 text-gray-400" />
                             )}
                           </div>
 
@@ -245,7 +246,7 @@ export const CourseLearningSection = ({
                           <div className="flex-1 min-w-0">
                             <p
                               className={cn(
-                                'text-sm truncate',
+                                'text-xs truncate',
                                 canPlay ? 'text-gray-900' : 'text-gray-400'
                               )}
                             >
@@ -253,18 +254,23 @@ export const CourseLearningSection = ({
                             </p>
                           </div>
 
-                          {/* Duration & Tags */}
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            <span className="text-xs text-gray-500">{lesson.duration}</span>
+                          {/* Duration & High-Contrast Buttons */}
+                          <div className="flex items-center gap-1.5 flex-shrink-0">
+                            <span className="text-[10px] text-gray-500">{lesson.duration}</span>
                             {lesson.isPreview && !isEnrolled && (
-                              <Badge variant="outline" className="text-xs border-primary text-primary">
+                              <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 border-primary text-primary">
                                 미리보기
                               </Badge>
                             )}
                             {canPlay && hasVideo && (
                               <Badge
                                 variant={isPlaying ? 'default' : 'secondary'}
-                                className="text-xs"
+                                className={cn(
+                                  "text-[10px] px-1.5 py-0 h-4 font-bold",
+                                  isPlaying 
+                                    ? "bg-primary text-primary-foreground" 
+                                    : "bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20"
+                                )}
                               >
                                 {isPlaying ? '닫기' : '재생'}
                               </Badge>
@@ -272,13 +278,13 @@ export const CourseLearningSection = ({
                           </div>
                         </div>
 
-                        {/* Video Player */}
+                        {/* Video Player - FULL WIDTH on Mobile */}
                         {isPlaying && hasVideo && (
-                          <div className="ml-11 p-4 bg-gray-900/5 rounded-xl">
+                          <div className="w-full p-2 bg-gray-900/5 rounded-lg">
                             <VideoPlayer
                               src={lesson.videoUrl!}
                               showLabel={lesson.isPreview && !isEnrolled ? '미리보기' : undefined}
-                              className="rounded-lg"
+                              className="w-full rounded-lg"
                               onEnded={() => handleVideoEnded(lesson.id)}
                             />
                           </div>
