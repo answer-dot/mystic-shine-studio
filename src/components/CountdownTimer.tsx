@@ -36,26 +36,54 @@ export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerPr
   }, [targetDate]);
 
   const TimeBlock = ({ value, label }: { value: number; label: string }) => (
-    <div className={`flex flex-col items-center flex-shrink-0 ${compact ? 'min-w-[40px]' : 'min-w-[44px] sm:min-w-[64px] md:min-w-[80px]'}`}>
-      <div className={`
-        ${compact ? 'text-lg sm:text-xl px-2 py-1' : 'text-xl sm:text-3xl md:text-4xl lg:text-5xl px-2 py-2 sm:px-3 sm:py-2 md:px-4 md:py-3'}
-        font-bold text-primary bg-card rounded-lg sm:rounded-xl border border-border shadow-elevated
-        w-full text-center whitespace-nowrap leading-none tabular-nums
-      `}>
+    <div 
+      className="flex flex-col items-center flex-shrink-0"
+      style={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center',
+        minWidth: compact ? '40px' : '44px'
+      }}
+    >
+      <div 
+        className={`
+          ${compact ? 'text-lg sm:text-xl px-2 py-1' : 'text-xl sm:text-3xl md:text-4xl lg:text-5xl px-2 py-2 sm:px-3 sm:py-2 md:px-4 md:py-3'}
+          font-bold text-primary bg-card rounded-lg sm:rounded-xl border border-border shadow-elevated
+          text-center whitespace-nowrap leading-none tabular-nums
+        `}
+        style={{ display: 'block', width: '100%' }}
+      >
         {String(value).padStart(2, '0')}
       </div>
-      <span className={`${compact ? 'text-[10px]' : 'text-[9px] sm:text-xs md:text-sm'} text-muted-foreground mt-1 sm:mt-1.5 uppercase tracking-wider whitespace-nowrap`}>
+      <span 
+        className={`${compact ? 'text-[10px]' : 'text-[9px] sm:text-xs md:text-sm'} text-muted-foreground mt-1 sm:mt-1.5 uppercase tracking-wider whitespace-nowrap`}
+      >
         {label}
       </span>
     </div>
   );
 
   const Separator = () => (
-    <span className={`${compact ? 'text-lg' : 'text-lg sm:text-2xl md:text-4xl'} font-bold text-primary flex-shrink-0 leading-none`}>:</span>
+    <span 
+      className={`${compact ? 'text-lg' : 'text-lg sm:text-2xl md:text-4xl'} font-bold text-primary leading-none`}
+      style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
+    >
+      :
+    </span>
   );
 
   return (
-    <div className="flex flex-row items-start justify-center gap-1 sm:gap-2 md:gap-3 w-full flex-nowrap overflow-hidden">
+    <div 
+      className="flex items-start justify-center gap-1 sm:gap-2 md:gap-3 w-full"
+      style={{ 
+        display: 'flex', 
+        flexDirection: 'row', 
+        flexWrap: 'nowrap',
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        overflow: 'hidden'
+      }}
+    >
       <TimeBlock value={timeLeft.days} label="일" />
       <Separator />
       <TimeBlock value={timeLeft.hours} label="시간" />

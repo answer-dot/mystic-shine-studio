@@ -455,7 +455,7 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="!p-0 !overflow-hidden bg-white rounded-xl">
+          <DialogContent className="!p-0 bg-white rounded-xl overflow-hidden">
             {/* Hidden file input for video uploads */}
             <input
               type="file"
@@ -465,10 +465,10 @@ export const CoursesSection = () => {
               className="hidden"
             />
             
-            {/* Fixed Header */}
-            <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-gray-100 bg-white rounded-t-xl relative z-10">
+            {/* Fixed Header - inside modal with no gap */}
+            <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-gray-200 bg-white">
               <DialogHeader>
-                <DialogTitle className="text-gray-900 text-xl font-bold pr-10">
+                <DialogTitle className="text-gray-900 text-xl font-bold pr-12">
                   {editingCourse ? '강의 수정' : '새 강의 추가'}
                 </DialogTitle>
                 <DialogDescription className="text-gray-600">
@@ -478,7 +478,7 @@ export const CoursesSection = () => {
             </div>
             
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 max-w-full">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
                 <TabsTrigger 
