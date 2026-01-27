@@ -49,7 +49,7 @@ export const GeneralSection = ({
       <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900">
-            <Settings className="w-5 h-5 text-orange-500" />
+            <Settings className="w-5 h-5 text-gray-500" />
             사이트 정보
           </CardTitle>
           <CardDescription className="text-gray-600">사이트 이름과 웨비나 정보를 설정합니다</CardDescription>
@@ -64,7 +64,7 @@ export const GeneralSection = ({
                   value={siteName}
                   onChange={(e) => setSiteName(e.target.value)}
                   placeholder="사이트 이름"
-                  className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
                 />
                 <p className="text-xs text-gray-500 mt-1">헤더에 표시되는 사이트 이름입니다</p>
               </div>
@@ -75,7 +75,7 @@ export const GeneralSection = ({
                 type="datetime-local"
                 value={webinarDate.slice(0, 16)}
                 onChange={(e) => setWebinarDate(e.target.value)}
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 lg:flex-1"
+                className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 lg:flex-1"
               />
             </div>
             <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
@@ -85,7 +85,7 @@ export const GeneralSection = ({
                 value={remainingSeats}
                 onChange={(e) => setRemainingSeats(Number(e.target.value))}
                 min={0}
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 w-full lg:w-32"
+                className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 w-full lg:w-32"
               />
             </div>
             <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
@@ -94,7 +94,7 @@ export const GeneralSection = ({
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="₩490,000"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 w-full lg:w-40"
+                className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 w-full lg:w-40"
               />
             </div>
             <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
@@ -103,7 +103,7 @@ export const GeneralSection = ({
                 value={originalPrice}
                 onChange={(e) => setOriginalPrice(e.target.value)}
                 placeholder="₩890,000"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 w-full lg:w-40"
+                className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 w-full lg:w-40"
               />
             </div>
           </div>
@@ -182,7 +182,7 @@ export const InstructorSection = ({
       <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900">
-            <Settings className="w-5 h-5 text-orange-500" />
+            <Settings className="w-5 h-5 text-gray-500" />
             프로필 정보
           </CardTitle>
         </CardHeader>
@@ -229,35 +229,35 @@ export const InstructorSection = ({
             </div>
           </div>
           
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">강사 이름</label>
-              <Input
-                value={instructorName}
-                onChange={(e) => setInstructorName(e.target.value)}
-                placeholder="이름"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
-              />
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">강사 이름</label>
+                <Input
+                  value={instructorName}
+                  onChange={(e) => setInstructorName(e.target.value)}
+                  placeholder="이름"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
+                />
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">직함</label>
-              <Input
-                value={instructorTitle}
-                onChange={(e) => setInstructorTitle(e.target.value)}
-                placeholder="직함"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
-              />
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">직함</label>
+                <Input
+                  value={instructorTitle}
+                  onChange={(e) => setInstructorTitle(e.target.value)}
+                  placeholder="직함"
+                  className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
+                />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">소개</label>
-            <Textarea
-              value={instructorBio}
-              onChange={(e) => setInstructorBio(e.target.value)}
-              placeholder="강사 소개를 입력해주세요"
-              rows={5}
-              className="bg-white border-gray-300 text-gray-900 resize-none focus:border-orange-500 focus:ring-orange-500"
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">소개</label>
+              <Textarea
+                value={instructorBio}
+                onChange={(e) => setInstructorBio(e.target.value)}
+                placeholder="강사 소개를 입력해주세요"
+                rows={5}
+                className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300"
             />
           </div>
 

@@ -122,12 +122,12 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
       {/* Quick Actions */}
       <div className="grid gap-3 lg:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card 
-          className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-orange-300 transition-all"
+          className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-emerald-300 transition-all"
           onClick={() => onNavigate('general')}
         >
           <CardHeader className="p-4 lg:pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-gray-900">
-              <TrendingUp className="w-4 h-4 text-orange-500" />
+              <TrendingUp className="w-4 h-4 text-emerald-500" />
               일반 설정
             </CardTitle>
           </CardHeader>
@@ -139,12 +139,12 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
         </Card>
 
         <Card 
-          className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-orange-300 transition-all"
+          className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-emerald-300 transition-all"
           onClick={() => onNavigate('curriculum')}
         >
           <CardHeader className="p-4 lg:pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-gray-900">
-              <Eye className="w-4 h-4 text-orange-500" />
+              <Eye className="w-4 h-4 text-emerald-500" />
               커리큘럼 관리
             </CardTitle>
           </CardHeader>
@@ -156,12 +156,12 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
         </Card>
 
         <Card 
-          className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-orange-300 transition-all"
+          className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-emerald-300 transition-all"
           onClick={() => onNavigate('inquiries')}
         >
           <CardHeader className="p-4 lg:pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-gray-900">
-              <MessageSquare className="w-4 h-4 text-orange-500" />
+              <MessageSquare className="w-4 h-4 text-emerald-500" />
               문의 확인
             </CardTitle>
           </CardHeader>
