@@ -682,31 +682,32 @@ export const CoursesSection = () => {
               {editingCourse ? (
                 <Button
                   variant="ghost"
+                  size="icon"
                   onClick={() => {
                     if (confirm('정말 삭제하시겠습니까?')) {
                       deleteMutation.mutate(editingCourse.id);
                       setIsDialogOpen(false);
                     }
                   }}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg h-10"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg h-10 w-10"
+                  title="삭제"
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  삭제
+                  <Trash2 className="w-5 h-5" />
                 </Button>
               ) : (
                 <div />
               )}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   onClick={() => setIsDialogOpen(false)}
-                  className="border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 px-6 rounded-lg font-medium h-10"
+                  className="border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 px-5 rounded-lg font-medium h-10"
                 >
                   취소
                 </Button>
                 <Button 
                   onClick={handleSubmit}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 rounded-lg font-medium h-10"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 rounded-lg font-medium h-10"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {editingCourse ? '저장' : '추가'}
