@@ -348,12 +348,12 @@ export const CustomersSection = () => {
           placeholder="고객 이름으로 검색..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
+          className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
         />
       </div>
 
-      {/* Customer List */}
-      <Card className="bg-white">
+      {/* Customer List - Simplified */}
+      <Card className="bg-white border border-gray-200 shadow-sm">
         <CardContent className="p-0">
           {loading ? (
             <div className="p-8 text-center text-gray-500">로딩 중...</div>
@@ -365,46 +365,38 @@ export const CustomersSection = () => {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>고객명</TableHead>
-                  <TableHead>가입일</TableHead>
-                  <TableHead>상태</TableHead>
-                  <TableHead className="text-right">관리</TableHead>
+                <TableRow className="bg-gray-50 border-b border-gray-200">
+                  <TableHead className="text-gray-700 font-semibold">고객명</TableHead>
+                  <TableHead className="text-right text-gray-700 font-semibold">관리</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredProfiles.map((profile) => (
-                  <TableRow key={profile.id}>
+                  <TableRow key={profile.id} className="hover:bg-gray-50 border-b border-gray-100">
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
+                        <div className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-sm font-semibold text-gray-600">
                           {(profile.display_name || '?')[0]}
                         </div>
-                        <span className="font-medium text-gray-900">
-                          {profile.display_name || '이름 없음'}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-gray-900">
+                            {profile.display_name || '이름 없음'}
+                          </span>
+                          {profile.is_blacklisted && (
+                            <Badge variant="destructive" className="gap-1 text-xs">
+                              <Ban className="w-3 h-3" />
+                              블랙리스트
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-gray-500">
-                      {format(new Date(profile.created_at), 'yyyy.MM.dd', { locale: ko })}
-                    </TableCell>
-                    <TableCell>
-                      {profile.is_blacklisted ? (
-                        <Badge variant="destructive" className="gap-1">
-                          <Ban className="w-3 h-3" />
-                          블랙리스트
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">
-                          정상
-                        </Badge>
-                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => fetchCustomerDetails(profile)}
+                        className="bg-white text-gray-700 border-gray-300 hover:bg-gray-100 hover:text-gray-900 font-medium"
                       >
                         상세보기
                       </Button>
@@ -419,24 +411,24 @@ export const CustomersSection = () => {
 
       {/* Customer Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-lg font-medium text-gray-600">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col bg-white border border-gray-200 shadow-2xl">
+          <DialogHeader className="border-b border-gray-100 pb-4">
+            <DialogTitle className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center text-lg font-bold text-gray-700">
                 {(selectedCustomer?.display_name || '?')[0]}
               </div>
               <div>
-                <span className="text-gray-900">
+                <span className="text-xl font-bold text-gray-900">
                   {selectedCustomer?.display_name || '이름 없음'}
                 </span>
                 {selectedCustomer?.is_blacklisted && (
-                  <Badge variant="destructive" className="ml-2">
+                  <Badge variant="destructive" className="ml-3">
                     블랙리스트
                   </Badge>
                 )}
               </div>
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-600 mt-1">
               가입일:{' '}
               {selectedCustomer &&
                 format(new Date(selectedCustomer.created_at), 'yyyy년 MM월 dd일', { locale: ko })}
@@ -444,20 +436,20 @@ export const CustomersSection = () => {
           </DialogHeader>
 
           <ScrollArea className="flex-1 pr-4">
-            <div className="space-y-6 py-4">
+            <div className="space-y-6 py-6">
               {/* Blacklist Section */}
-              <Card className="border-red-100">
+              <Card className="border border-red-200 bg-red-50/30 shadow-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2 text-red-600">
+                  <CardTitle className="text-base flex items-center gap-2 text-red-700 font-semibold">
                     <Ban className="w-4 h-4" />
                     블랙리스트 관리
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200">
                     <div>
-                      <Label className="text-gray-700">접근 제한</Label>
-                      <p className="text-xs text-gray-500">
+                      <Label className="text-gray-800 font-medium">접근 제한</Label>
+                      <p className="text-xs text-gray-500 mt-1">
                         활성화 시 해당 고객의 예약/구매가 차단됩니다
                       </p>
                     </div>
@@ -468,18 +460,18 @@ export const CustomersSection = () => {
                   </div>
                   {(selectedCustomer?.is_blacklisted || blacklistReason) && (
                     <div className="space-y-2">
-                      <Label className="text-gray-700">제한 사유</Label>
+                      <Label className="text-gray-800 font-medium">제한 사유</Label>
                       <Textarea
                         placeholder="블랙리스트 등록 사유를 입력하세요"
                         value={blacklistReason}
                         onChange={(e) => setBlacklistReason(e.target.value)}
-                        className="min-h-[80px]"
+                        className="min-h-[80px] bg-white border-gray-300 text-gray-900"
                       />
                       {selectedCustomer?.is_blacklisted && (
                         <Button
                           size="sm"
                           onClick={() => handleToggleBlacklist(true)}
-                          className="mt-2"
+                          className="mt-2 bg-gray-900 text-white hover:bg-gray-800"
                         >
                           사유 저장
                         </Button>
@@ -490,13 +482,13 @@ export const CustomersSection = () => {
               </Card>
 
               {/* Admin Notes Section */}
-              <Card>
+              <Card className="border border-gray-200 bg-white shadow-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 font-semibold">
                     <StickyNote className="w-4 h-4" />
                     관리자 메모
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-gray-500">
                     이 고객에 대한 내부 메모를 작성합니다 (고객에게 보이지 않음)
                   </CardDescription>
                 </CardHeader>
@@ -506,9 +498,9 @@ export const CustomersSection = () => {
                       placeholder="메모를 입력하세요..."
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-                      className="min-h-[60px]"
+                      className="min-h-[60px] bg-white border-gray-300 text-gray-900"
                     />
-                    <Button onClick={handleAddNote} className="shrink-0">
+                    <Button onClick={handleAddNote} className="shrink-0 bg-gray-900 text-white hover:bg-gray-800">
                       <Plus className="w-4 h-4" />
                     </Button>
                   </div>
@@ -518,16 +510,16 @@ export const CustomersSection = () => {
                       {customerNotes.map((note) => (
                         <div
                           key={note.id}
-                          className="p-3 bg-gray-50 rounded-lg text-sm group relative"
+                          className="p-4 bg-gray-50 rounded-lg text-sm group relative border border-gray-100"
                         >
-                          <p className="text-gray-700 pr-8">{note.note}</p>
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-gray-800 pr-8">{note.note}</p>
+                          <p className="text-xs text-gray-400 mt-2">
                             {format(new Date(note.created_at), 'yyyy.MM.dd HH:mm', { locale: ko })}
                           </p>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute top-2 right-2 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500"
+                            className="absolute top-3 right-3 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 hover:bg-red-50"
                             onClick={() => handleDeleteNote(note.id)}
                           >
                             <Trash2 className="w-3 h-3" />
@@ -541,10 +533,10 @@ export const CustomersSection = () => {
 
               {/* Refund History Section */}
               {customerCourses.length > 0 && (
-                <Card>
+                <Card className="border border-gray-200 bg-white shadow-sm">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-base flex items-center gap-2">
+                      <CardTitle className="text-base flex items-center gap-2 text-gray-900 font-semibold">
                         <RefreshCw className="w-4 h-4" />
                         수강/환불 내역
                       </CardTitle>
@@ -572,13 +564,13 @@ export const CustomersSection = () => {
                       {customerCourses.map((course) => (
                         <div
                           key={course.id}
-                          className="p-3 border rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2"
+                          className="p-4 border border-gray-200 rounded-lg flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50/50"
                         >
                           <div>
-                            <p className="font-medium text-gray-900">
+                            <p className="font-semibold text-gray-900">
                               {course.course?.title || '강의'}
                             </p>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 mt-1">
                               등록일:{' '}
                               {format(new Date(course.enrolled_at), 'yyyy.MM.dd', { locale: ko })}
                             </p>
@@ -586,11 +578,11 @@ export const CustomersSection = () => {
                           <div className="flex items-center gap-2">
                             <RefundStatusBadge status={course.refund_status} />
                             {course.refund_status === 'pending' && (
-                              <div className="flex gap-1">
+                              <div className="flex gap-2">
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="text-green-600 hover:bg-green-50"
+                                  className="text-green-700 border-green-300 bg-green-50 hover:bg-green-100 font-medium"
                                   onClick={() =>
                                     handleUpdateRefundStatus(course.id, 'approved')
                                   }
@@ -600,7 +592,7 @@ export const CustomersSection = () => {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="text-red-600 hover:bg-red-50"
+                                  className="text-red-700 border-red-300 bg-red-50 hover:bg-red-100 font-medium"
                                   onClick={() =>
                                     handleUpdateRefundStatus(course.id, 'rejected')
                                   }
@@ -618,24 +610,24 @@ export const CustomersSection = () => {
               )}
 
               {/* Inquiry History Section */}
-              <Card>
+              <Card className="border border-gray-200 bg-white shadow-sm">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-gray-900 font-semibold">
                     <History className="w-4 h-4" />
                     문의 이력
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {customerInquiries.length === 0 ? (
-                    <p className="text-sm text-gray-500 text-center py-4">
+                    <p className="text-sm text-gray-500 text-center py-6 bg-gray-50 rounded-lg">
                       문의 이력이 없습니다
                     </p>
                   ) : (
                     <div className="space-y-3">
                       {customerInquiries.map((inquiry) => (
-                        <div key={inquiry.id} className="p-3 border rounded-lg">
-                          <p className="text-sm text-gray-700">{inquiry.message}</p>
-                          <p className="text-xs text-gray-400 mt-1">
+                        <div key={inquiry.id} className="p-4 border border-gray-200 rounded-lg bg-gray-50/50">
+                          <p className="text-sm text-gray-800">{inquiry.message}</p>
+                          <p className="text-xs text-gray-400 mt-2">
                             {format(new Date(inquiry.created_at), 'yyyy.MM.dd HH:mm', {
                               locale: ko,
                             })}
