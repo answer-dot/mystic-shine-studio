@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSettings, saveSettings, SiteSettings, CurriculumItem, EventItem, TestimonialItem } from '@/lib/store';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -19,20 +19,36 @@ const DB_SETTINGS_KEYS = [
   'resendApiKey',
 ] as const;
 
+// Timeout for database operations
+const DB_TIMEOUT_MS = 5000;
+
 export const useSettings = () => {
   const [settings, setSettings] = useState<SiteSettings>(getSettings);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const loadAttempted = useRef(false);
 
   // Load settings from database on mount
   useEffect(() => {
+    // Prevent multiple load attempts
+    if (loadAttempted.current) return;
+    loadAttempted.current = true;
+
     const loadFromDatabase = async () => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), DB_TIMEOUT_MS);
+
       try {
         const { data, error } = await supabase
           .from('site_settings')
           .select('key, value');
         
+        clearTimeout(timeoutId);
+
         if (error) {
-          console.error('Failed to load settings from database:', error);
+          console.warn('Failed to load settings from database, using defaults:', error);
+          setError(error);
+          // Continue with local settings
           return;
         }
 
@@ -50,7 +66,10 @@ export const useSettings = () => {
           saveSettings(dbSettings as Partial<SiteSettings>);
         }
       } catch (error) {
-        console.error('Error loading settings:', error);
+        clearTimeout(timeoutId);
+        console.warn('Error loading settings, using defaults:', error);
+        setError(error as Error);
+        // Continue with local settings - don't block the UI
       } finally {
         setIsLoading(false);
       }
@@ -60,24 +79,24 @@ export const useSettings = () => {
   }, []);
 
   const updateSettings = useCallback(async (updates: Partial<SiteSettings>) => {
-    // Immediately update local state
+    // Immediately update local state for responsive UI
     setSettings(prev => ({ ...prev, ...updates }));
     
     // Save to localStorage as backup
     saveSettings(updates);
 
-    // Save to database
+    // Save to database in background (don't await)
     try {
       const upsertPromises = Object.entries(updates).map(async ([key, value]) => {
         // Skip adminPin - it has its own table
         if (key === 'adminPin') return;
         
-        if (!DB_SETTINGS_KEYS.includes(key as any)) return;
+        if (!DB_SETTINGS_KEYS.includes(key as typeof DB_SETTINGS_KEYS[number])) return;
 
         const { error } = await supabase
           .from('site_settings')
           .upsert(
-            { key, value: value as any },
+            { key, value: value as never },
             { onConflict: 'key' }
           );
 
@@ -94,6 +113,8 @@ export const useSettings = () => {
 
   const refreshSettings = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
+
     try {
       const { data, error } = await supabase
         .from('site_settings')
@@ -101,6 +122,7 @@ export const useSettings = () => {
       
       if (error) {
         console.error('Failed to refresh settings:', error);
+        setError(error);
         setSettings(getSettings());
         return;
       }
@@ -121,11 +143,12 @@ export const useSettings = () => {
       }
     } catch (error) {
       console.error('Error refreshing settings:', error);
+      setError(error as Error);
       setSettings(getSettings());
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  return { settings, updateSettings, refreshSettings, isLoading };
+  return { settings, updateSettings, refreshSettings, isLoading, error };
 };

@@ -154,16 +154,27 @@ const Dashboard = () => {
     navigate('/');
   };
 
+  // Show loading state with timeout protection
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">로딩 중...</div>
+        <div className="text-center space-y-4">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-muted-foreground">로딩 중...</p>
+        </div>
       </div>
     );
   }
 
+  // Redirect handled in useEffect - just return null while redirecting
   if (!user) {
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-muted-foreground">로그인 페이지로 이동 중...</p>
+        </div>
+      </div>
+    );
   }
 
   const enrolledCourseIds = enrollments?.map(e => e.course_id) || [];
