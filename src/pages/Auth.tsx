@@ -107,7 +107,7 @@ export default function Auth() {
   const canSubmitSignup = agreedAge && agreedTerms && agreedPrivacy;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
       <div className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -117,51 +117,51 @@ export default function Auth() {
         {/* Back button */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8"
+          className="flex items-center gap-2 text-slate-300 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>돌아가기</span>
         </button>
 
-        {/* Auth card */}
-        <div className="glass-card rounded-2xl p-6 sm:p-8 shadow-2xl">
+        {/* Auth card - HIGH CONTRAST WHITE BACKGROUND */}
+        <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-200">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-xs text-primary font-medium">{settings.siteName || 'Mystic Tarot Academy'}</span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 mb-4">
+              <Sparkles className="w-4 h-4 text-emerald-600" />
+              <span className="text-xs text-emerald-700 font-medium">{settings.siteName || 'Mystic Tarot Academy'}</span>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-bold text-gray-900">
               {isLogin ? '로그인' : '회원가입'}
             </h1>
-            <p className="text-muted-foreground text-sm mt-2">
+            <p className="text-gray-500 text-sm mt-2">
               {isLogin ? '계정에 로그인하세요' : '새 계정을 만들어보세요'}
             </p>
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="displayName" className="text-foreground">이름</Label>
+                <Label htmlFor="displayName" className="text-gray-800 font-medium">이름</Label>
                 <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                   <Input
                     id="displayName"
                     type="text"
                     placeholder="홍길동"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="pl-10 bg-secondary/50 border-border"
+                    className="pl-10 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500"
                   />
                 </div>
               </div>
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">이메일</Label>
+              <Label htmlFor="email" className="text-gray-800 font-medium">이메일</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   id="email"
                   type="email"
@@ -169,15 +169,15 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="pl-10 bg-secondary/50 border-border"
+                  className="pl-10 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground">비밀번호</Label>
+              <Label htmlFor="password" className="text-gray-800 font-medium">비밀번호</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   id="password"
                   type="password"
@@ -186,15 +186,15 @@ export default function Auth() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   minLength={6}
-                  className="pl-10 bg-secondary/50 border-border"
+                  className="pl-10 bg-white border-2 border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
             </div>
 
             {/* Agreement Checkboxes - Only for signup */}
             {!isLogin && (
-              <div className="space-y-3 pt-2 border-t border-border/50 mt-4">
-                <p className="text-xs text-muted-foreground pt-2">필수 동의 사항</p>
+              <div className="space-y-3 pt-4 border-t border-gray-200 mt-4">
+                <p className="text-xs text-gray-600 font-medium pt-2">필수 동의 사항</p>
                 
                 {/* Age Verification - MANDATORY */}
                 <div className="flex items-start gap-3 p-3 rounded-lg bg-amber-50 border border-amber-200">
@@ -221,15 +221,15 @@ export default function Auth() {
                     id="terms"
                     checked={agreedTerms}
                     onCheckedChange={(checked) => setAgreedTerms(checked === true)}
-                    className="mt-0.5"
+                    className="mt-0.5 border-gray-400 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
                   />
                   <div className="flex-1">
-                    <label htmlFor="terms" className="text-sm text-foreground cursor-pointer">
-                      <span className="text-destructive">*</span>{' '}
+                    <label htmlFor="terms" className="text-sm text-gray-800 cursor-pointer">
+                      <span className="text-red-500">*</span>{' '}
                       <button
                         type="button"
                         onClick={() => setShowTermsDialog(true)}
-                        className="text-primary hover:underline inline-flex items-center gap-1"
+                        className="text-emerald-600 hover:underline inline-flex items-center gap-1 font-medium"
                       >
                         <FileText className="w-3 h-3" />
                         이용약관
@@ -245,15 +245,15 @@ export default function Auth() {
                     id="privacy"
                     checked={agreedPrivacy}
                     onCheckedChange={(checked) => setAgreedPrivacy(checked === true)}
-                    className="mt-0.5"
+                    className="mt-0.5 border-gray-400 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
                   />
                   <div className="flex-1">
-                    <label htmlFor="privacy" className="text-sm text-foreground cursor-pointer">
-                      <span className="text-destructive">*</span>{' '}
+                    <label htmlFor="privacy" className="text-sm text-gray-800 cursor-pointer">
+                      <span className="text-red-500">*</span>{' '}
                       <button
                         type="button"
                         onClick={() => setShowPrivacyDialog(true)}
-                        className="text-primary hover:underline inline-flex items-center gap-1"
+                        className="text-emerald-600 hover:underline inline-flex items-center gap-1 font-medium"
                       >
                         <Shield className="w-3 h-3" />
                         개인정보처리방침
@@ -277,12 +277,12 @@ export default function Auth() {
 
           {/* Toggle */}
           <div className="mt-6 text-center">
-            <p className="text-muted-foreground text-sm">
+            <p className="text-gray-600 text-sm">
               {isLogin ? '계정이 없으신가요?' : '이미 계정이 있으신가요?'}
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-primary font-medium ml-1 hover:underline"
+                className="text-emerald-600 font-semibold ml-1 hover:underline"
               >
                 {isLogin ? '회원가입' : '로그인'}
               </button>
