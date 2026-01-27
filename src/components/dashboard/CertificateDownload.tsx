@@ -242,21 +242,21 @@ export const CertificateDownload = ({
   };
 
   return (
-    <Card className="bg-white border-gray-200 shadow-sm">
+    <Card className="bg-card border-2 border-border shadow-lg">
       <CardContent className="p-5">
         {/* Progress Display */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+            <h3 className="font-semibold text-foreground flex items-center gap-2">
               <Award className="w-5 h-5 text-primary" />
               학습 진도율
             </h3>
             <span className="text-2xl font-bold text-primary">{progressPercentage}%</span>
           </div>
           
-          <Progress value={progressPercentage} className="h-3" />
+          <Progress value={progressPercentage} className="h-3 bg-muted" />
           
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {isCompleted 
               ? '🎉 모든 강의를 완료했습니다!' 
               : `${100 - progressPercentage}% 더 학습하면 수료증을 받을 수 있습니다.`
@@ -265,42 +265,43 @@ export const CertificateDownload = ({
         </div>
 
         {/* Certificate Section */}
-        <div className="mt-6 pt-6 border-t border-gray-100">
+        <div className="mt-6 pt-6 border-t border-border">
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-700">수료증 발급</span>
+                <span className="text-sm font-medium text-foreground">수료증 발급</span>
                 {certificateIssued ? (
-                  <Badge className="bg-green-100 text-green-700 border-green-200">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     발급 완료
-                  </Badge>
+                  </span>
                 ) : isCompleted ? (
-                  <Badge className="bg-primary/10 text-primary border-primary/20">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary border border-primary/30">
                     발급 가능
-                  </Badge>
+                  </span>
                 ) : (
-                  <Badge variant="outline" className="text-gray-500">
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground border border-border">
                     <Lock className="w-3 h-3 mr-1" />
                     100% 달성 필요
-                  </Badge>
+                  </span>
                 )}
               </div>
               {certificateIssuedAt && (
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-muted-foreground">
                   {format(new Date(certificateIssuedAt), 'yyyy.MM.dd 발급', { locale: ko })}
                 </span>
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-2">
+            {/* Action Buttons - HIGH CONTRAST */}
+            <div className="flex flex-col sm:flex-row gap-3">
               {!certificateIssued && isCompleted && (
                 <Button 
                   onClick={handleIssueCertificate}
-                  className="flex-1"
+                  className="flex-1 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-primary/90"
+                  size="lg"
                 >
-                  <Award className="w-4 h-4 mr-2" />
+                  <Award className="w-5 h-5 mr-2" />
                   수료증 발급
                 </Button>
               )}
@@ -309,9 +310,10 @@ export const CertificateDownload = ({
                 <Button 
                   onClick={handleDownloadCertificate}
                   disabled={isGenerating}
-                  className="flex-1"
+                  className="flex-1 bg-green-600 text-white font-bold border-2 border-green-500 hover:bg-green-700"
+                  size="lg"
                 >
-                  <Printer className="w-4 h-4 mr-2" />
+                  <Printer className="w-5 h-5 mr-2" />
                   {isGenerating ? '생성 중...' : '수료증 인쇄/다운로드'}
                 </Button>
               )}
@@ -320,9 +322,10 @@ export const CertificateDownload = ({
                 <Button 
                   disabled 
                   variant="outline"
-                  className="flex-1 opacity-50"
+                  size="lg"
+                  className="flex-1 border-2 border-muted-foreground/50 text-muted-foreground bg-muted/30 font-semibold"
                 >
-                  <Lock className="w-4 h-4 mr-2" />
+                  <Lock className="w-5 h-5 mr-2" />
                   수료증 발급 (100% 달성 시 활성화)
                 </Button>
               )}
