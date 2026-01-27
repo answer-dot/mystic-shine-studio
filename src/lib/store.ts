@@ -363,7 +363,7 @@ const defaultSettings: SiteSettings = {
 };
 
 const STORAGE_KEY = 'tarot-site-settings';
-const STORAGE_VERSION = 'v3'; // Increment to reset localStorage with new defaults (v3: added legal docs)
+const STORAGE_VERSION = 'v4'; // Increment to reset localStorage with new defaults (v4: fixed site name sync)
 const VERSION_KEY = 'tarot-site-version';
 
 export const getSettings = (): SiteSettings => {
