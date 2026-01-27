@@ -4,7 +4,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { VideoPlayer } from '@/components/VideoPlayer';
-import { CourseMaterialsDownload } from './CourseMaterialsDownload';
 import { CertificateDownload } from './CertificateDownload';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
 import {
@@ -278,15 +277,17 @@ export const CourseLearningSection = ({
                           </div>
                         </div>
 
-                        {/* Video Player - FULL WIDTH on Mobile */}
+                        {/* Video Player - FULL WIDTH & CENTERED on Mobile */}
                         {isPlaying && hasVideo && (
-                          <div className="w-full p-2 bg-gray-900/5 rounded-lg">
-                            <VideoPlayer
-                              src={lesson.videoUrl!}
-                              showLabel={lesson.isPreview && !isEnrolled ? '미리보기' : undefined}
-                              className="w-full rounded-lg"
-                              onEnded={() => handleVideoEnded(lesson.id)}
-                            />
+                          <div className="w-full mx-auto p-2 bg-gray-900/5 rounded-lg">
+                            <div className="relative w-full aspect-video">
+                              <VideoPlayer
+                                src={lesson.videoUrl!}
+                                showLabel={lesson.isPreview && !isEnrolled ? '미리보기' : undefined}
+                                className="absolute inset-0 w-full h-full rounded-lg"
+                                onEnded={() => handleVideoEnded(lesson.id)}
+                              />
+                            </div>
                           </div>
                         )}
                       </div>
@@ -298,11 +299,6 @@ export const CourseLearningSection = ({
           );
         })}
       </Accordion>
-
-      {/* Materials Download Section - Only for enrolled users */}
-      {isEnrolled && (
-        <CourseMaterialsDownload courseId={courseId} courseName={courseTitle} />
-      )}
     </div>
   );
 };

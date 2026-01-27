@@ -154,6 +154,7 @@ export const EnrolledCourseCard = ({
               {isCompleted ? '다시 학습' : '이어서 학습'}
             </Button>
             
+            {/* Certificate button - Enabled only at 100% */}
             {isCompleted ? (
               <Button 
                 size="sm"
@@ -168,12 +169,12 @@ export const EnrolledCourseCard = ({
               <Button 
                 size="sm"
                 variant="outline"
-                className="flex-1 h-8 text-xs border border-white/30 text-white/60 font-medium cursor-not-allowed"
+                className="flex-1 h-8 text-xs border border-muted-foreground/40 text-muted-foreground font-medium cursor-not-allowed opacity-60"
                 disabled
                 title="100% 달성 시 활성화"
               >
                 <Lock className="w-3 h-3 mr-1" />
-                수료증 발급
+                수료증 ({progressPercentage}%/100%)
               </Button>
             )}
           </div>
