@@ -34,39 +34,86 @@ export const HeroSection = () => {
     document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // Enrolled User: Show compact "Welcome Back" banner instead of full hero
+  // Enrolled User: Show expanded premium "Welcome Back" banner
   if (userIsEnrolled) {
     return (
-      <section className="relative pt-20 sm:pt-24 pb-8 sm:pb-12 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-        <div className="absolute top-1/4 left-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-primary/10 rounded-full blur-3xl" />
+      <section className="relative pt-20 sm:pt-28 pb-12 sm:pb-20 overflow-hidden min-h-[50vh] sm:min-h-[60vh] flex items-center">
+        {/* Premium Background - Mystic Tarot Theme */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#12121a] to-[#0d0d14]" />
+        
+        {/* Decorative background elements */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top_left,_hsl(var(--primary)/0.15)_0%,_transparent_50%)]" />
+          <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_bottom_right,_hsl(280,60%,30%,0.12)_0%,_transparent_50%)]" />
+        </div>
+        
+        {/* Animated orbs */}
+        <div className="absolute top-1/4 left-1/6 w-64 sm:w-96 h-64 sm:h-96 bg-primary/15 rounded-full blur-3xl animate-pulse-slow" />
+        <div className="absolute bottom-1/4 right-1/6 w-48 sm:w-72 h-48 sm:h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        
+        {/* Subtle star pattern overlay */}
+        <div 
+          className="absolute inset-0 opacity-20" 
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary)/0.3) 1px, transparent 1px),
+                              radial-gradient(circle at 80% 70%, hsl(var(--primary)/0.2) 1px, transparent 1px),
+                              radial-gradient(circle at 50% 50%, hsl(280,60%,50%,0.15) 1px, transparent 1px)`,
+            backgroundSize: '100px 100px, 150px 150px, 200px 200px'
+          }}
+        />
 
-        <div className="section-container relative z-10">
-          <div className="max-w-3xl mx-auto">
-            <div className="glass-card rounded-2xl p-6 sm:p-8 border border-primary/20">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-center sm:text-left">
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-medium mb-2">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    수강 중
+        <div className="section-container relative z-10 w-full">
+          <div className="max-w-5xl mx-auto px-4">
+            {/* Expanded Premium Card */}
+            <div className="relative rounded-3xl overflow-hidden border border-primary/30 shadow-2xl" 
+                 style={{ 
+                   background: 'linear-gradient(135deg, rgba(20,20,30,0.9) 0%, rgba(15,15,25,0.95) 100%)',
+                   boxShadow: '0 0 60px -15px hsl(var(--primary)/0.3), 0 25px 50px -12px rgba(0,0,0,0.5)'
+                 }}>
+              {/* Inner glow border */}
+              <div className="absolute inset-0 rounded-3xl border border-primary/20 pointer-events-none" />
+              
+              <div className="p-8 sm:p-12 lg:p-16">
+                <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
+                  {/* Left: Welcome Content */}
+                  <div className="text-center lg:text-left flex-1">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 text-green-400 text-sm font-semibold mb-4 border border-green-500/30">
+                      <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+                      수강 중
+                    </div>
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
+                      다시 오신 것을{' '}
+                      <span className="text-gradient-gold">환영합니다!</span> 👋
+                    </h2>
+                    <p className="text-lg sm:text-xl text-muted-foreground max-w-lg">
+                      <span className="text-primary font-medium">{primaryCourse?.title || '강의'}</span>를 이어서 학습해보세요.
+                    </p>
                   </div>
-                  <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-                    다시 오신 것을 환영합니다! 👋
-                  </h2>
-                  <p className="text-muted-foreground">
-                    {primaryCourse?.title || '강의'}를 이어서 학습해보세요.
-                  </p>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                  <Button variant="hero" size="lg" onClick={() => navigate('/dashboard')} className="w-full sm:w-auto">
-                    <Play className="w-5 h-5 mr-2" />
-                    이어서 학습하기
-                  </Button>
-                  <Button variant="outline" size="lg" onClick={scrollToCurriculum} className="w-full sm:w-auto">
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    커리큘럼 보기
-                  </Button>
+                  
+                  {/* Right: Action Buttons */}
+                  <div className="flex flex-col gap-4 w-full lg:w-auto">
+                    <Button 
+                      variant="hero" 
+                      size="xl" 
+                      onClick={() => navigate('/dashboard')} 
+                      className="w-full lg:w-auto px-10 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
+                      style={{
+                        boxShadow: '0 0 40px -10px hsl(var(--primary)/0.5), 0 10px 30px -10px rgba(0,0,0,0.3)'
+                      }}
+                    >
+                      <Play className="w-6 h-6 mr-3" />
+                      이어서 학습하기
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      onClick={scrollToCurriculum} 
+                      className="w-full lg:w-auto border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10"
+                    >
+                      <BookOpen className="w-5 h-5 mr-2" />
+                      커리큘럼 보기
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
