@@ -20,16 +20,20 @@ export const useAdminBootstrap = () => {
 
   const checkAdminStatus = async () => {
     try {
-      // Check if any admins exist
-      const { count, error: countError } = await supabase
+      // Check if any admins exist by fetching actual data
+      const { data: adminData, error: countError } = await supabase
         .from('admin_roles')
-        .select('*', { count: 'exact', head: true });
+        .select('id')
+        .limit(1);
 
       if (countError) {
         console.error('Error checking admin count:', countError);
       }
 
-      const noAdminsExist = count === 0;
+      // Check if no admins exist (empty array or null)
+      const noAdminsExist = !adminData || adminData.length === 0;
+      
+      console.log('Admin bootstrap check:', { adminData, noAdminsExist });
 
       // Check if signup is disabled in site_settings
       const { data: signupSetting } = await supabase
@@ -47,7 +51,7 @@ export const useAdminBootstrap = () => {
       });
     } catch (error) {
       console.error('Error in admin bootstrap check:', error);
-      setState(prev => ({ ...prev, isChecking: false }));
+      setState(prev => ({ ...prev, isChecking: false, isFirstAdmin: false }));
     }
   };
 
