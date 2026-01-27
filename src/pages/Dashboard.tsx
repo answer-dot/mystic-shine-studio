@@ -204,59 +204,59 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-            <Card className="bg-card border-border">
-              <CardContent className="pt-6">
+          {/* Stats Cards - White Theme, Mobile Full Width */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            <Card className="bg-white border-gray-200 shadow-sm">
+              <CardContent className="py-6 px-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-primary" />
+                  <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center">
+                    <BookOpen className="w-7 h-7 text-emerald-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">수강 중</p>
-                    <p className="text-2xl font-bold">{enrolledCourseIds.length}</p>
+                    <p className="text-base text-gray-600 font-medium">수강 중</p>
+                    <p className="text-3xl font-bold text-gray-900">{enrolledCourseIds.length}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-card border-border">
-              <CardContent className="pt-6">
+            <Card className="bg-white border-gray-200 shadow-sm">
+              <CardContent className="py-6 px-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                    <GraduationCap className="w-6 h-6 text-green-500" />
+                  <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center">
+                    <GraduationCap className="w-7 h-7 text-blue-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">완료</p>
-                    <p className="text-2xl font-bold">{enrollments?.filter(e => e.completed_at).length || 0}</p>
+                    <p className="text-base text-gray-600 font-medium">완료</p>
+                    <p className="text-3xl font-bold text-gray-900">{enrollments?.filter(e => e.completed_at).length || 0}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-card border-border">
-              <CardContent className="pt-6">
+            <Card className="bg-white border-gray-200 shadow-sm">
+              <CardContent className="py-6 px-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                    <Star className="w-6 h-6 text-yellow-500" />
+                  <div className="w-14 h-14 rounded-full bg-amber-50 flex items-center justify-center">
+                    <Star className="w-7 h-7 text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">내 후기</p>
-                    <p className="text-2xl font-bold">{userReviews?.length || 0}</p>
+                    <p className="text-base text-gray-600 font-medium">내 후기</p>
+                    <p className="text-3xl font-bold text-gray-900">{userReviews?.length || 0}</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-card border-border">
-              <CardContent className="pt-6">
+            <Card className="bg-white border-gray-200 shadow-sm">
+              <CardContent className="py-6 px-5">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                    <Ticket className="w-6 h-6 text-purple-500" />
+                  <div className="w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center">
+                    <Ticket className="w-7 h-7 text-violet-600" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">쿠폰</p>
-                    <p className="text-2xl font-bold">{validCoupons.length}</p>
+                    <p className="text-base text-gray-600 font-medium">쿠폰</p>
+                    <p className="text-3xl font-bold text-gray-900">{validCoupons.length}</p>
                   </div>
                 </div>
               </CardContent>
