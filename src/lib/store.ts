@@ -52,6 +52,8 @@ export interface EventItem {
   status: 'ongoing' | 'upcoming' | 'ended';
   spots: number;
   imageUrl?: string;
+  totalCapacity?: number;  // Total seats available
+  startTime?: string;      // ISO datetime for countdown (e.g., "2025-02-01T19:00:00")
 }
 
 const defaultSettings: SiteSettings = {
@@ -128,7 +130,9 @@ const defaultSettings: SiteSettings = {
       date: "2025-02-01",
       status: "ongoing",
       spots: 50,
-      imageUrl: ""
+      imageUrl: "",
+      totalCapacity: 50,
+      startTime: "2026-02-01T19:00:00"
     },
     {
       id: "2",
@@ -137,7 +141,9 @@ const defaultSettings: SiteSettings = {
       date: "2025-02-20",
       status: "upcoming",
       spots: 5,
-      imageUrl: ""
+      imageUrl: "",
+      totalCapacity: 10,
+      startTime: "2026-02-20T14:00:00"
     }
   ],
   testimonials: [
