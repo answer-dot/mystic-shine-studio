@@ -524,13 +524,15 @@ export const CustomersSection = () => {
                         className="min-h-[80px] bg-white border-gray-300 text-gray-900"
                       />
                       {selectedCustomer?.is_blacklisted && (
-                        <Button
-                          size="sm"
-                          onClick={() => handleToggleBlacklist(true)}
-                          className="mt-2 bg-gray-900 text-white hover:bg-gray-800"
-                        >
-                          사유 저장
-                        </Button>
+                        <div className="flex justify-end mt-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleToggleBlacklist(true)}
+                            className="bg-gray-900 text-white hover:bg-gray-800"
+                          >
+                            사유 저장
+                          </Button>
+                        </div>
                       )}
                     </div>
                   )}
