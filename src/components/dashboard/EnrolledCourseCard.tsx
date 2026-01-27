@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,21 +9,26 @@ import {
   Clock, 
   Award,
   CheckCircle,
-  Lock
+  Lock,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface Lesson {
+  id: string;
+  title: string;
+  duration: string;
+  isPreview: boolean;
+  videoUrl?: string;
+}
 
 interface Chapter {
   id: string;
   title: string;
   description: string;
   duration: string;
-  lessons: {
-    id: string;
-    title: string;
-    duration: string;
-    isPreview: boolean;
-    videoUrl?: string;
-  }[];
+  lessons: Lesson[];
 }
 
 interface Course {
@@ -59,9 +65,11 @@ export const EnrolledCourseCard = ({
   userName,
   onStartLearning,
 }: EnrolledCourseCardProps) => {
+  const [showLessonList, setShowLessonList] = useState(false);
   const curriculum = course.curriculum as Chapter[] || [];
   
   const {
+    completedLessons,
     completedCount,
     totalLessons,
     progressPercentage,
@@ -69,6 +77,19 @@ export const EnrolledCourseCard = ({
     certificateIssued,
     issueCertificate,
   } = useCourseProgress(course.id, curriculum);
+
+  // Flatten all lessons for the list view
+  const allLessons: { lesson: Lesson; chapterTitle: string; chapterIndex: number; lessonIndex: number }[] = [];
+  curriculum.forEach((chapter, chapterIdx) => {
+    chapter.lessons?.forEach((lesson, lessonIdx) => {
+      allLessons.push({
+        lesson,
+        chapterTitle: chapter.title,
+        chapterIndex: chapterIdx + 1,
+        lessonIndex: lessonIdx + 1,
+      });
+    });
+  });
 
   return (
     <Card className="bg-card border-border overflow-hidden">
@@ -162,6 +183,85 @@ export const EnrolledCourseCard = ({
           </div>
         </div>
       </div>
+
+      {/* Lesson List Toggle */}
+      {allLessons.length > 0 && (
+        <div className="border-t border-border">
+          <button
+            onClick={() => setShowLessonList(!showLessonList)}
+            className="w-full px-4 py-3 flex items-center justify-between text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              📚 강의 목록 ({allLessons.length}개)
+            </span>
+            {showLessonList ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
+          </button>
+
+          {/* Collapsible Lesson List */}
+          <div className={cn(
+            "overflow-hidden transition-all duration-300",
+            showLessonList ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+          )}>
+            <div className="px-4 pb-4 space-y-1 max-h-[500px] overflow-y-auto">
+              {allLessons.map(({ lesson, chapterTitle, chapterIndex, lessonIndex }, index) => {
+                const isLessonCompleted = completedLessons.has(lesson.id);
+                
+                return (
+                  <div
+                    key={lesson.id}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-lg transition-colors",
+                      "hover:bg-muted/50 cursor-pointer"
+                    )}
+                    onClick={onStartLearning}
+                  >
+                    {/* Status Icon */}
+                    <div className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-medium",
+                      isLessonCompleted 
+                        ? "bg-green-500/10 text-green-500" 
+                        : "bg-muted text-muted-foreground"
+                    )}>
+                      {isLessonCompleted ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : (
+                        <span>{index + 1}</span>
+                      )}
+                    </div>
+
+                    {/* Lesson Info */}
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(
+                        "text-sm truncate",
+                        isLessonCompleted ? "text-muted-foreground" : "text-foreground"
+                      )}>
+                        {lesson.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        Chapter {chapterIndex}: {chapterTitle}
+                      </p>
+                    </div>
+
+                    {/* Duration */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs text-muted-foreground">{lesson.duration}</span>
+                      {isLessonCompleted && (
+                        <Badge variant="outline" className="text-xs text-green-500 border-green-500/30">
+                          완료
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };

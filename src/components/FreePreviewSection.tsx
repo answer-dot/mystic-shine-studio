@@ -105,7 +105,7 @@ export const FreePreviewSection = () => {
                     "flex-shrink-0 whitespace-nowrap"
                   )}
                 >
-                  지금 시청하기
+                  {user ? '지금 시청하기' : '풀버전 시청하기'}
                 </button>
               </div>
             </div>
