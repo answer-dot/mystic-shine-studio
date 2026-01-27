@@ -379,9 +379,9 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="!w-[calc(100vw-32px)] !max-w-[600px] !max-h-[calc(100vh-64px)] bg-white rounded-xl">
-            <DialogHeader className="pb-4 border-b border-gray-100">
-              <DialogTitle className="text-gray-900 text-xl font-bold">
+          <DialogContent className="!w-[calc(100vw-32px)] !max-w-[600px] !max-h-[90vh] !overflow-x-hidden bg-white rounded-xl">
+            <DialogHeader className="pb-4 border-b border-gray-100 sticky top-0 bg-white z-10 -mx-5 -mt-5 px-5 pt-5 sm:-mx-6 sm:-mt-6 sm:px-6 sm:pt-6 rounded-t-xl">
+              <DialogTitle className="text-gray-900 text-xl font-bold pr-10">
                 {editingCourse ? '강의 수정' : '새 강의 추가'}
               </DialogTitle>
               <DialogDescription className="text-gray-600">
@@ -389,7 +389,7 @@ export const CoursesSection = () => {
               </DialogDescription>
             </DialogHeader>
             
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4 flex-1 flex flex-col min-h-0">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
               <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
                 <TabsTrigger 
                   value="general" 
@@ -563,7 +563,7 @@ export const CoursesSection = () => {
               </TabsContent>
 
               {/* Curriculum Tab */}
-              <TabsContent value="curriculum" className="mt-4 space-y-4 flex-1 min-h-0 flex flex-col">
+              <TabsContent value="curriculum" className="mt-4 space-y-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <p className="text-sm text-gray-600">챕터와 레슨을 추가하여 커리큘럼을 구성하세요</p>
                   <Button 
@@ -584,7 +584,7 @@ export const CoursesSection = () => {
                     <p className="text-sm mt-1">위의 "챕터 추가" 버튼을 클릭해 시작하세요</p>
                   </div>
                 ) : (
-                  <div className="space-y-4 flex-1 overflow-y-auto pr-1 -mr-1">
+                  <div className="space-y-4">
                     {formData.curriculum.map((chapter, chapterIndex) => (
                       <div key={chapter.id} className="border border-gray-200 rounded-lg bg-white">
                         {/* Chapter Header */}
@@ -628,36 +628,40 @@ export const CoursesSection = () => {
                         {/* Lessons */}
                         <div className="p-4 space-y-2">
                           {chapter.lessons.map((lesson, lessonIndex) => (
-                            <div key={lesson.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                              <Video className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                              <Input
-                                value={lesson.title}
-                                onChange={(e) => updateLesson(chapter.id, lesson.id, 'title', e.target.value)}
-                                placeholder={`레슨 ${lessonIndex + 1} 제목`}
-                                className="flex-1 bg-white border-gray-200 text-sm h-8"
-                              />
-                              <Input
-                                value={lesson.videoUrl || ''}
-                                onChange={(e) => updateLesson(chapter.id, lesson.id, 'videoUrl', e.target.value)}
-                                placeholder="영상 URL"
-                                className="w-32 bg-white border-gray-200 text-sm h-8"
-                              />
-                              <div className="flex items-center gap-1.5">
-                                <Switch
-                                  checked={lesson.isPreview || false}
-                                  onCheckedChange={(checked) => updateLesson(chapter.id, lesson.id, 'isPreview', checked)}
-                                  className="scale-75"
+                            <div key={lesson.id} className="p-2 bg-gray-50 rounded-lg space-y-2">
+                              <div className="flex items-center gap-2">
+                                <Video className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                <Input
+                                  value={lesson.title}
+                                  onChange={(e) => updateLesson(chapter.id, lesson.id, 'title', e.target.value)}
+                                  placeholder={`레슨 ${lessonIndex + 1} 제목`}
+                                  className="flex-1 bg-white border-gray-200 text-sm h-8 min-w-0"
                                 />
-                                <span className="text-xs text-gray-500 whitespace-nowrap">미리보기</span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => deleteLesson(chapter.id, lesson.id)}
+                                  className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </Button>
                               </div>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => deleteLesson(chapter.id, lesson.id)}
-                                className="h-7 w-7 text-red-400 hover:text-red-600 hover:bg-red-50 flex-shrink-0"
-                              >
-                                <X className="w-3.5 h-3.5" />
-                              </Button>
+                              <div className="flex items-center gap-2 pl-6">
+                                <Input
+                                  value={lesson.videoUrl || ''}
+                                  onChange={(e) => updateLesson(chapter.id, lesson.id, 'videoUrl', e.target.value)}
+                                  placeholder="영상 URL"
+                                  className="flex-1 bg-white border-gray-200 text-sm h-8 min-w-0"
+                                />
+                                <div className="flex items-center gap-1.5 flex-shrink-0">
+                                  <Switch
+                                    checked={lesson.isPreview || false}
+                                    onCheckedChange={(checked) => updateLesson(chapter.id, lesson.id, 'isPreview', checked)}
+                                    className="scale-75"
+                                  />
+                                  <span className="text-xs text-gray-500 whitespace-nowrap">미리보기</span>
+                                </div>
+                              </div>
                             </div>
                           ))}
                           <Button
@@ -677,8 +681,8 @@ export const CoursesSection = () => {
               </TabsContent>
             </Tabs>
 
-            {/* Action Footer */}
-            <div className="flex justify-between items-center pt-5 mt-4 border-t border-gray-200">
+            {/* Action Footer - Sticky */}
+            <div className="flex justify-between items-center pt-5 mt-4 border-t border-gray-200 sticky bottom-0 bg-white -mx-5 -mb-5 px-5 pb-5 sm:-mx-6 sm:-mb-6 sm:px-6 sm:pb-6 rounded-b-xl">
               {editingCourse ? (
                 <Button
                   variant="ghost"
