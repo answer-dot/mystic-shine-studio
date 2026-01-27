@@ -40,11 +40,11 @@ export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerPr
       <div className={`
         ${compact ? 'text-xl sm:text-2xl px-2 py-1' : 'text-2xl sm:text-4xl md:text-5xl px-2 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4'}
         font-bold text-primary bg-card rounded-lg sm:rounded-xl border border-border shadow-elevated
-        animate-count-pulse w-full text-center
+        animate-count-pulse w-full text-center whitespace-nowrap leading-none
       `}>
-        {String(value).padStart(2, '0')}
+        <span className="inline-block">{String(value).padStart(2, '0')}</span>
       </div>
-      <span className={`${compact ? 'text-xs' : 'text-[10px] sm:text-xs md:text-sm'} text-muted-foreground mt-1 sm:mt-2 uppercase tracking-wider`}>
+      <span className={`${compact ? 'text-xs' : 'text-[10px] sm:text-xs md:text-sm'} text-muted-foreground mt-1 sm:mt-2 uppercase tracking-wider whitespace-nowrap`}>
         {label}
       </span>
     </div>

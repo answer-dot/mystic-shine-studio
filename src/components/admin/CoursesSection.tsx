@@ -381,7 +381,7 @@ export const CoursesSection = () => {
           </DialogTrigger>
           <DialogContent className="!p-0 !overflow-hidden bg-white rounded-xl">
             {/* Fixed Header */}
-            <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-gray-100 bg-white">
+            <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-gray-100 bg-white rounded-t-xl relative z-10">
               <DialogHeader>
                 <DialogTitle className="text-gray-900 text-xl font-bold pr-10">
                   {editingCourse ? '강의 수정' : '새 강의 추가'}
@@ -393,8 +393,8 @@ export const CoursesSection = () => {
             </div>
             
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 pt-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
                 <TabsTrigger 
                   value="general" 
