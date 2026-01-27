@@ -263,7 +263,7 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl [&>button]:w-8 [&>button]:h-8 [&>button]:bg-gray-100 [&>button]:hover:bg-gray-200 [&>button]:rounded-full [&>button]:text-gray-600 [&>button]:hover:text-gray-900 [&>button]:transition-colors">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl">
             <DialogHeader className="pb-4 border-b border-gray-100">
               <DialogTitle className="text-gray-900 text-xl font-bold">{editingCourse ? '강의 수정' : '새 강의 추가'}</DialogTitle>
               <DialogDescription className="text-gray-500">
