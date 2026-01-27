@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Mail, Lock, User, Sparkles, FileText, Shield, UserCheck } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, User, Sparkles, FileText, Shield, UserCheck, Crown, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSettings } from '@/hooks/useSettings';
 import { replacePlaceholders } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useAdminBootstrap } from '@/hooks/useAdminBootstrap';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function Auth() {
   const [searchParams] = useSearchParams();
@@ -27,6 +29,7 @@ export default function Auth() {
   const { signIn, signUp, user, loading: authLoading } = useAuth();
   const { settings } = useSettings();
   const navigate = useNavigate();
+  const { isFirstAdmin, isChecking, signupDisabled, promoteToAdmin } = useAdminBootstrap();
 
   useEffect(() => {
     const mode = searchParams.get('mode');
@@ -39,7 +42,7 @@ export default function Auth() {
     }
   }, [user, authLoading, navigate]);
 
-  if (authLoading) {
+  if (authLoading || isChecking) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -50,8 +53,18 @@ export default function Auth() {
     );
   }
 
+  // Block signup if disabled (but allow first admin setup)
+  const isSignupBlocked = signupDisabled && !isFirstAdmin;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Block signup if disabled
+    if (!isLogin && isSignupBlocked) {
+      toast.error('현재 회원가입이 비활성화되어 있습니다');
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -79,11 +92,22 @@ export default function Auth() {
           setIsSubmitting(false);
           return;
         }
-        const { error } = await signUp(email, password, displayName);
+        
+        const { data, error } = await signUp(email, password, displayName);
         if (error) {
           toast.error(error.message);
         } else {
-          toast.success('회원가입 성공! 로그인해주세요.');
+          // If this is the first admin, automatically promote them
+          if (isFirstAdmin && data?.user?.id) {
+            const promoted = await promoteToAdmin(data.user.id);
+            if (promoted) {
+              toast.success('🎉 첫 관리자로 등록되었습니다! 로그인해주세요.');
+            } else {
+              toast.success('회원가입 성공! 로그인해주세요.');
+            }
+          } else {
+            toast.success('회원가입 성공! 로그인해주세요.');
+          }
           setIsLogin(true);
         }
       }
@@ -125,6 +149,28 @@ export default function Auth() {
 
         {/* Auth card - HIGH CONTRAST WHITE BACKGROUND */}
         <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-slate-200">
+          {/* First Admin Banner */}
+          {isFirstAdmin && !isLogin && (
+            <Alert className="mb-6 bg-amber-50 border-amber-300">
+              <Crown className="h-4 w-4 text-amber-600" />
+              <AlertTitle className="text-amber-800">🎉 첫 관리자 설정</AlertTitle>
+              <AlertDescription className="text-amber-700 text-sm">
+                아직 관리자가 없습니다. 지금 가입하시면 자동으로 관리자 권한이 부여됩니다.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {/* Signup Disabled Banner */}
+          {isSignupBlocked && !isLogin && (
+            <Alert className="mb-6 bg-red-50 border-red-300">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              <AlertTitle className="text-red-800">회원가입 비활성화</AlertTitle>
+              <AlertDescription className="text-red-700 text-sm">
+                현재 회원가입이 관리자에 의해 비활성화되어 있습니다.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 mb-4">
@@ -132,10 +178,10 @@ export default function Auth() {
               <span className="text-xs text-emerald-700 font-medium">{settings.siteName || 'Mystic Tarot Academy'}</span>
             </div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {isLogin ? '로그인' : '회원가입'}
+              {isLogin ? '로그인' : (isFirstAdmin ? '관리자 계정 생성' : '회원가입')}
             </h1>
             <p className="text-gray-500 text-sm mt-2">
-              {isLogin ? '계정에 로그인하세요' : '새 계정을 만들어보세요'}
+              {isLogin ? '계정에 로그인하세요' : (isFirstAdmin ? '첫 관리자 계정을 만들어보세요' : '새 계정을 만들어보세요')}
             </p>
           </div>
 
