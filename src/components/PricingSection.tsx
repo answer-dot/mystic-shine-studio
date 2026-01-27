@@ -17,13 +17,19 @@ export const PricingSection = () => {
   const navigate = useNavigate();
   const [isTestPaymentLoading, setIsTestPaymentLoading] = useState(false);
 
+  // Check if user is enrolled in the primary course
+  const userIsEnrolled = user && primaryCourse && isEnrolled(primaryCourse.id);
+
   const handleRegisterClick = () => {
-    if (user) {
-      // Logged in: go to dashboard
-      navigate('/dashboard');
-    } else {
+    if (!user) {
       // Not logged in: go to signup
       navigate('/auth?mode=signup');
+    } else if (userIsEnrolled) {
+      // Enrolled: go directly to dashboard/course player
+      navigate('/dashboard');
+    } else {
+      // Logged in but not enrolled: scroll to pricing to encourage purchase
+      document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -145,10 +151,10 @@ export const PricingSection = () => {
 
               {/* CTA Buttons */}
               <div className="space-y-3">
-                {/* Main CTA */}
+                {/* Main CTA - Smart Redirection */}
                 <Button variant="hero" size="xl" className="w-full" onClick={handleRegisterClick}>
                   <CreditCard className="w-5 h-5 mr-2" />
-                  {user ? '내 강의실 가기' : '지금 등록하기'}
+                  {!user ? '지금 등록하기' : userIsEnrolled ? '내 강의실 가기' : '지금 등록하기'}
                 </Button>
 
                 {/* Test Payment Button - Only visible when logged in */}
