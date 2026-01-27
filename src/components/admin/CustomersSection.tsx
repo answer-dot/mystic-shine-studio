@@ -467,7 +467,7 @@ export const CustomersSection = () => {
 
       {/* Customer Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col bg-white border border-gray-200 shadow-2xl">
+        <DialogContent className="max-w-2xl max-h-[90vh] bg-white border border-gray-200 shadow-2xl overflow-y-auto">
           <DialogHeader className="border-b border-gray-100 pb-4">
             <DialogTitle className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center text-lg font-bold text-gray-700">
@@ -491,7 +491,7 @@ export const CustomersSection = () => {
             </DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="flex-1 pr-4">
+          <div className="space-y-6 py-6">
             <div className="space-y-6 py-6">
               {/* Blacklist Section */}
               <Card className="border border-red-200 bg-red-50/30 shadow-sm">
@@ -549,16 +549,22 @@ export const CustomersSection = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex gap-2">
+                  <div className="space-y-2">
                     <Textarea
                       placeholder="메모를 입력하세요..."
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
                       className="min-h-[60px] bg-white border-gray-300 text-gray-900"
                     />
-                    <Button onClick={handleAddNote} className="shrink-0 bg-gray-900 text-white hover:bg-gray-800">
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                    <div className="flex justify-end">
+                      <Button 
+                        onClick={handleAddNote} 
+                        disabled={!newNote.trim()}
+                        className="bg-gray-900 text-white hover:bg-gray-800"
+                      >
+                        등록하기
+                      </Button>
+                    </div>
                   </div>
 
                   {customerNotes.length > 0 && (
@@ -785,7 +791,7 @@ export const CustomersSection = () => {
                 </CardContent>
               </Card>
             </div>
-          </ScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
