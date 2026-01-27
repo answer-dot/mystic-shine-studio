@@ -583,6 +583,7 @@ const Dashboard = () => {
                   const selectedCourse = courses.find(c => c.id === selectedCourseId);
                   if (!selectedCourse) return null;
                   const isEnrolled = enrolledCourseIds.includes(selectedCourse.id);
+                  const enrollment = enrollments?.find(e => e.course_id === selectedCourse.id);
                   return (
                     <div className="space-y-4">
                       <Button 
@@ -598,6 +599,8 @@ const Dashboard = () => {
                         courseTitle={selectedCourse.title}
                         curriculum={selectedCourse.curriculum as any[] || []}
                         isEnrolled={isEnrolled}
+                        userName={displayName}
+                        completedAt={enrollment?.completed_at}
                       />
                     </div>
                   );
