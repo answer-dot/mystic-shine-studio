@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -63,7 +63,7 @@ interface Profile {
   avatar_url: string | null;
 }
 
-const Dashboard = forwardRef<HTMLDivElement>((_, ref) => {
+const Dashboard = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -171,7 +171,7 @@ const Dashboard = forwardRef<HTMLDivElement>((_, ref) => {
   const validCoupons = userCoupons?.filter(c => !c.is_used && new Date(c.expires_at) > new Date()) || [];
 
   return (
-    <div ref={ref} className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="pt-20 pb-16">
@@ -614,8 +614,6 @@ const Dashboard = forwardRef<HTMLDivElement>((_, ref) => {
       <Footer />
     </div>
   );
-});
-
-Dashboard.displayName = 'Dashboard';
+};
 
 export default Dashboard;
