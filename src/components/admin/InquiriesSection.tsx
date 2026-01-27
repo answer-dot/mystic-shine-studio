@@ -201,7 +201,7 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
           {inquiries.map((inquiry) => (
             <Card 
               key={inquiry.id} 
-              className={`bg-white border-gray-200 shadow-sm ${!inquiry.is_read ? 'border-l-4 border-l-orange-500' : ''}`}
+              className={`bg-white border-gray-200 shadow-sm ${!inquiry.is_read ? 'border-l-4 border-l-emerald-500' : ''}`}
             >
               <CardHeader className="pb-2">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
@@ -209,7 +209,7 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
                     <CardTitle className="text-base flex flex-wrap items-center gap-2 text-gray-900">
                       {inquiry.name}
                       {!inquiry.is_read && (
-                        <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded font-medium">NEW</span>
+                        <span className="text-xs bg-emerald-500 text-white px-2 py-0.5 rounded font-medium">NEW</span>
                       )}
                       {getStatusBadge(inquiry)}
                     </CardTitle>
