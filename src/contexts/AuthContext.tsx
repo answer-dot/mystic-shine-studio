@@ -1,13 +1,16 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { checkUserBlacklist } from '@/hooks/useBlacklistCheck';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
+  isBlacklisted: boolean;
+  blacklistReason: string | null;
   signUp: (email: string, password: string, displayName: string) => Promise<{ error: Error | null }>;
-  signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: Error | null; isBlacklisted?: boolean }>;
   signOut: () => Promise<void>;
 }
 
@@ -17,19 +20,39 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isBlacklisted, setIsBlacklisted] = useState(false);
+  const [blacklistReason, setBlacklistReason] = useState<string | null>(null);
 
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      // Check blacklist status when user logs in
+      if (session?.user) {
+        const result = await checkUserBlacklist(session.user.id);
+        setIsBlacklisted(result.isBlacklisted);
+        setBlacklistReason(result.reason);
+      } else {
+        setIsBlacklisted(false);
+        setBlacklistReason(null);
+      }
+      
       setLoading(false);
     });
 
     // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        const result = await checkUserBlacklist(session.user.id);
+        setIsBlacklisted(result.isBlacklisted);
+        setBlacklistReason(result.reason);
+      }
+      
       setLoading(false);
     });
 
@@ -51,19 +74,47 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
+    if (!error && data.user) {
+      // Check blacklist status after successful login
+      const result = await checkUserBlacklist(data.user.id);
+      setIsBlacklisted(result.isBlacklisted);
+      setBlacklistReason(result.reason);
+      
+      if (result.isBlacklisted) {
+        // Sign out the blacklisted user
+        await supabase.auth.signOut();
+        return { 
+          error: new Error('계정이 제한되었습니다. 고객센터에 문의해주세요.'), 
+          isBlacklisted: true 
+        };
+      }
+    }
+
     return { error };
   };
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    setIsBlacklisted(false);
+    setBlacklistReason(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      loading, 
+      isBlacklisted, 
+      blacklistReason, 
+      signUp, 
+      signIn, 
+      signOut 
+    }}>
       {children}
     </AuthContext.Provider>
   );

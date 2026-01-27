@@ -38,6 +38,33 @@ export type Database = {
         }
         Relationships: []
       }
+      blacklist_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string
+          id: string
+          is_read: boolean
+          user_id: string
+          user_name: string | null
+        }
+        Insert: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          user_id: string
+          user_name?: string | null
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          user_id?: string
+          user_name?: string | null
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           code: string
@@ -214,6 +241,10 @@ export type Database = {
           message: string
           name: string
           phone: string | null
+          responded_at: string | null
+          responded_by: string | null
+          response: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -223,6 +254,10 @@ export type Database = {
           message: string
           name: string
           phone?: string | null
+          responded_at?: string | null
+          responded_by?: string | null
+          response?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -232,6 +267,10 @@ export type Database = {
           message?: string
           name?: string
           phone?: string | null
+          responded_at?: string | null
+          responded_by?: string | null
+          response?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
