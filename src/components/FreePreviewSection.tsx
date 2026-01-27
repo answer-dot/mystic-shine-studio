@@ -78,25 +78,26 @@ export const FreePreviewSection = () => {
             </div>
           </div>
 
-          {/* Info Bar - BELOW video, only for logged-out users */}
-          {!user && (
-            <div className="mt-4">
-              <div className="backdrop-blur-md bg-black/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex-1 min-w-0">
-                    <span className="text-primary text-xs sm:text-sm font-semibold">
-                      {previewData.chapter}
-                    </span>
-                    <h3 className="text-sm sm:text-lg font-bold text-white mt-0.5 truncate">
-                      {previewData.title}
-                    </h3>
-                    <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/70">
-                      <span>{previewData.duration}</span>
-                      <span>•</span>
-                      <span className="text-primary font-medium">{previewData.badge}</span>
-                    </div>
+          {/* Info Bar - BELOW video */}
+          <div className="mt-4">
+            <div className="backdrop-blur-md bg-black/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <span className="text-primary text-xs sm:text-sm font-semibold">
+                    {previewData.chapter}
+                  </span>
+                  <h3 className="text-sm sm:text-lg font-bold text-white mt-0.5 truncate">
+                    {previewData.title}
+                  </h3>
+                  <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/70">
+                    <span>{previewData.duration}</span>
+                    <span>•</span>
+                    <span className="text-primary font-medium">{previewData.badge}</span>
                   </div>
-                  
+                </div>
+                
+                {/* Button - Only for logged-out users */}
+                {!user && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -111,16 +112,18 @@ export const FreePreviewSection = () => {
                   >
                     풀버전 시청하기
                   </button>
-                </div>
-                
-                {/* Login prompt */}
+                )}
+              </div>
+              
+              {/* Login prompt - Only for logged-out users */}
+              {!user && (
                 <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-center gap-2 text-white/80 text-xs sm:text-sm">
                   <Lock className="w-3.5 h-3.5" />
                   <span>🔒 로그인 후 풀버전 감상 가능합니다</span>
                 </div>
-              </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       </div>
     </section>
