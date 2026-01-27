@@ -19,6 +19,9 @@ const DB_SETTINGS_KEYS = [
   'resendApiKey',
   'termsOfService',
   'privacyPolicy',
+  'csEmail',
+  'csPhone',
+  'csAddress',
 ] as const;
 
 // Timeout for database operations

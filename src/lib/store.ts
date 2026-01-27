@@ -16,6 +16,9 @@ export interface SiteSettings {
   resendApiKey: string;
   termsOfService: string;
   privacyPolicy: string;
+  csEmail: string;
+  csPhone: string;
+  csAddress: string;
 }
 
 export interface TestimonialItem {
@@ -70,6 +73,9 @@ const defaultSettings: SiteSettings = {
   resendApiKey: "",
   termsOfService: "",
   privacyPolicy: "",
+  csEmail: "support@mystictarot.kr",
+  csPhone: "02-1234-5678",
+  csAddress: "서울시 강남구",
   curriculum: [
     {
       id: "1",
