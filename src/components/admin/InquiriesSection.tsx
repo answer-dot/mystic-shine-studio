@@ -349,7 +349,7 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
             <Button
               variant="outline"
               onClick={() => setResponseDialogOpen(false)}
-              className="border-gray-300"
+              className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
             >
               취소
             </Button>

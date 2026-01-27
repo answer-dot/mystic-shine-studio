@@ -307,7 +307,11 @@ export const MaterialsSection = () => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button variant="outline" onClick={() => { resetForm(); setIsDialogOpen(false); }}>
+            <Button 
+              variant="outline" 
+              onClick={() => { resetForm(); setIsDialogOpen(false); }}
+              className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
+            >
               취소
             </Button>
             <Button 
