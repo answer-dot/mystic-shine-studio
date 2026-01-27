@@ -57,9 +57,9 @@ export const EventCountdownTimer = ({ targetDate, onExpire }: EventCountdownTime
   // Compact format for event cards
   if (timeLeft.days > 0) {
     return (
-      <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
-        <Clock className="w-3.5 h-3.5 text-primary" />
-        <span className="text-white">
+      <div className="flex flex-row items-center gap-1.5 text-xs sm:text-sm font-medium flex-nowrap whitespace-nowrap">
+        <Clock className="w-3.5 h-3.5 text-primary flex-shrink-0" />
+        <span className="text-white tabular-nums">
           {timeLeft.days}일 {formatTime(timeLeft.hours)}:{formatTime(timeLeft.minutes)}:{formatTime(timeLeft.seconds)} 남음
         </span>
       </div>
@@ -67,9 +67,9 @@ export const EventCountdownTimer = ({ targetDate, onExpire }: EventCountdownTime
   }
 
   return (
-    <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium">
-      <Clock className="w-3.5 h-3.5 text-primary animate-pulse" />
-      <span className="text-white">
+    <div className="flex flex-row items-center gap-1.5 text-xs sm:text-sm font-medium flex-nowrap whitespace-nowrap">
+      <Clock className="w-3.5 h-3.5 text-primary animate-pulse flex-shrink-0" />
+      <span className="text-white tabular-nums">
         {formatTime(timeLeft.hours)}:{formatTime(timeLeft.minutes)}:{formatTime(timeLeft.seconds)} 남음
       </span>
     </div>
