@@ -31,6 +31,7 @@ const Admin = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [pin, setPin] = useState('');
   const [pinError, setPinError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -70,12 +71,31 @@ const Admin = () => {
   }, [isAuthenticated, settings]);
 
   const handleLogin = async () => {
-    const isValid = await verifyPin(pin);
-    if (isValid) {
-      setIsAuthenticated(true);
-      setPinError('');
-    } else {
-      setPinError('잘못된 PIN입니다');
+    if (!pin.trim()) {
+      setPinError('PIN을 입력해주세요');
+      return;
+    }
+    
+    setIsLoggingIn(true);
+    setPinError('');
+    
+    try {
+      const isValid = await verifyPin(pin);
+      if (isValid) {
+        setIsAuthenticated(true);
+        setPinError('');
+        toast({
+          title: "로그인 성공",
+          description: "관리자 대시보드에 오신 것을 환영합니다.",
+        });
+      } else {
+        setPinError('잘못된 PIN입니다. (기본 PIN: 1234)');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setPinError('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -213,15 +233,30 @@ const Admin = () => {
               type="password"
               placeholder="PIN 입력"
               value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+              onChange={(e) => {
+                setPin(e.target.value);
+                setPinError('');
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && !isLoggingIn && handleLogin()}
               className="text-center text-lg tracking-widest bg-white border-gray-300 text-gray-900"
+              disabled={isLoggingIn}
+              autoFocus
             />
             {pinError && <p className="text-sm text-destructive text-center">{pinError}</p>}
-            <Button variant="gold" className="w-full" onClick={handleLogin}>
-              로그인
+            <Button 
+              variant="gold" 
+              className="w-full" 
+              onClick={handleLogin}
+              disabled={isLoggingIn}
+            >
+              {isLoggingIn ? '로그인 중...' : '로그인'}
             </Button>
-            <Button variant="ghost" className="w-full text-gray-600 hover:text-gray-900" onClick={() => navigate('/')}>
+            <Button 
+              variant="ghost" 
+              className="w-full text-gray-600 hover:text-gray-900" 
+              onClick={() => navigate('/')}
+              disabled={isLoggingIn}
+            >
               홈으로 돌아가기
             </Button>
             <p className="text-xs text-gray-500 text-center pt-2">

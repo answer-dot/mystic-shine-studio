@@ -194,19 +194,32 @@ export const saveSettings = (settings: Partial<SiteSettings>): void => {
 import { supabase } from '@/integrations/supabase/client';
 
 export const verifyPin = async (pin: string): Promise<boolean> => {
-  const { data, error } = await supabase
-    .from('admin_settings')
-    .select('value')
-    .eq('key', 'admin_pin')
-    .maybeSingle();
-  
-  if (error || !data) {
-    // Fallback to localStorage if database fails
-    const settings = getSettings();
-    return pin === settings.adminPin;
+  try {
+    const { data, error } = await supabase
+      .from('admin_settings')
+      .select('value')
+      .eq('key', 'admin_pin')
+      .maybeSingle();
+    
+    console.log('PIN verification - Data:', data, 'Error:', error);
+    
+    if (error) {
+      console.error('PIN verification error:', error);
+      // Fallback to default PIN if database fails
+      return pin === '1234';
+    }
+    
+    if (!data) {
+      // No PIN in database, use default
+      return pin === '1234';
+    }
+    
+    return pin === data.value;
+  } catch (err) {
+    console.error('PIN verification exception:', err);
+    // Fallback to default PIN on any error
+    return pin === '1234';
   }
-  
-  return pin === data.value;
 };
 
 export const updateAdminPin = async (newPin: string): Promise<boolean> => {
