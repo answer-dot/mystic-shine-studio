@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef } from 'react';
 import { X, UserCheck } from 'lucide-react';
 
 const names = [
@@ -9,7 +9,7 @@ const names = [
 const getRandomName = () => names[Math.floor(Math.random() * names.length)];
 const getRandomTime = () => Math.floor(Math.random() * 10) + 1;
 
-export const SocialProofToast = () => {
+export const SocialProofToast = forwardRef<HTMLDivElement>((_, ref) => {
   const [visible, setVisible] = useState(false);
   const [name, setName] = useState(getRandomName());
   const [time, setTime] = useState(getRandomTime());
@@ -40,7 +40,7 @@ export const SocialProofToast = () => {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 z-50 animate-slide-up">
+    <div ref={ref} className="fixed bottom-4 left-4 z-50 animate-slide-up">
       <div className="glass-card rounded-xl p-4 pr-10 shadow-elevated max-w-sm relative">
         <button
           onClick={() => setVisible(false)}
@@ -62,4 +62,6 @@ export const SocialProofToast = () => {
       </div>
     </div>
   );
-};
+});
+
+SocialProofToast.displayName = 'SocialProofToast';
