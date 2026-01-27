@@ -81,6 +81,15 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Korean Typography - Natural word breaks */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  /* Apply Korean typography to all text elements */
+  p, h1, h2, h3, h4, h5, h6, span, li, td, th, label, button, a {
+    word-break: keep-all;
+    overflow-wrap: break-word;
   }
 }
 
@@ -135,7 +144,7 @@
   }
 
   .section-container {
-    @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-3 sm:px-4 lg:px-6;
   }
 }
 
