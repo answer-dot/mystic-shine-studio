@@ -6,17 +6,23 @@ import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
 import { useCourses } from '@/hooks/useCourses';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
 export const HeroSection = () => {
-  const { settings } = useSettings();
-  const { primaryCourse } = usePrimaryCourse();
-  const { isEnrolled } = useCourses();
-  const { user } = useAuth();
+  const {
+    settings
+  } = useSettings();
+  const {
+    primaryCourse
+  } = usePrimaryCourse();
+  const {
+    isEnrolled
+  } = useCourses();
+  const {
+    user
+  } = useAuth();
   const navigate = useNavigate();
 
   // Check if user is enrolled in the primary course
   const userIsEnrolled = user && primaryCourse && isEnrolled(primaryCourse.id);
-
   const handleCTAClick = () => {
     if (!user) {
       // Not logged in: go to signup
@@ -26,18 +32,20 @@ export const HeroSection = () => {
       navigate('/dashboard');
     } else {
       // Logged in but not enrolled: scroll to curriculum to encourage purchase
-      document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('curriculum')?.scrollIntoView({
+        behavior: 'smooth'
+      });
     }
   };
-
   const scrollToCurriculum = () => {
-    document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('curriculum')?.scrollIntoView({
+      behavior: 'smooth'
+    });
   };
 
   // Enrolled User: Show expanded premium "Welcome Back" banner
   if (userIsEnrolled) {
-    return (
-      <section className="relative pt-20 sm:pt-28 pb-12 sm:pb-20 overflow-hidden min-h-[50vh] sm:min-h-[60vh] flex items-center">
+    return <section className="relative pt-20 sm:pt-28 pb-12 sm:pb-20 overflow-hidden min-h-[50vh] sm:min-h-[60vh] flex items-center">
         {/* Premium Background - Mystic Tarot Theme */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0a0a0f] via-[#12121a] to-[#0d0d14]" />
         
@@ -49,27 +57,25 @@ export const HeroSection = () => {
         
         {/* Animated orbs */}
         <div className="absolute top-1/4 left-1/6 w-64 sm:w-96 h-64 sm:h-96 bg-primary/15 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-1/4 right-1/6 w-48 sm:w-72 h-48 sm:h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-1/4 right-1/6 w-48 sm:w-72 h-48 sm:h-72 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow" style={{
+        animationDelay: '1s'
+      }} />
         
         {/* Subtle star pattern overlay */}
-        <div 
-          className="absolute inset-0 opacity-20" 
-          style={{
-            backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary)/0.3) 1px, transparent 1px),
+        <div className="absolute inset-0 opacity-20" style={{
+        backgroundImage: `radial-gradient(circle at 20% 30%, hsl(var(--primary)/0.3) 1px, transparent 1px),
                               radial-gradient(circle at 80% 70%, hsl(var(--primary)/0.2) 1px, transparent 1px),
                               radial-gradient(circle at 50% 50%, hsl(280,60%,50%,0.15) 1px, transparent 1px)`,
-            backgroundSize: '100px 100px, 150px 150px, 200px 200px'
-          }}
-        />
+        backgroundSize: '100px 100px, 150px 150px, 200px 200px'
+      }} />
 
         <div className="section-container relative z-10 w-full">
           <div className="max-w-5xl mx-auto px-4">
             {/* Expanded Premium Card */}
-            <div className="relative rounded-3xl overflow-hidden border border-primary/30 shadow-2xl" 
-                 style={{ 
-                   background: 'linear-gradient(135deg, rgba(20,20,30,0.9) 0%, rgba(15,15,25,0.95) 100%)',
-                   boxShadow: '0 0 60px -15px hsl(var(--primary)/0.3), 0 25px 50px -12px rgba(0,0,0,0.5)'
-                 }}>
+            <div className="relative rounded-3xl overflow-hidden border border-primary/30 shadow-2xl" style={{
+            background: 'linear-gradient(135deg, rgba(20,20,30,0.9) 0%, rgba(15,15,25,0.95) 100%)',
+            boxShadow: '0 0 60px -15px hsl(var(--primary)/0.3), 0 25px 50px -12px rgba(0,0,0,0.5)'
+          }}>
               {/* Inner glow border */}
               <div className="absolute inset-0 rounded-3xl border border-primary/20 pointer-events-none" />
               
@@ -81,7 +87,7 @@ export const HeroSection = () => {
                       <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
                       수강 중
                     </div>
-                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 leading-tight">
+                    <h2 className="text-3xl sm:text-4xl font-extrabold mb-4 leading-tight lg:text-4xl">
                       다시 오신 것을{' '}
                       <span className="text-gradient-gold">환영합니다!</span> 👋
                     </h2>
@@ -92,24 +98,13 @@ export const HeroSection = () => {
                   
                   {/* Right: Action Buttons */}
                   <div className="flex flex-col gap-4 w-full lg:w-auto">
-                    <Button 
-                      variant="hero" 
-                      size="xl" 
-                      onClick={() => navigate('/dashboard')} 
-                      className="w-full lg:w-auto px-10 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300"
-                      style={{
-                        boxShadow: '0 0 40px -10px hsl(var(--primary)/0.5), 0 10px 30px -10px rgba(0,0,0,0.3)'
-                      }}
-                    >
+                    <Button variant="hero" size="xl" onClick={() => navigate('/dashboard')} className="w-full lg:w-auto px-10 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300" style={{
+                    boxShadow: '0 0 40px -10px hsl(var(--primary)/0.5), 0 10px 30px -10px rgba(0,0,0,0.3)'
+                  }}>
                       <Play className="w-6 h-6 mr-3" />
                       이어서 학습하기
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      onClick={scrollToCurriculum} 
-                      className="w-full lg:w-auto border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10"
-                    >
+                    <Button variant="outline" size="lg" onClick={scrollToCurriculum} className="w-full lg:w-auto border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10">
                       <BookOpen className="w-5 h-5 mr-2" />
                       커리큘럼 보기
                     </Button>
@@ -119,13 +114,11 @@ export const HeroSection = () => {
             </div>
           </div>
         </div>
-      </section>
-    );
+      </section>;
   }
 
   // Default Hero for non-enrolled users
-  return (
-    <section className="relative min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 flex items-center overflow-hidden">
+  return <section className="relative min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 flex items-center overflow-hidden">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
       <div className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
@@ -171,11 +164,9 @@ export const HeroSection = () => {
               {!user ? '무료 체험 시작' : '커리큘럼 보기'}
               <ArrowRight className="w-5 h-5" />
             </Button>
-            {!user && (
-              <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
+            {!user && <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
                 커리큘럼 보기
-              </Button>
-            )}
+              </Button>}
           </div>
 
           {/* Urgency */}
@@ -190,6 +181,5 @@ export const HeroSection = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
