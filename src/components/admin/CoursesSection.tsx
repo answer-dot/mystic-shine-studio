@@ -379,16 +379,21 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="!w-[calc(100vw-32px)] !max-w-[600px] !max-h-[90vh] !overflow-x-hidden bg-white rounded-xl">
-            <DialogHeader className="pb-4 border-b border-gray-100 sticky top-0 bg-white z-10 -mx-5 -mt-5 px-5 pt-5 sm:-mx-6 sm:-mt-6 sm:px-6 sm:pt-6 rounded-t-xl">
-              <DialogTitle className="text-gray-900 text-xl font-bold pr-10">
-                {editingCourse ? '강의 수정' : '새 강의 추가'}
-              </DialogTitle>
-              <DialogDescription className="text-gray-600">
-                일반 정보와 커리큘럼을 탭에서 관리하세요
-              </DialogDescription>
-            </DialogHeader>
+          <DialogContent className="!p-0 !overflow-hidden bg-white rounded-xl">
+            {/* Fixed Header */}
+            <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-gray-100 bg-white">
+              <DialogHeader>
+                <DialogTitle className="text-gray-900 text-xl font-bold pr-10">
+                  {editingCourse ? '강의 수정' : '새 강의 추가'}
+                </DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  일반 정보와 커리큘럼을 탭에서 관리하세요
+                </DialogDescription>
+              </DialogHeader>
+            </div>
             
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden p-5 sm:p-6 pt-0">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
               <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
                 <TabsTrigger 
@@ -680,9 +685,10 @@ export const CoursesSection = () => {
                 )}
               </TabsContent>
             </Tabs>
+            </div>
 
-            {/* Action Footer - Sticky */}
-            <div className="flex justify-between items-center pt-5 mt-4 border-t border-gray-200 sticky bottom-0 bg-white -mx-5 -mb-5 px-5 pb-5 sm:-mx-6 sm:-mb-6 sm:px-6 sm:pb-6 rounded-b-xl">
+            {/* Fixed Footer */}
+            <div className="flex-shrink-0 flex justify-between items-center p-5 sm:p-6 pt-4 border-t border-gray-200 bg-white">
               {editingCourse ? (
                 <Button
                   variant="ghost"
