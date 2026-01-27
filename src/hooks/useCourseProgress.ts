@@ -141,8 +141,20 @@ export const useCourseProgress = (courseId: string, curriculum: Chapter[] = []) 
     });
   }, [progress, isCompleted, updateProgressMutation]);
 
-  // Get first incomplete lesson (for "Continue Learning" button)
+  // Get the lesson to resume - prioritize lastWatchedLessonId, then first incomplete
   const getNextLesson = useCallback(() => {
+    // First priority: Resume from last watched lesson if exists
+    if (progress.lastWatchedLessonId) {
+      for (const chapter of curriculum) {
+        for (const lesson of chapter.lessons || []) {
+          if (lesson.id === progress.lastWatchedLessonId) {
+            return { chapterId: chapter.id, lessonId: lesson.id, lessonTitle: lesson.title };
+          }
+        }
+      }
+    }
+    
+    // Second priority: Find first incomplete lesson
     for (const chapter of curriculum) {
       for (const lesson of chapter.lessons || []) {
         if (!completedLessons.has(lesson.id)) {
@@ -150,8 +162,15 @@ export const useCourseProgress = (courseId: string, curriculum: Chapter[] = []) 
         }
       }
     }
+    
+    // If all completed, return first lesson for replay
+    if (curriculum.length > 0 && curriculum[0].lessons?.length > 0) {
+      const firstLesson = curriculum[0].lessons[0];
+      return { chapterId: curriculum[0].id, lessonId: firstLesson.id, lessonTitle: firstLesson.title };
+    }
+    
     return null;
-  }, [curriculum, completedLessons]);
+  }, [curriculum, completedLessons, progress.lastWatchedLessonId]);
 
   return {
     completedLessons,
