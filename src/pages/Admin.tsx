@@ -455,16 +455,16 @@ const Admin = () => {
         )}
       >
         <div className="p-4 lg:p-8 max-w-6xl">
-          {/* Back Button */}
+          {/* Back Button - uses browser history for true back navigation */}
           <div className="mb-6 mt-2">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/')}
+              onClick={() => window.history.back()}
               className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
-              홈으로 돌아가기
+              뒤로가기
             </Button>
           </div>
           {renderSection()}
