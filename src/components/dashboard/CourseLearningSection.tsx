@@ -279,12 +279,12 @@ export const CourseLearningSection = ({
 
                         {/* Video Player - FULL WIDTH & CENTERED on Mobile */}
                         {isPlaying && hasVideo && (
-                          <div className="w-full mx-auto p-2 bg-gray-900/5 rounded-lg">
-                            <div className="relative w-full aspect-video">
+                          <div className="w-full max-w-full mx-auto p-0 sm:p-2 bg-gray-900/5 rounded-lg -mx-2 sm:mx-0">
+                            <div className="relative w-[calc(100%+16px)] sm:w-full aspect-video -ml-2 sm:ml-0">
                               <VideoPlayer
                                 src={lesson.videoUrl!}
                                 showLabel={lesson.isPreview && !isEnrolled ? '미리보기' : undefined}
-                                className="absolute inset-0 w-full h-full rounded-lg"
+                                className="absolute inset-0 w-full h-full sm:rounded-lg"
                                 onEnded={() => handleVideoEnded(lesson.id)}
                               />
                             </div>

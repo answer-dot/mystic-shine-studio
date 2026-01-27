@@ -70,7 +70,7 @@ export const HeroSection = () => {
       }} />
 
         <div className="section-container relative z-10 w-full">
-          <div className="max-w-5xl mx-auto px-4">
+          <div className="max-w-6xl mx-auto px-2 sm:px-4">
             {/* Expanded Premium Card */}
             <div className="relative rounded-3xl overflow-hidden border border-primary/30 shadow-2xl" style={{
             background: 'linear-gradient(135deg, rgba(20,20,30,0.9) 0%, rgba(15,15,25,0.95) 100%)',
@@ -96,15 +96,15 @@ export const HeroSection = () => {
                     </p>
                   </div>
                   
-                  {/* Right: Action Buttons */}
-                  <div className="flex flex-col gap-4 w-full lg:w-auto">
-                    <Button variant="hero" size="xl" onClick={() => navigate('/dashboard')} className="w-full lg:w-auto px-10 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300" style={{
+                  {/* Right: Action Buttons - Unified sizing */}
+                  <div className="flex flex-col gap-4 w-full lg:w-auto lg:min-w-[280px]">
+                    <Button variant="hero" size="xl" onClick={() => navigate('/dashboard')} className="w-full min-h-[56px] px-8 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300" style={{
                     boxShadow: '0 0 40px -10px hsl(var(--primary)/0.5), 0 10px 30px -10px rgba(0,0,0,0.3)'
                   }}>
                       <Play className="w-6 h-6 mr-3" />
                       이어서 학습하기
                     </Button>
-                    <Button variant="outline" size="lg" onClick={scrollToCurriculum} className="w-full lg:w-auto border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10">
+                    <Button variant="outline" size="xl" onClick={scrollToCurriculum} className="w-full min-h-[56px] px-8 border-2 border-primary/40 hover:border-primary/60 hover:bg-primary/10">
                       <BookOpen className="w-5 h-5 mr-2" />
                       커리큘럼 보기
                     </Button>
