@@ -710,7 +710,7 @@ const Dashboard = () => {
 
       {/* 1:1 Inquiry Modal */}
       <Dialog open={showInquiryModal} onOpenChange={setShowInquiryModal}>
-        <DialogContent className="sm:max-w-md bg-white border-gray-200 mx-4 p-6 sm:p-8">
+        <DialogContent className="bg-white border-gray-200">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-gray-900">강사에게 질문하기</DialogTitle>
             <DialogDescription className="text-gray-600">
