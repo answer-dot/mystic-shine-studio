@@ -1,29 +1,42 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Lock, User, Sparkles } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ArrowLeft, Mail, Lock, User, Sparkles, FileText, Shield } from 'lucide-react';
 import { toast } from 'sonner';
+import { useSettings } from '@/hooks/useSettings';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function Auth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [searchParams] = useSearchParams();
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'signup');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [agreedTerms, setAgreedTerms] = useState(false);
+  const [agreedPrivacy, setAgreedPrivacy] = useState(false);
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const { signIn, signUp, user, loading: authLoading } = useAuth();
+  const { settings } = useSettings();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Only redirect if auth is done loading AND user exists
+    const mode = searchParams.get('mode');
+    setIsLogin(mode !== 'signup');
+  }, [searchParams]);
+
+  useEffect(() => {
     if (!authLoading && user) {
       navigate('/dashboard');
     }
   }, [user, authLoading, navigate]);
 
-  // Show loading state while auth is initializing
   if (authLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -54,6 +67,11 @@ export default function Auth() {
           setIsSubmitting(false);
           return;
         }
+        if (!agreedTerms || !agreedPrivacy) {
+          toast.error('이용약관과 개인정보처리방침에 동의해주세요');
+          setIsSubmitting(false);
+          return;
+        }
         const { error } = await signUp(email, password, displayName);
         if (error) {
           toast.error(error.message);
@@ -68,6 +86,9 @@ export default function Auth() {
       setIsSubmitting(false);
     }
   };
+
+  const termsContent = settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.';
+  const privacyContent = settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.';
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -92,7 +113,7 @@ export default function Auth() {
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-4">
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-xs text-primary font-medium">Mystic Tarot Academy</span>
+              <span className="text-xs text-primary font-medium">{settings.siteName || 'Mystic Tarot Academy'}</span>
             </div>
             <h1 className="text-2xl font-bold text-foreground">
               {isLogin ? '로그인' : '회원가입'}
@@ -154,11 +175,61 @@ export default function Auth() {
               </div>
             </div>
 
+            {/* Terms & Privacy Checkboxes - Only for signup */}
+            {!isLogin && (
+              <div className="space-y-3 pt-2">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="terms"
+                    checked={agreedTerms}
+                    onCheckedChange={(checked) => setAgreedTerms(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="terms" className="text-sm text-foreground cursor-pointer">
+                      <span className="text-destructive">*</span>{' '}
+                      <button
+                        type="button"
+                        onClick={() => setShowTermsDialog(true)}
+                        className="text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        <FileText className="w-3 h-3" />
+                        이용약관
+                      </button>
+                      에 동의합니다
+                    </label>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="privacy"
+                    checked={agreedPrivacy}
+                    onCheckedChange={(checked) => setAgreedPrivacy(checked === true)}
+                    className="mt-0.5"
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="privacy" className="text-sm text-foreground cursor-pointer">
+                      <span className="text-destructive">*</span>{' '}
+                      <button
+                        type="button"
+                        onClick={() => setShowPrivacyDialog(true)}
+                        className="text-primary hover:underline inline-flex items-center gap-1"
+                      >
+                        <Shield className="w-3 h-3" />
+                        개인정보처리방침
+                      </button>
+                      에 동의합니다
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <Button
               type="submit"
               variant="hero"
               className="w-full mt-6"
-              disabled={isSubmitting}
+              disabled={isSubmitting || (!isLogin && (!agreedTerms || !agreedPrivacy))}
             >
               {isSubmitting ? '처리중...' : isLogin ? '로그인' : '회원가입'}
             </Button>
@@ -179,6 +250,40 @@ export default function Auth() {
           </div>
         </div>
       </div>
+
+      {/* Terms Dialog */}
+      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary" />
+              이용약관
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              {termsContent}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Privacy Dialog */}
+      <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              개인정보처리방침
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              {privacyContent}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
