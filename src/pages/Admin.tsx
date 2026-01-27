@@ -23,6 +23,7 @@ import { MaterialsSection } from '@/components/admin/MaterialsSection';
 import { CustomersSection } from '@/components/admin/CustomersSection';
 import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
 import { EmailSettingsSection } from '@/components/admin/EmailSettingsSection';
+import { NotificationBell } from '@/components/admin/NotificationBell';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -381,7 +382,12 @@ const Admin = () => {
           {mobileSidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </Button>
         <span className="font-semibold text-gray-900">관리자센터</span>
-        <div className="w-10" /> {/* Spacer for centering */}
+        <NotificationBell />
+      </header>
+
+      {/* Desktop Header with Notification Bell */}
+      <header className="hidden lg:flex fixed top-0 right-0 h-14 bg-white border-b border-gray-200 z-40 items-center justify-end px-6 shadow-sm" style={{ left: sidebarCollapsed ? '64px' : '256px' }}>
+        <NotificationBell />
       </header>
 
       {/* Mobile Sidebar Overlay */}
@@ -411,7 +417,7 @@ const Admin = () => {
       {/* Main Content */}
       <main 
         className={cn(
-          "min-h-screen pt-14 lg:pt-0 transition-all duration-300 bg-gray-50",
+          "min-h-screen pt-14 lg:pt-14 transition-all duration-300 bg-gray-50",
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-64"
         )}
       >
