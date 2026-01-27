@@ -227,7 +227,7 @@ export const MaterialsSection = () => {
 
       {/* Upload Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md bg-white">
+        <DialogContent className="max-w-md bg-white max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-gray-900">자료 업로드</DialogTitle>
             <DialogDescription className="text-gray-600">
@@ -306,7 +306,7 @@ export const MaterialsSection = () => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
+          <div className="flex justify-end gap-3 pt-4">
             <Button 
               variant="outline" 
               onClick={() => { resetForm(); setIsDialogOpen(false); }}
@@ -317,6 +317,7 @@ export const MaterialsSection = () => {
             <Button 
               onClick={() => uploadMutation.mutate()}
               disabled={isUploading || !selectedFile || !formData.courseId || !formData.title}
+              className="bg-gradient-to-r from-primary to-orange-400 text-black hover:shadow-lg hover:shadow-primary/30"
             >
               {isUploading ? (
                 <>
