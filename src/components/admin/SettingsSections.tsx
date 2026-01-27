@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, forwardRef } from 'react';
 import { Settings, Save, HelpCircle, Upload, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,7 @@ interface GeneralSectionProps {
   onSave: () => void;
 }
 
-export const GeneralSection = ({
+export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
   siteName,
   setSiteName,
   webinarDate,
@@ -38,9 +38,9 @@ export const GeneralSection = ({
   originalPrice,
   setOriginalPrice,
   onSave,
-}: GeneralSectionProps) => {
+}, ref) => {
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       <div>
         <h1 className="text-xl lg:text-2xl font-bold text-gray-900">일반 설정</h1>
         <p className="text-sm lg:text-base text-gray-600">사이트 기본 정보를 관리합니다</p>
@@ -66,7 +66,7 @@ export const GeneralSection = ({
                   placeholder="사이트 이름"
                   className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
                 />
-                <p className="text-xs text-gray-500 mt-1">헤더에 표시되는 사이트 이름입니다</p>
+                <p className="text-xs text-gray-500 mt-1">헤더, 푸터, 법적 문서에 즉시 반영됩니다</p>
               </div>
             </div>
             <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
@@ -117,7 +117,9 @@ export const GeneralSection = ({
       </Card>
     </div>
   );
-};
+});
+
+GeneralSection.displayName = 'GeneralSection';
 
 interface InstructorSectionProps {
   instructorName: string;

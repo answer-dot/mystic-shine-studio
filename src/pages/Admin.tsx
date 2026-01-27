@@ -57,20 +57,26 @@ const Admin = () => {
   const [privacyPolicy, setPrivacyPolicy] = useState('');
   const [refundPolicy, setRefundPolicy] = useState('');
 
-  // Initialize form with settings
+  // Initialize form with settings - separate refresh from state sync
   useEffect(() => {
     if (isAuthenticated) {
       refreshSettings();
-      setSiteName(settings.siteName);
-      setWebinarDate(settings.webinarDate);
-      setRemainingSeats(settings.remainingSeats);
-      setInstructorName(settings.instructorName);
-      setInstructorTitle(settings.instructorTitle);
-      setInstructorBio(settings.instructorBio);
-      setInstructorImageUrl(settings.instructorImageUrl);
-      setPrice(settings.price);
-      setOriginalPrice(settings.originalPrice);
-      setEvents(settings.events);
+    }
+  }, [isAuthenticated, refreshSettings]);
+
+  // Sync form state when settings change
+  useEffect(() => {
+    if (isAuthenticated && settings) {
+      setSiteName(settings.siteName || '');
+      setWebinarDate(settings.webinarDate || '');
+      setRemainingSeats(settings.remainingSeats || 0);
+      setInstructorName(settings.instructorName || '');
+      setInstructorTitle(settings.instructorTitle || '');
+      setInstructorBio(settings.instructorBio || '');
+      setInstructorImageUrl(settings.instructorImageUrl || '');
+      setPrice(settings.price || '');
+      setOriginalPrice(settings.originalPrice || '');
+      setEvents(settings.events || []);
       setTestimonials(settings.testimonials || []);
       setTermsOfService(settings.termsOfService || '');
       setPrivacyPolicy(settings.privacyPolicy || '');
@@ -107,8 +113,8 @@ const Admin = () => {
     }
   };
 
-  const handleSaveGeneral = () => {
-    updateSettings({
+  const handleSaveGeneral = async () => {
+    await updateSettings({
       siteName,
       webinarDate,
       remainingSeats,
@@ -117,12 +123,12 @@ const Admin = () => {
     });
     toast({
       title: "저장 완료",
-      description: "일반 설정이 저장되었습니다.",
+      description: "일반 설정이 저장되었습니다. 메인 사이트에 즉시 반영됩니다.",
     });
   };
 
-  const handleSaveInstructor = () => {
-    updateSettings({
+  const handleSaveInstructor = async () => {
+    await updateSettings({
       instructorName,
       instructorTitle,
       instructorBio,
@@ -134,27 +140,27 @@ const Admin = () => {
     });
   };
 
-  const handleSaveEvents = () => {
-    updateSettings({ events });
+  const handleSaveEvents = async () => {
+    await updateSettings({ events });
     toast({
       title: "저장 완료",
       description: "이벤트가 저장되었습니다.",
     });
   };
 
-  const handleSaveTestimonials = () => {
-    updateSettings({ testimonials });
+  const handleSaveTestimonials = async () => {
+    await updateSettings({ testimonials });
     toast({
       title: "저장 완료",
       description: "수강생 후기가 저장되었습니다.",
     });
   };
 
-  const handleSaveLegal = () => {
-    updateSettings({ termsOfService, privacyPolicy, refundPolicy });
+  const handleSaveLegal = async () => {
+    await updateSettings({ termsOfService, privacyPolicy, refundPolicy });
     toast({
       title: "저장 완료",
-      description: "약관이 저장되었습니다.",
+      description: "약관이 저장되었습니다. 푸터와 회원가입 페이지에 즉시 반영됩니다.",
     });
   };
 
