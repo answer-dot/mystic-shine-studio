@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Menu, X } from 'lucide-react';
+import { Shield, Menu, X, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -455,6 +455,18 @@ const Admin = () => {
         )}
       >
         <div className="p-4 lg:p-8 max-w-6xl">
+          {/* Back Button */}
+          <div className="mb-6 mt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/')}
+              className="text-gray-600 hover:text-gray-900 hover:bg-gray-100 gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              홈으로 돌아가기
+            </Button>
+          </div>
           {renderSection()}
         </div>
       </main>

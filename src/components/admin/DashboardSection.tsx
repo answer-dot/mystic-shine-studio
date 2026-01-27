@@ -140,7 +140,7 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
 
         <Card 
           className="bg-white border-gray-200 shadow-sm cursor-pointer hover:shadow-md hover:border-emerald-300 transition-all"
-          onClick={() => onNavigate('curriculum')}
+          onClick={() => onNavigate('courses')}
         >
           <CardHeader className="p-4 lg:pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-gray-900">
@@ -249,7 +249,7 @@ export const DashboardSection = ({ stats, onNavigate }: DashboardSectionProps) =
 
       {/* Review Detail Modal */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className="max-w-lg bg-white">
+        <DialogContent className="max-w-lg bg-white max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-gray-900">후기 상세</DialogTitle>
             <DialogDescription>
