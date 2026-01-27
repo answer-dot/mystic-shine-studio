@@ -263,152 +263,172 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
-            <DialogHeader>
-              <DialogTitle className="text-gray-900">{editingCourse ? '강의 수정' : '새 강의 추가'}</DialogTitle>
-              <DialogDescription className="text-gray-600">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl">
+            <DialogHeader className="pb-4 border-b border-gray-100">
+              <DialogTitle className="text-gray-900 text-xl font-bold">{editingCourse ? '강의 수정' : '새 강의 추가'}</DialogTitle>
+              <DialogDescription className="text-gray-500">
                 강의 정보를 입력하세요
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-4 py-4">
+            <div className="space-y-5 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-gray-700">강의 제목 *</Label>
+                  <Label className="text-gray-700 font-medium">강의 제목 *</Label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     placeholder="타로 마스터 과정"
-                    className="bg-white border-gray-300 text-gray-900"
+                    className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-700">슬러그 (URL) *</Label>
+                  <Label className="text-gray-700 font-medium">슬러그 (URL) *</Label>
                   <Input
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
                     placeholder="tarot-master"
-                    className="bg-white border-gray-300 text-gray-900"
+                    className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-700">짧은 설명</Label>
+                <Label className="text-gray-700 font-medium">짧은 설명</Label>
                 <Input
                   value={formData.short_description}
                   onChange={(e) => setFormData({ ...formData, short_description: e.target.value })}
                   placeholder="타로의 신비로운 세계에 입문하세요"
-                  className="bg-white border-gray-300 text-gray-900"
+                  className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-700">상세 설명</Label>
+                <Label className="text-gray-700 font-medium">상세 설명</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder="강의에 대한 자세한 설명..."
                   rows={3}
-                  className="bg-white border-gray-300 text-gray-900"
+                  className="bg-white border-gray-300 text-gray-900 rounded-lg"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-gray-700">이미지 URL</Label>
+                <Label className="text-gray-700 font-medium">이미지 URL</Label>
                 <Input
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   placeholder="https://..."
-                  className="bg-white border-gray-300 text-gray-900"
+                  className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                 />
               </div>
 
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <Label className="text-gray-700">가격</Label>
+                  <Label className="text-gray-700 font-medium">가격</Label>
                   <Input
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     placeholder="₩490,000"
-                    className="bg-white border-gray-300 text-gray-900"
+                    className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-700">원래 가격</Label>
+                  <Label className="text-gray-700 font-medium">원래 가격</Label>
                   <Input
                     value={formData.original_price}
                     onChange={(e) => setFormData({ ...formData, original_price: e.target.value })}
                     placeholder="₩890,000"
-                    className="bg-white border-gray-300 text-gray-900"
+                    className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-gray-700">기간</Label>
+                  <Label className="text-gray-700 font-medium">기간</Label>
                   <Input
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                     placeholder="14주"
-                    className="bg-white border-gray-300 text-gray-900"
+                    className="bg-white border-gray-300 text-gray-900 rounded-lg h-11"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-gray-700">포함 항목</Label>
+              <div className="space-y-3">
+                <Label className="text-gray-700 font-medium">포함 항목</Label>
                 <div className="flex gap-2">
                   <Input
                     value={newFeature}
                     onChange={(e) => setNewFeature(e.target.value)}
                     placeholder="예: 평생 무제한 영상 시청"
                     onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addFeature())}
-                    className="bg-white border-gray-300 text-gray-900"
+                    className="bg-white border-gray-300 text-gray-900 rounded-lg"
                   />
-                  <Button type="button" variant="outline" onClick={addFeature} className="border-gray-300 text-gray-700">
+                  <Button type="button" variant="outline" onClick={addFeature} className="border-gray-300 text-gray-700 rounded-lg">
                     추가
                   </Button>
                 </div>
-                <div className="flex flex-wrap gap-2 mt-2">
+                <div className="flex flex-wrap gap-3 mt-3">
                   {formData.features.map((feature, index) => (
-                    <Badge key={index} variant="secondary" className="flex items-center gap-1 bg-gray-100 text-gray-700">
+                    <Badge 
+                      key={index} 
+                      variant="secondary" 
+                      className="flex items-center gap-2 bg-gray-100 text-gray-700 py-2 px-3 text-sm rounded-lg"
+                    >
                       {feature}
-                      <button onClick={() => removeFeature(index)}>
-                        <X className="w-3 h-3" />
+                      <button 
+                        onClick={() => removeFeature(index)}
+                        className="ml-1 p-1 hover:bg-gray-200 rounded-full transition-colors"
+                        aria-label="항목 삭제"
+                      >
+                        <X className="w-4 h-4" />
                       </button>
                     </Badge>
                   ))}
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 pt-4">
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={formData.is_published}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
-                    />
-                    <Label className="text-gray-700">공개</Label>
+              {/* Primary Course Toggle - Enhanced */}
+              <div className={`p-4 rounded-xl border-2 transition-all ${formData.is_featured ? 'border-orange-400 bg-gradient-to-r from-orange-50 to-amber-50' : 'border-gray-200 bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${formData.is_featured ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                      <Star className={`w-5 h-5 ${formData.is_featured ? 'fill-current' : ''}`} />
+                    </div>
+                    <div>
+                      <Label className="text-gray-900 font-semibold text-base">메인 강의</Label>
+                      <p className="text-xs text-gray-500 mt-0.5">홈페이지에 표시될 대표 강의로 설정</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Switch
-                      checked={formData.is_featured}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-                    />
-                    <Label className="text-gray-700 flex items-center gap-1">
-                      <Star className="w-4 h-4 text-orange-500" />
-                      메인 강의
-                    </Label>
-                  </div>
+                  <Switch
+                    checked={formData.is_featured}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
+                    className="data-[state=checked]:bg-orange-500"
+                  />
                 </div>
                 {formData.is_featured && (
-                  <p className="text-xs text-orange-600 bg-orange-50 p-2 rounded-lg">
-                    ⭐ 이 강의가 홈페이지 메인에 표시됩니다
+                  <p className="text-sm text-orange-700 mt-3 flex items-center gap-2">
+                    <span className="text-lg">⭐</span>
+                    이 강의가 홈페이지 메인에 표시됩니다
                   </p>
                 )}
               </div>
+
+              {/* Publish Toggle */}
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                <Switch
+                  checked={formData.is_published}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
+                />
+                <div>
+                  <Label className="text-gray-700 font-medium">공개 설정</Label>
+                  <p className="text-xs text-gray-500">비공개 시 관리자만 볼 수 있습니다</p>
+                </div>
+              </div>
             </div>
 
-            <div className="flex justify-between items-center pt-4 border-t">
+            {/* Action Footer */}
+            <div className="flex justify-between items-center pt-5 mt-2 border-t-2 border-gray-100">
               {editingCourse ? (
                 <Button
                   variant="ghost"
@@ -418,7 +438,7 @@ export const CoursesSection = () => {
                       setIsDialogOpen(false);
                     }
                   }}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   삭제
@@ -426,11 +446,18 @@ export const CoursesSection = () => {
               ) : (
                 <div />
               )}
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setIsDialogOpen(false)}
+                  className="border-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 px-6 rounded-lg font-medium"
+                >
                   취소
                 </Button>
-                <Button onClick={handleSubmit}>
+                <Button 
+                  onClick={handleSubmit}
+                  className="bg-gradient-to-r from-primary to-orange-500 text-white hover:shadow-lg px-6 rounded-lg font-medium"
+                >
                   <Save className="w-4 h-4 mr-2" />
                   {editingCourse ? '수정' : '추가'}
                 </Button>
