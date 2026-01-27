@@ -19,10 +19,9 @@ export const InstructorSection = () => {
         </div>
 
         {/* Clean 50:50 Grid - NO enclosing container */}
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            
-            {/* Left Column: PHOTO ONLY - Standalone with rounded corners */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column: PHOTO ONLY - Standalone with rounded corners */}
             <div className="w-full">
               <img 
                 src={profileImage} 
@@ -85,7 +84,6 @@ export const InstructorSection = () => {
                 <MessageCircle className="w-5 h-5 mr-2" />
                 강사에게 질문하기
               </Button>
-            </div>
           </div>
         </div>
       </div>
