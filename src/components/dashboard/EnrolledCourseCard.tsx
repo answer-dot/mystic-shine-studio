@@ -72,66 +72,71 @@ export const EnrolledCourseCard = ({
 
   return (
     <Card className="bg-card border-border overflow-hidden">
-      {/* Compact Horizontal Layout */}
-      <div className="flex flex-col sm:flex-row">
-        {/* Course Thumbnail - Smaller */}
-        <div className="relative w-full sm:w-32 h-24 sm:h-auto flex-shrink-0">
-          <img 
-            src={course.image_url || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&h=300&fit=crop'}
-            alt={course.title}
-            className="w-full h-full object-cover"
-          />
+      {/* Horizontal Split Layout: Image Left, Content Right */}
+      <div className="flex flex-col md:flex-row">
+        {/* Left Side: Fixed Image Box (16:9 ratio) */}
+        <div className="relative w-full md:w-48 lg:w-56 flex-shrink-0">
+          <div className="aspect-video md:aspect-square lg:aspect-video w-full h-full">
+            <img 
+              src={course.image_url || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&h=300&fit=crop'}
+              alt={course.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
           {isCompleted && (
-            <div className="absolute top-1 right-1">
-              <Badge className="bg-green-500 text-white text-xs px-1.5 py-0.5">
-                <CheckCircle className="w-3 h-3 mr-0.5" />
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-green-500 text-white text-xs px-2 py-0.5">
+                <CheckCircle className="w-3 h-3 mr-1" />
                 수료
               </Badge>
             </div>
           )}
         </div>
         
-        {/* Course Info & Progress - Combined */}
-        <div className="flex-1 p-4">
-          {/* Title & Badge Row */}
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-bold text-base truncate">{course.title}</h3>
-            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs ml-2 flex-shrink-0">
-              수강 중
-            </Badge>
-          </div>
-          
-          {/* Meta Info */}
-          <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-            <div className="flex items-center gap-1">
-              <Clock className="w-3 h-3" />
-              <span>{course.duration}</span>
+        {/* Right Side: Content Area */}
+        <div className="flex-1 p-4 md:p-5 flex flex-col justify-between">
+          {/* Top Content: Title, Tag, Lesson Count */}
+          <div>
+            {/* Title & Tag Row */}
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h3 className="font-bold text-lg leading-tight">{course.title}</h3>
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs flex-shrink-0">
+                수강 중
+              </Badge>
             </div>
-            <span>•</span>
-            <span>{completedCount}/{totalLessons} 레슨</span>
+            
+            {/* Meta Info: Duration & Lesson Count */}
+            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
+              <div className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{course.duration}</span>
+              </div>
+              <span className="text-border">•</span>
+              <span className="font-medium">{completedCount}/{totalLessons} 레슨</span>
+            </div>
+
+            {/* Progress Bar (within right content area, not full width) */}
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-xs font-medium text-muted-foreground">학습 진도율</span>
+                <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
+            </div>
           </div>
 
-          {/* Sleek Progress Bar */}
-          <div className="mb-3">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium text-muted-foreground">학습 진도율</span>
-              <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
-            </div>
-            <Progress value={progressPercentage} className="h-2" />
-          </div>
-
-          {/* Action Buttons - Compact */}
-          <div className="flex flex-col sm:flex-row gap-2">
+          {/* Bottom: Action Buttons Side-by-Side */}
+          <div className="flex flex-col sm:flex-row gap-2 mt-auto">
             <Button 
               size="sm"
               className="flex-1" 
               onClick={onStartLearning}
             >
-              <Play className="w-3 h-3 mr-1.5" />
+              <Play className="w-3.5 h-3.5 mr-1.5" />
               {isCompleted ? '다시 학습하기' : '이어서 학습하기'}
             </Button>
             
-            {/* Certificate Button with Tooltip */}
+            {/* Certificate Button */}
             {isCompleted ? (
               <Button 
                 size="sm"
@@ -139,7 +144,7 @@ export const EnrolledCourseCard = ({
                 className="flex-1 border-green-500/50 text-green-500 hover:bg-green-500/10"
                 onClick={() => certificateIssued ? onStartLearning() : issueCertificate()}
               >
-                <Award className="w-3 h-3 mr-1.5" />
+                <Award className="w-3.5 h-3.5 mr-1.5" />
                 {certificateIssued ? '수료증 보기' : '수료증 발급'}
               </Button>
             ) : (
@@ -150,7 +155,7 @@ export const EnrolledCourseCard = ({
                 disabled
                 title="100% 달성 시 활성화"
               >
-                <Lock className="w-3 h-3 mr-1.5" />
+                <Lock className="w-3.5 h-3.5 mr-1.5" />
                 수료증 발급
               </Button>
             )}
