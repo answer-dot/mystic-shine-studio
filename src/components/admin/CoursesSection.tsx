@@ -379,7 +379,7 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="!w-[95%] !max-w-[600px] !max-h-[85vh] !overflow-y-auto bg-white rounded-xl">
+          <DialogContent className="!w-[calc(100vw-32px)] !max-w-[600px] !max-h-[calc(100vh-64px)] bg-white rounded-xl">
             <DialogHeader className="pb-4 border-b border-gray-100">
               <DialogTitle className="text-gray-900 text-xl font-bold">
                 {editingCourse ? '강의 수정' : '새 강의 추가'}
@@ -389,7 +389,7 @@ export const CoursesSection = () => {
               </DialogDescription>
             </DialogHeader>
             
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4 flex-1 flex flex-col min-h-0">
               <TabsList className="grid w-full grid-cols-2 bg-gray-100 p-1 rounded-lg">
                 <TabsTrigger 
                   value="general" 
@@ -563,14 +563,14 @@ export const CoursesSection = () => {
               </TabsContent>
 
               {/* Curriculum Tab */}
-              <TabsContent value="curriculum" className="mt-4 space-y-4">
-                <div className="flex items-center justify-between">
+              <TabsContent value="curriculum" className="mt-4 space-y-4 flex-1 min-h-0 flex flex-col">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                   <p className="text-sm text-gray-600">챕터와 레슨을 추가하여 커리큘럼을 구성하세요</p>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={addChapter}
-                    className="border-emerald-300 text-emerald-600 hover:bg-emerald-50"
+                    className="border-emerald-300 text-emerald-600 hover:bg-emerald-50 flex-shrink-0"
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     챕터 추가
@@ -584,7 +584,7 @@ export const CoursesSection = () => {
                     <p className="text-sm mt-1">위의 "챕터 추가" 버튼을 클릭해 시작하세요</p>
                   </div>
                 ) : (
-                  <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+                  <div className="space-y-4 flex-1 overflow-y-auto pr-1 -mr-1">
                     {formData.curriculum.map((chapter, chapterIndex) => (
                       <div key={chapter.id} className="border border-gray-200 rounded-lg bg-white">
                         {/* Chapter Header */}
