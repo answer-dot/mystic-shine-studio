@@ -9,7 +9,7 @@ interface AuthContextType {
   loading: boolean;
   isBlacklisted: boolean;
   blacklistReason: string | null;
-  signUp: (email: string, password: string, displayName: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, displayName: string) => Promise<{ data: { user: User | null } | null; error: Error | null }>;
   signIn: (email: string, password: string) => Promise<{ error: Error | null; isBlacklisted?: boolean }>;
   signOut: () => Promise<void>;
 }
@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signUp = async (email: string, password: string, displayName: string) => {
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -133,9 +133,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       });
-      return { error };
+      return { data: data ? { user: data.user } : null, error };
     } catch (error) {
-      return { error: error as Error };
+      return { data: null, error: error as Error };
     }
   };
 
