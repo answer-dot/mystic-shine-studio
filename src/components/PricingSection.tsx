@@ -1,16 +1,21 @@
-import { Check, Shield, Zap, Clock } from 'lucide-react';
+import { Check, Shield, Zap, Clock, CreditCard, TestTube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
 import { useSettings } from '@/hooks/useSettings';
 import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
+import { useCourses } from '@/hooks/useCourses';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export const PricingSection = () => {
   const { settings } = useSettings();
   const { primaryCourse } = usePrimaryCourse();
+  const { enroll, isEnrolling, isEnrolled } = useCourses();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [isTestPaymentLoading, setIsTestPaymentLoading] = useState(false);
 
   const handleRegisterClick = () => {
     if (user) {
@@ -19,6 +24,39 @@ export const PricingSection = () => {
     } else {
       // Not logged in: go to signup
       navigate('/auth?mode=signup');
+    }
+  };
+
+  // Virtual/Test payment handler
+  const handleTestPayment = async () => {
+    if (!user) {
+      toast.error('로그인이 필요합니다');
+      navigate('/auth?mode=login');
+      return;
+    }
+
+    if (!primaryCourse) {
+      toast.error('강의 정보를 불러올 수 없습니다');
+      return;
+    }
+
+    if (isEnrolled(primaryCourse.id)) {
+      toast.info('이미 수강 중인 강의입니다');
+      navigate('/dashboard');
+      return;
+    }
+
+    setIsTestPaymentLoading(true);
+    
+    try {
+      await enroll(primaryCourse.id);
+      toast.success('🎉 테스트 결제가 완료되었습니다! 내 강의실로 이동합니다.');
+      navigate('/dashboard');
+    } catch (error: unknown) {
+      console.error('Test payment error:', error);
+      toast.error('결제 처리 중 오류가 발생했습니다');
+    } finally {
+      setIsTestPaymentLoading(false);
     }
   };
 
@@ -105,10 +143,35 @@ export const PricingSection = () => {
                 </span>
               </div>
 
-              {/* CTA */}
-              <Button variant="hero" size="xl" className="w-full" onClick={handleRegisterClick}>
-                {user ? '내 강의실 가기' : '지금 등록하기'}
-              </Button>
+              {/* CTA Buttons */}
+              <div className="space-y-3">
+                {/* Main CTA */}
+                <Button variant="hero" size="xl" className="w-full" onClick={handleRegisterClick}>
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  {user ? '내 강의실 가기' : '지금 등록하기'}
+                </Button>
+
+                {/* Test Payment Button - Only visible when logged in */}
+                {user && primaryCourse && !isEnrolled(primaryCourse.id) && (
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="w-full border-dashed border-2 border-primary/50 hover:border-primary bg-primary/5 hover:bg-primary/10"
+                    onClick={handleTestPayment}
+                    disabled={isTestPaymentLoading || isEnrolling}
+                  >
+                    <TestTube className="w-5 h-5 mr-2" />
+                    {isTestPaymentLoading || isEnrolling ? '처리 중...' : '🧪 테스트 결제 (가상)'}
+                  </Button>
+                )}
+
+                {/* Already enrolled message */}
+                {user && primaryCourse && isEnrolled(primaryCourse.id) && (
+                  <div className="text-center p-3 rounded-lg bg-primary/10 border border-primary/20">
+                    <span className="text-sm font-medium text-primary">✓ 이미 수강 중인 강의입니다</span>
+                  </div>
+                )}
+              </div>
 
               {/* Trust badges */}
               <div className="flex items-center justify-center gap-4 mt-6 text-xs text-muted-foreground">
