@@ -93,7 +93,7 @@ export const CoursesSection = () => {
 
   // Video upload handler
   const handleVideoUpload = async (file: File, chapterId: string, lessonId: string) => {
-    if (!file) return;
+    if (!file || !editingCourse) return;
     
     setUploadingLessonId(lessonId);
     
@@ -115,8 +115,31 @@ export const CoursesSection = () => {
         .from('course-videos')
         .getPublicUrl(filePath);
 
-      updateLesson(chapterId, lessonId, 'videoUrl', publicUrl);
-      toast({ title: '동영상이 업로드되었습니다' });
+      // Update local state
+      const updatedCurriculum = formData.curriculum.map(ch =>
+        ch.id === chapterId
+          ? {
+              ...ch,
+              lessons: ch.lessons.map(l =>
+                l.id === lessonId ? { ...l, videoUrl: publicUrl } : l
+              ),
+            }
+          : ch
+      );
+
+      setFormData(prev => ({ ...prev, curriculum: updatedCurriculum }));
+
+      // Auto-save to database immediately
+      const { error: dbError } = await supabase
+        .from('courses')
+        .update({ curriculum: updatedCurriculum as unknown as any })
+        .eq('id', editingCourse.id);
+
+      if (dbError) throw dbError;
+
+      queryClient.invalidateQueries({ queryKey: ['admin_courses'] });
+      queryClient.invalidateQueries({ queryKey: ['primary_course'] });
+      toast({ title: '동영상 URL이 저장되었습니다' });
     } catch (error) {
       console.error('Upload error:', error);
       toast({ title: '업로드 실패', description: String(error), variant: 'destructive' });
