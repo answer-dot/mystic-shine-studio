@@ -1,24 +1,60 @@
-import { Calendar, Users, ArrowRight, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, Users, ArrowRight, Sparkles, X, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 // Default placeholder for events without images
 const defaultEventImage = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&h=600&fit=crop&q=80";
 
 export const EventsSection = () => {
   const { settings } = useSettings();
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  });
 
-  const handleApplyClick = () => {
-    if (!user) {
-      // Redirect to signup if not logged in
-      navigate('/auth?mode=signup');
-    } else {
-      // Logged-in users go to dashboard
-      navigate('/dashboard');
+  const handleApplyClick = (eventTitle: string) => {
+    setSelectedEvent(eventTitle);
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email) {
+      toast.error('이름과 이메일을 입력해주세요');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error } = await supabase.from('inquiries').insert({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone || null,
+        message: `[이벤트 신청: ${selectedEvent}]\n\n${formData.message || '참가 신청합니다.'}`
+      });
+
+      if (error) throw error;
+
+      toast.success('이벤트 신청이 완료되었습니다!');
+      setIsModalOpen(false);
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (error) {
+      console.error('Event application error:', error);
+      toast.error('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -132,7 +168,7 @@ export const EventsSection = () => {
                       size="lg"
                       disabled={event.status === 'ended'}
                       className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 group/btn"
-                      onClick={event.status !== 'ended' ? handleApplyClick : undefined}
+                      onClick={event.status !== 'ended' ? () => handleApplyClick(event.title) : undefined}
                     >
                       {event.status === 'ended' ? '종료됨' : '신청하기'}
                       {event.status !== 'ended' && (
@@ -146,6 +182,84 @@ export const EventsSection = () => {
           ))}
         </div>
       </div>
+
+      {/* Event Application Modal */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-md bg-white border-gray-200">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-900">이벤트 신청</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              {selectedEvent}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-gray-700">이름 *</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="홍길동"
+                className="bg-white border-gray-300 text-gray-900 focus:ring-primary"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-gray-700">이메일 *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="example@email.com"
+                className="bg-white border-gray-300 text-gray-900 focus:ring-primary"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-gray-700">연락처</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="010-1234-5678"
+                className="bg-white border-gray-300 text-gray-900 focus:ring-primary"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="message" className="text-gray-700">추가 메시지</Label>
+              <Textarea
+                id="message"
+                value={formData.message}
+                onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
+                placeholder="문의사항이 있으시면 작성해주세요"
+                className="bg-white border-gray-300 text-gray-900 focus:ring-primary resize-none"
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+                className="flex-1"
+              >
+                취소
+              </Button>
+              <Button
+                type="submit"
+                variant="gold"
+                disabled={isSubmitting}
+                className="flex-1"
+              >
+                {isSubmitting ? '신청 중...' : '신청하기'}
+                <Send className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
