@@ -22,13 +22,13 @@ export const InstructorSection = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: PHOTO ONLY - Standalone with rounded corners */}
-            <div className="w-full">
-              <img 
-                src={profileImage} 
-                alt={settings.instructorName || '강사 프로필'}
-                className="w-full aspect-[3/4] object-cover object-top rounded-[20px] shadow-2xl"
-              />
-            </div>
+          <div className="w-full px-4 sm:px-0">
+            <img 
+              src={profileImage} 
+              alt={settings.instructorName || '강사 프로필'}
+              className="w-full aspect-[3/4] object-cover object-top rounded-[20px] shadow-2xl"
+            />
+          </div>
 
             {/* Right Column: TEXT ONLY - Vertically centered */}
             <div className="flex flex-col justify-center">
