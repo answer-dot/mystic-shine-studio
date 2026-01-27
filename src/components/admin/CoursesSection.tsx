@@ -249,7 +249,7 @@ export const CoursesSection = () => {
         <div>
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900">강의 관리</h1>
           <p className="text-sm lg:text-base text-gray-600">
-            ⭐ '메인 강의'로 설정된 코스가 홈페이지에 표시됩니다
+            '메인 강의'로 설정된 코스가 홈페이지에 표시됩니다
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -263,7 +263,7 @@ export const CoursesSection = () => {
               새 강의 추가
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white rounded-xl [&>button]:w-8 [&>button]:h-8 [&>button]:bg-gray-100 [&>button]:hover:bg-gray-200 [&>button]:rounded-full [&>button]:text-gray-600 [&>button]:hover:text-gray-900 [&>button]:transition-colors">
             <DialogHeader className="pb-4 border-b border-gray-100">
               <DialogTitle className="text-gray-900 text-xl font-bold">{editingCourse ? '강의 수정' : '새 강의 추가'}</DialogTitle>
               <DialogDescription className="text-gray-500">
@@ -389,11 +389,11 @@ export const CoursesSection = () => {
               </div>
 
               {/* Primary Course Toggle - Enhanced */}
-              <div className={`p-4 rounded-xl border-2 transition-all ${formData.is_featured ? 'border-orange-400 bg-gradient-to-r from-orange-50 to-amber-50' : 'border-gray-200 bg-gray-50'}`}>
+              <div className={`p-4 rounded-xl border-2 transition-all ${formData.is_featured ? 'border-emerald-400 bg-gradient-to-r from-emerald-50 to-teal-50' : 'border-gray-200 bg-gray-50'}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${formData.is_featured ? 'bg-orange-400 text-white' : 'bg-gray-200 text-gray-500'}`}>
-                      <Star className={`w-5 h-5 ${formData.is_featured ? 'fill-current' : ''}`} />
+                    <div className={`p-2 rounded-lg ${formData.is_featured ? 'bg-emerald-500 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                      <BookOpen className="w-5 h-5" />
                     </div>
                     <div>
                       <Label className="text-gray-900 font-semibold text-base">메인 강의</Label>
@@ -403,12 +403,10 @@ export const CoursesSection = () => {
                   <Switch
                     checked={formData.is_featured}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-                    className="data-[state=checked]:bg-orange-500"
                   />
                 </div>
                 {formData.is_featured && (
-                  <p className="text-sm text-orange-700 mt-3 flex items-center gap-2">
-                    <span className="text-lg">⭐</span>
+                  <p className="text-sm text-emerald-700 mt-3">
                     이 강의가 홈페이지 메인에 표시됩니다
                   </p>
                 )}
@@ -428,7 +426,7 @@ export const CoursesSection = () => {
             </div>
 
             {/* Action Footer */}
-            <div className="flex justify-between items-center pt-5 mt-2 border-t-2 border-gray-100">
+            <div className="flex justify-between items-center pt-5 mt-2 border-t border-gray-200">
               {editingCourse ? (
                 <Button
                   variant="ghost"
@@ -438,7 +436,7 @@ export const CoursesSection = () => {
                       setIsDialogOpen(false);
                     }
                   }}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg h-10"
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
                   삭제
@@ -446,17 +444,17 @@ export const CoursesSection = () => {
               ) : (
                 <div />
               )}
-              <div className="flex gap-3">
+              <div className="flex items-center gap-3">
                 <Button 
                   variant="outline" 
                   onClick={() => setIsDialogOpen(false)}
-                  className="border-2 border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400 px-6 rounded-lg font-medium"
+                  className="border border-gray-300 text-gray-700 hover:bg-gray-50 px-6 rounded-lg font-medium h-10"
                 >
                   취소
                 </Button>
                 <Button 
                   onClick={handleSubmit}
-                  className="bg-gradient-to-r from-primary to-orange-500 text-white hover:shadow-lg px-6 rounded-lg font-medium"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 rounded-lg font-medium h-10"
                 >
                   <Save className="w-4 h-4 mr-2" />
                   {editingCourse ? '수정' : '추가'}
