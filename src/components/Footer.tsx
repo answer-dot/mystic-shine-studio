@@ -1,74 +1,134 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Mail, Phone, MapPin } from 'lucide-react';
+import { Sparkles, Mail, Phone, MapPin, FileText, Shield } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const Footer = () => {
   const { settings } = useSettings();
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+
+  const termsContent = settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.';
+  const privacyContent = settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.';
 
   return (
-    <footer className="py-16 border-t border-border">
-      <div className="section-container">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Brand */}
-          <div>
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <span className="font-bold text-lg">{settings.siteName}</span>
-            </Link>
-            <p className="text-sm text-muted-foreground">
-              타로의 신비로운 세계로 안내하는 최고의 온라인 교육 플랫폼
-            </p>
+    <>
+      <footer className="py-16 border-t border-border">
+        <div className="section-container">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            {/* Brand */}
+            <div>
+              <Link to="/" className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-primary-foreground" />
+                </div>
+                <span className="font-bold text-lg">{settings.siteName}</span>
+              </Link>
+              <p className="text-sm text-muted-foreground">
+                타로의 신비로운 세계로 안내하는 최고의 온라인 교육 플랫폼
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="font-semibold mb-4">빠른 메뉴</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><a href="#curriculum" className="hover:text-foreground transition-colors">커리큘럼</a></li>
+                <li><a href="#instructor" className="hover:text-foreground transition-colors">강사 소개</a></li>
+                <li><a href="#testimonials" className="hover:text-foreground transition-colors">수강생 후기</a></li>
+                <li><a href="#faq" className="hover:text-foreground transition-colors">자주 묻는 질문</a></li>
+              </ul>
+            </div>
+
+            {/* Support */}
+            <div>
+              <h4 className="font-semibold mb-4">고객 지원</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>
+                  <button 
+                    onClick={() => setShowTermsDialog(true)} 
+                    className="hover:text-foreground transition-colors inline-flex items-center gap-1"
+                  >
+                    <FileText className="w-3 h-3" />
+                    이용약관
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => setShowPrivacyDialog(true)} 
+                    className="hover:text-foreground transition-colors inline-flex items-center gap-1"
+                  >
+                    <Shield className="w-3 h-3" />
+                    개인정보처리방침
+                  </button>
+                </li>
+                <li><a href="#" className="hover:text-foreground transition-colors">환불 정책</a></li>
+                <li><Link to="/admin" className="hover:text-foreground transition-colors">관리자</Link></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h4 className="font-semibold mb-4">문의하기</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-primary" />
+                  <span>support@mystictarot.kr</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-primary" />
+                  <span>02-1234-5678</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <span>서울시 강남구</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-semibold mb-4">빠른 메뉴</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#curriculum" className="hover:text-foreground transition-colors">커리큘럼</a></li>
-              <li><a href="#instructor" className="hover:text-foreground transition-colors">강사 소개</a></li>
-              <li><a href="#testimonials" className="hover:text-foreground transition-colors">수강생 후기</a></li>
-              <li><a href="#faq" className="hover:text-foreground transition-colors">자주 묻는 질문</a></li>
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h4 className="font-semibold mb-4">고객 지원</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">이용약관</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">개인정보처리방침</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">환불 정책</a></li>
-              <li><Link to="/admin" className="hover:text-foreground transition-colors">관리자</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="font-semibold mb-4">문의하기</h4>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-primary" />
-                <span>support@mystictarot.kr</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-primary" />
-                <span>02-1234-5678</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-primary" />
-                <span>서울시 강남구</span>
-              </li>
-            </ul>
+          {/* Bottom */}
+          <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
+            <p>© 2025 {settings.siteName}. All rights reserved.</p>
           </div>
         </div>
+      </footer>
 
-        {/* Bottom */}
-        <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-          <p>© 2025 {settings.siteName}. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
+      {/* Terms Dialog */}
+      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary" />
+              이용약관
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              {termsContent}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Privacy Dialog */}
+      <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-primary" />
+              개인정보처리방침
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="h-[60vh] pr-4">
+            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              {privacyContent}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

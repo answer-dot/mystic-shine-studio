@@ -14,6 +14,8 @@ export interface SiteSettings {
   events: EventItem[];
   testimonials: TestimonialItem[];
   resendApiKey: string;
+  termsOfService: string;
+  privacyPolicy: string;
 }
 
 export interface TestimonialItem {
@@ -64,6 +66,8 @@ const defaultSettings: SiteSettings = {
   price: "₩490,000",
   originalPrice: "₩890,000",
   resendApiKey: "",
+  termsOfService: "",
+  privacyPolicy: "",
   curriculum: [
     {
       id: "1",

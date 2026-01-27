@@ -17,6 +17,8 @@ const DB_SETTINGS_KEYS = [
   'events',
   'testimonials',
   'resendApiKey',
+  'termsOfService',
+  'privacyPolicy',
 ] as const;
 
 // Timeout for database operations

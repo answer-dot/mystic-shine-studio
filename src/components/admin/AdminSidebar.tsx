@@ -43,6 +43,7 @@ const menuItems = [
   { id: 'reviews', label: '리뷰 관리', icon: MessageCircle },
   { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
   { id: 'email', label: '이메일 설정', icon: Mail },
+  { id: 'legal', label: '약관 관리', icon: Shield },
   { id: 'security', label: '보안', icon: Shield },
 ];
 

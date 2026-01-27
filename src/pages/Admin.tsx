@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { DashboardSection } from '@/components/admin/DashboardSection';
 import { GeneralSection, InstructorSection } from '@/components/admin/SettingsSections';
+import { LegalSettingsSection } from '@/components/admin/LegalSettingsSection';
 import { EventsSection } from '@/components/admin/EventsSection';
 import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
 import { InquiriesSection } from '@/components/admin/InquiriesSection';
@@ -52,6 +53,8 @@ const Admin = () => {
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
+  const [termsOfService, setTermsOfService] = useState('');
+  const [privacyPolicy, setPrivacyPolicy] = useState('');
 
   // Initialize form with settings
   useEffect(() => {
@@ -68,6 +71,8 @@ const Admin = () => {
       setOriginalPrice(settings.originalPrice);
       setEvents(settings.events);
       setTestimonials(settings.testimonials || []);
+      setTermsOfService(settings.termsOfService || '');
+      setPrivacyPolicy(settings.privacyPolicy || '');
     }
   }, [isAuthenticated, settings]);
 
@@ -140,6 +145,14 @@ const Admin = () => {
     toast({
       title: "저장 완료",
       description: "수강생 후기가 저장되었습니다.",
+    });
+  };
+
+  const handleSaveLegal = () => {
+    updateSettings({ termsOfService, privacyPolicy });
+    toast({
+      title: "저장 완료",
+      description: "약관이 저장되었습니다.",
     });
   };
 
@@ -351,6 +364,16 @@ const Admin = () => {
         );
       case 'email':
         return <EmailSettingsSection />;
+      case 'legal':
+        return (
+          <LegalSettingsSection
+            termsOfService={termsOfService}
+            setTermsOfService={setTermsOfService}
+            privacyPolicy={privacyPolicy}
+            setPrivacyPolicy={setPrivacyPolicy}
+            onSave={handleSaveLegal}
+          />
+        );
       case 'security':
         return (
           <SecuritySection
