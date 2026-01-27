@@ -75,15 +75,15 @@ export const Footer = () => {
               <ul className="space-y-3 text-sm text-muted-foreground">
                 <li className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary" />
-                  <span>support@mystictarot.kr</span>
+                  <span>{settings.csEmail || 'support@mystictarot.kr'}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Phone className="w-4 h-4 text-primary" />
-                  <span>02-1234-5678</span>
+                  <span>{settings.csPhone || '02-1234-5678'}</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-primary" />
-                  <span>서울시 강남구</span>
+                  <span>{settings.csAddress || '서울시 강남구'}</span>
                 </li>
               </ul>
             </div>

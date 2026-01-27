@@ -16,6 +16,11 @@ import { EnrolledCourseCard } from '@/components/dashboard/EnrolledCourseCard';
 import { CourseMaterialsDownload } from '@/components/dashboard/CourseMaterialsDownload';
 import { Progress } from '@/components/ui/progress';
 import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 import { 
   BookOpen, 
   MessageSquare, 
@@ -30,7 +35,8 @@ import {
   FolderOpen,
   Lock,
   CheckCircle,
-  Bell
+  Bell,
+  Send
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -141,6 +147,11 @@ const Dashboard = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [isLearningMode, setIsLearningMode] = useState(false);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [isSubmittingInquiry, setIsSubmittingInquiry] = useState(false);
+  const [inquiryFormData, setInquiryFormData] = useState({
+    message: ''
+  });
 
   // Fetch user reviews
   const { data: userReviews } = useUserReviews(user?.id);
@@ -224,6 +235,37 @@ const Dashboard = () => {
   const handleLogout = async () => {
     await signOut();
     navigate('/');
+  };
+
+  // Handle inquiry submission from modal
+  const handleInquirySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inquiryFormData.message.trim()) {
+      toast.error('메시지를 입력해주세요');
+      return;
+    }
+
+    setIsSubmittingInquiry(true);
+    try {
+      const { error } = await supabase.from('inquiries').insert({
+        name: profile?.display_name || user?.email?.split('@')[0] || '회원',
+        email: user?.email || '',
+        phone: null,
+        message: inquiryFormData.message,
+        user_id: user?.id
+      });
+
+      if (error) throw error;
+
+      toast.success('문의가 등록되었습니다!');
+      setShowInquiryModal(false);
+      setInquiryFormData({ message: '' });
+    } catch (error) {
+      console.error('Inquiry submission error:', error);
+      toast.error('문의 등록 중 오류가 발생했습니다.');
+    } finally {
+      setIsSubmittingInquiry(false);
+    }
   };
 
   // Show loading state
@@ -549,12 +591,7 @@ const Dashboard = () => {
                   <Button 
                     variant="outline" 
                     className="w-full mt-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                    onClick={() => {
-                      navigate('/');
-                      setTimeout(() => {
-                        document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-                      }, 100);
-                    }}
+                    onClick={() => setShowInquiryModal(true)}
                   >
                     <MessageSquare className="w-4 h-4 mr-1" />
                     강사에게 질문하기 <ChevronRight className="w-4 h-4 ml-1" />
@@ -673,6 +710,50 @@ const Dashboard = () => {
       </main>
 
       <Footer />
+
+      {/* 1:1 Inquiry Modal */}
+      <Dialog open={showInquiryModal} onOpenChange={setShowInquiryModal}>
+        <DialogContent className="sm:max-w-md bg-white border-gray-200 mx-4 p-6 sm:p-8">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-gray-900">강사에게 질문하기</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              궁금한 점이나 문의사항을 남겨주세요
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleInquirySubmit} className="space-y-4 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="inquiry-message" className="text-gray-700">문의 내용 *</Label>
+              <Textarea
+                id="inquiry-message"
+                value={inquiryFormData.message}
+                onChange={(e) => setInquiryFormData({ message: e.target.value })}
+                placeholder="강의 내용이나 학습 관련 질문을 자유롭게 작성해주세요."
+                className="bg-white border-gray-300 text-gray-900 focus:ring-primary resize-none min-h-[120px]"
+                rows={5}
+                required
+              />
+            </div>
+            <div className="flex gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowInquiryModal(false)}
+                className="flex-1 border-2 border-gray-400 text-gray-700 hover:bg-gray-100 font-medium"
+              >
+                취소
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                disabled={isSubmittingInquiry}
+              >
+                {isSubmittingInquiry ? '전송 중...' : '문의하기'}
+                <Send className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
