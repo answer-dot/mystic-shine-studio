@@ -54,6 +54,8 @@ interface Inquiry {
   message: string;
   created_at: string;
   is_read: boolean;
+  response: string | null;
+  responded_at: string | null;
 }
 
 interface Profile {
@@ -507,19 +509,35 @@ const Dashboard = () => {
                       ))}
                     </div>
                   ) : inquiries && inquiries.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {inquiries.map((inquiry) => (
                         <div 
                           key={inquiry.id} 
-                          className="p-3 rounded-lg bg-secondary/50 border border-border"
+                          className="p-3 rounded-lg bg-secondary/50 border border-border space-y-2"
                         >
-                          <p className="text-sm line-clamp-2 mb-2">{inquiry.message}</p>
+                          <p className="text-sm line-clamp-2">{inquiry.message}</p>
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <span>{new Date(inquiry.created_at).toLocaleDateString('ko-KR')}</span>
-                            <Badge variant={inquiry.is_read ? 'secondary' : 'default'} className="text-xs">
-                              {inquiry.is_read ? '확인됨' : '대기 중'}
+                            <Badge 
+                              variant={inquiry.response ? 'default' : 'secondary'} 
+                              className={cn(
+                                "text-xs",
+                                inquiry.response && "bg-green-500 hover:bg-green-600"
+                              )}
+                            >
+                              {inquiry.response ? '답변 완료' : '대기 중'}
                             </Badge>
                           </div>
+                          
+                          {/* Show response if available */}
+                          {inquiry.response && (
+                            <div className="mt-2 p-2 rounded bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
+                              <p className="text-xs font-medium text-green-700 dark:text-green-400 mb-1">
+                                관리자 답변 {inquiry.responded_at && `(${new Date(inquiry.responded_at).toLocaleDateString('ko-KR')})`}
+                              </p>
+                              <p className="text-sm text-gray-700 dark:text-gray-300">{inquiry.response}</p>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

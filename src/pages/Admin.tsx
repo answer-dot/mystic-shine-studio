@@ -21,6 +21,7 @@ import { CoursesSection } from '@/components/admin/CoursesSection';
 import { ReviewsSection } from '@/components/admin/ReviewsSection';
 import { MaterialsSection } from '@/components/admin/MaterialsSection';
 import { CustomersSection } from '@/components/admin/CustomersSection';
+import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -329,6 +330,8 @@ const Admin = () => {
   // Admin dashboard with sidebar
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Blacklist Alert Banner */}
+      <BlacklistAlertBanner />
       {/* Mobile Header */}
       <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-white border-b border-gray-200 z-50 flex items-center justify-between px-4 shadow-sm">
         <Button
