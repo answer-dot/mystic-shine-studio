@@ -19,12 +19,19 @@ export const FreePreviewSection = () => {
     videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
   };
 
-  const handleWatchClick = () => {
-    if (user) {
-      setIsPlaying(true);
-    } else {
-      navigate('/auth');
+  const handleWatchClick = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
+    
+    if (!user) {
+      // 비로그인 시 즉시 회원가입 페이지로 이동
+      navigate('/auth?mode=signup');
+      return;
+    }
+    
+    setIsPlaying(true);
   };
 
   return (
