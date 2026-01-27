@@ -27,7 +27,10 @@ import {
   Star,
   Gift,
   Ticket,
-  FolderOpen
+  FolderOpen,
+  Lock,
+  CheckCircle,
+  Bell
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -473,15 +476,21 @@ const Dashboard = () => {
                 </Card>
               )}
 
-              {/* 1:1 Inquiry Section */}
+              {/* 1:1 Inquiry Section - Enhanced with Admin Replies & Notifications */}
               <Card className="bg-card border-border">
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <MessageSquare className="w-5 h-5 text-primary" />
                     1:1 문의
+                    {inquiries && inquiries.some(i => i.response && !i.is_read) && (
+                      <Badge className="bg-red-500 text-white text-[10px] animate-pulse">
+                        <Bell className="w-2.5 h-2.5 mr-0.5" />
+                        새 답변
+                      </Badge>
+                    )}
                   </CardTitle>
                   <CardDescription>
-                    최근 문의 내역
+                    강사에게 질문하고 답변을 확인하세요
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -496,9 +505,26 @@ const Dashboard = () => {
                       {inquiries.slice(0, 3).map((inquiry) => (
                         <div 
                           key={inquiry.id} 
-                          className="p-3 rounded-lg bg-muted/50 border border-border space-y-2"
+                          className={cn(
+                            "p-3 rounded-lg border space-y-2",
+                            inquiry.response 
+                              ? "bg-green-500/10 border-green-500/30" 
+                              : "bg-muted/50 border-border"
+                          )}
                         >
-                          <p className="text-sm line-clamp-1">{inquiry.message}</p>
+                          <p className="text-sm line-clamp-1 font-medium">{inquiry.message}</p>
+                          
+                          {/* Show Admin Reply */}
+                          {inquiry.response && (
+                            <div className="p-2 rounded bg-background border border-green-500/20 mt-2">
+                              <p className="text-xs text-green-400 font-medium mb-1 flex items-center gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                강사 답변
+                              </p>
+                              <p className="text-sm text-foreground line-clamp-2">{inquiry.response}</p>
+                            </div>
+                          )}
+                          
                           <div className="flex items-center justify-between text-xs text-muted-foreground">
                             <span>{new Date(inquiry.created_at).toLocaleDateString('ko-KR')}</span>
                             <Badge 
@@ -522,7 +548,7 @@ const Dashboard = () => {
                   
                   <Button 
                     variant="outline" 
-                    className="w-full mt-4"
+                    className="w-full mt-4 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                     onClick={() => {
                       navigate('/');
                       setTimeout(() => {
@@ -530,7 +556,8 @@ const Dashboard = () => {
                       }, 100);
                     }}
                   >
-                    새 문의하기 <ChevronRight className="w-4 h-4 ml-1" />
+                    <MessageSquare className="w-4 h-4 mr-1" />
+                    강사에게 질문하기 <ChevronRight className="w-4 h-4 ml-1" />
                   </Button>
                 </CardContent>
               </Card>
@@ -583,23 +610,58 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Write Review CTA */}
-              <Card className="bg-gradient-to-br from-primary/10 to-orange-500/10 border-primary/20">
-                <CardContent className="p-6 text-center">
-                  <Gift className="w-10 h-10 text-primary mx-auto mb-3" />
-                  <h3 className="font-bold mb-2">후기 작성하고 쿠폰 받기!</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    솔직한 후기를 남기시면 10% 할인 쿠폰을 드려요
-                  </p>
-                  <Button 
-                    className="w-full"
-                    onClick={() => setShowReviewForm(!showReviewForm)}
-                  >
-                    <Star className="w-4 h-4 mr-2" />
-                    {showReviewForm ? '닫기' : '후기 작성하기'}
-                  </Button>
-                </CardContent>
-              </Card>
+              {/* Write Review CTA - Only show if enrolled AND no review yet */}
+              {enrolledCourseIds.length > 0 && (!userReviews || userReviews.length === 0) && (
+                <Card className="bg-gradient-to-br from-primary/10 to-orange-500/10 border-primary/20">
+                  <CardContent className="p-6 text-center">
+                    <Gift className="w-10 h-10 text-primary mx-auto mb-3" />
+                    <h3 className="font-bold mb-2">후기 작성하고 쿠폰 받기!</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      솔직한 후기를 남기시면 10% 할인 쿠폰을 드려요
+                    </p>
+                    <Button 
+                      className="w-full"
+                      onClick={() => setShowReviewForm(!showReviewForm)}
+                    >
+                      <Star className="w-4 h-4 mr-2" />
+                      {showReviewForm ? '닫기' : '후기 작성하기'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* No purchase - Show disabled review CTA */}
+              {enrolledCourseIds.length === 0 && (
+                <Card className="bg-muted/30 border-border">
+                  <CardContent className="p-6 text-center">
+                    <Gift className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                    <h3 className="font-bold mb-2 text-muted-foreground">후기 작성하고 쿠폰 받기!</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      강의 구매 후 후기를 작성하실 수 있습니다
+                    </p>
+                    <Button 
+                      className="w-full"
+                      disabled
+                    >
+                      <Lock className="w-4 h-4 mr-2" />
+                      강의 구매 후 작성 가능
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Already wrote review - Show message */}
+              {enrolledCourseIds.length > 0 && userReviews && userReviews.length > 0 && (
+                <Card className="bg-green-500/10 border-green-500/30">
+                  <CardContent className="p-6 text-center">
+                    <CheckCircle className="w-10 h-10 text-green-500 mx-auto mb-3" />
+                    <h3 className="font-bold mb-2 text-green-400">후기 작성 완료!</h3>
+                    <p className="text-sm text-muted-foreground">
+                      소중한 후기 감사합니다. 쿠폰이 발급되었습니다.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Review Form - Full Width on Mobile */}
               {showReviewForm && (

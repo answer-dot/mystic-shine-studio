@@ -126,6 +126,18 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
 
       if (updateError) throw updateError;
 
+      // Create notification for user about the reply
+      await supabase.from('notifications').insert({
+        type: 'inquiry_reply',
+        title: '문의 답변이 도착했습니다',
+        message: `${selectedInquiry.name}님, 문의하신 내용에 대한 답변이 등록되었습니다.`,
+        data: {
+          inquiry_id: selectedInquiry.id,
+          user_email: selectedInquiry.email,
+          user_id: selectedInquiry.user_id,
+        },
+      });
+
       // If addToNotes is checked and user_id exists, add to customer notes
       if (addToNotes && selectedInquiry.user_id) {
         const noteContent = `[문의 답변] ${selectedInquiry.name} - ${responseText.trim()}`;
@@ -138,7 +150,7 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
 
       toast({
         title: '답변 완료',
-        description: '문의에 대한 답변이 저장되었습니다.',
+        description: '문의에 대한 답변이 저장되었습니다. 회원에게 알림이 전송됩니다.',
       });
 
       setResponseDialogOpen(false);
