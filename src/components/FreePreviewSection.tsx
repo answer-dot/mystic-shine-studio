@@ -44,7 +44,6 @@ export const FreePreviewSection = () => {
 
         {/* Video Preview Card */}
         <div className="max-w-4xl mx-auto px-4 sm:px-0">
-          {/* Video Container */}
           <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl">
             {/* Video Area */}
             <div className="relative aspect-video bg-black">
@@ -76,28 +75,25 @@ export const FreePreviewSection = () => {
                 </>
               )}
             </div>
-          </div>
 
-          {/* Info Bar - BELOW video */}
-          <div className="mt-4">
-            <div className="backdrop-blur-md bg-black/80 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <span className="text-primary text-xs sm:text-sm font-semibold">
-                    {previewData.chapter}
-                  </span>
-                  <h3 className="text-sm sm:text-lg font-bold text-white mt-0.5 truncate">
-                    {previewData.title}
-                  </h3>
-                  <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/70">
-                    <span>{previewData.duration}</span>
-                    <span>•</span>
-                    <span className="text-primary font-medium">{previewData.badge}</span>
+            {/* Info Bar - positioned at bottom, overlapping video */}
+            <div className="absolute bottom-3 sm:bottom-4 left-3 sm:left-4 right-3 sm:right-4 z-10">
+              <div className="backdrop-blur-md bg-black/60 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-primary text-xs sm:text-sm font-semibold">
+                      {previewData.chapter}
+                    </span>
+                    <h3 className="text-sm sm:text-lg font-bold text-white mt-0.5 truncate">
+                      {previewData.title}
+                    </h3>
+                    <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/70">
+                      <span>{previewData.duration}</span>
+                      <span>•</span>
+                      <span className="text-primary font-medium">{previewData.badge}</span>
+                    </div>
                   </div>
-                </div>
-                
-                {/* Button - Only for logged-out users */}
-                {!user && (
+                  
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -110,18 +106,18 @@ export const FreePreviewSection = () => {
                       "flex-shrink-0 whitespace-nowrap"
                     )}
                   >
-                    풀버전 시청하기
+                    {user ? '지금 시청하기' : '풀버전 시청하기'}
                   </button>
+                </div>
+                
+                {/* Login prompt - Only visible for logged-out users */}
+                {!user && (
+                  <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-center gap-2 text-white/80 text-xs sm:text-sm">
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>🔒 로그인 후 풀버전 감상 가능합니다</span>
+                  </div>
                 )}
               </div>
-              
-              {/* Login prompt - Only for logged-out users */}
-              {!user && (
-                <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-center gap-2 text-white/80 text-xs sm:text-sm">
-                  <Lock className="w-3.5 h-3.5" />
-                  <span>🔒 로그인 후 풀버전 감상 가능합니다</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
