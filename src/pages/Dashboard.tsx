@@ -658,10 +658,10 @@ const Dashboard = () => {
                     </p>
                     <Button 
                       className="w-full"
-                      onClick={() => setShowReviewForm(!showReviewForm)}
+                      onClick={() => setShowReviewForm(true)}
                     >
                       <Star className="w-4 h-4 mr-2" />
-                      {showReviewForm ? '닫기' : '후기 작성하기'}
+                      후기 작성하기
                     </Button>
                   </CardContent>
                 </Card>
@@ -700,10 +700,7 @@ const Dashboard = () => {
                 </Card>
               )}
 
-              {/* Review Form - Full Width on Mobile */}
-              {showReviewForm && (
-                <ReviewForm onSuccess={() => setShowReviewForm(false)} />
-              )}
+              
             </div>
           </div>
         </div>
@@ -752,6 +749,15 @@ const Dashboard = () => {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Review Form Modal */}
+      <Dialog open={showReviewForm} onOpenChange={setShowReviewForm}>
+        <DialogContent className="sm:max-w-md bg-white border-gray-200 max-h-[90vh] overflow-y-auto">
+          <ReviewForm 
+            onSuccess={() => setShowReviewForm(false)} 
+          />
         </DialogContent>
       </Dialog>
     </div>
