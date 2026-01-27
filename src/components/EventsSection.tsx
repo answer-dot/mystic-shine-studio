@@ -233,7 +233,7 @@ export const EventsSection = () => {
 
       {/* Event Application Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md bg-white border-gray-200 mx-4 p-6 sm:p-8">
+        <DialogContent className="w-[90vw] max-w-[400px] bg-white border-gray-200 p-5 sm:p-6 rounded-xl">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-gray-900">이벤트 신청</DialogTitle>
             <DialogDescription className="text-gray-600">
@@ -291,7 +291,7 @@ export const EventsSection = () => {
                 type="button"
                 variant="outline"
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 border-2 border-gray-400 text-gray-700 hover:bg-gray-100 font-medium"
+                className="flex-1 border-2 border-gray-500 bg-gray-100 text-gray-800 hover:bg-gray-200 font-semibold"
               >
                 취소
               </Button>
