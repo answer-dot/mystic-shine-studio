@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Menu, X, ArrowLeft } from 'lucide-react';
+import { Shield, Menu, X, ArrowLeft, Mail, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,8 @@ import { useSettings } from '@/hooks/useSettings';
 import { verifyPin, updateAdminPin, EventItem, TestimonialItem } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 // Admin components
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
@@ -26,14 +28,23 @@ import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
 import { EmailSettingsSection } from '@/components/admin/EmailSettingsSection';
 import { NotificationBell } from '@/components/admin/NotificationBell';
 
+type AuthStep = 'login' | 'pin' | 'authenticated';
+
 const Admin = () => {
   const navigate = useNavigate();
   const { settings, updateSettings, refreshSettings } = useSettings();
   const { toast } = useToast();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { user, loading: authLoading, signIn, signOut } = useAuth();
+  
+  // Auth state
+  const [authStep, setAuthStep] = useState<AuthStep>('login');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [pin, setPin] = useState('');
-  const [pinError, setPinError] = useState('');
+  const [authError, setAuthError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  
+  // Dashboard state
   const [currentSection, setCurrentSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -57,16 +68,34 @@ const Admin = () => {
   const [privacyPolicy, setPrivacyPolicy] = useState('');
   const [refundPolicy, setRefundPolicy] = useState('');
 
-  // Initialize form with settings - separate refresh from state sync
+  // Determine auth step based on user state
   useEffect(() => {
-    if (isAuthenticated) {
+    if (authLoading) return;
+    
+    if (user) {
+      // User is logged in, check if they passed PIN
+      const pinVerified = sessionStorage.getItem('admin_pin_verified');
+      if (pinVerified === 'true') {
+        setAuthStep('authenticated');
+      } else {
+        setAuthStep('pin');
+      }
+    } else {
+      setAuthStep('login');
+      sessionStorage.removeItem('admin_pin_verified');
+    }
+  }, [user, authLoading]);
+
+  // Initialize form with settings
+  useEffect(() => {
+    if (authStep === 'authenticated') {
       refreshSettings();
     }
-  }, [isAuthenticated, refreshSettings]);
+  }, [authStep, refreshSettings]);
 
   // Sync form state when settings change
   useEffect(() => {
-    if (isAuthenticated && settings) {
+    if (authStep === 'authenticated' && settings) {
       setSiteName(settings.siteName || '');
       setWebinarDate(settings.webinarDate || '');
       setRemainingSeats(settings.remainingSeats || 0);
@@ -82,35 +111,80 @@ const Admin = () => {
       setPrivacyPolicy(settings.privacyPolicy || '');
       setRefundPolicy(settings.refundPolicy || '');
     }
-  }, [isAuthenticated, settings]);
+  }, [authStep, settings]);
 
-  const handleLogin = async () => {
-    if (!pin.trim()) {
-      setPinError('PIN을 입력해주세요');
+  // Handle email/password login
+  const handleEmailLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      setAuthError('이메일과 비밀번호를 입력해주세요');
       return;
     }
     
     setIsLoggingIn(true);
-    setPinError('');
+    setAuthError('');
+    
+    try {
+      const { error } = await signIn(email, password);
+      if (error) {
+        setAuthError(error.message || '로그인에 실패했습니다');
+      } else {
+        // After login, move to PIN verification
+        setAuthStep('pin');
+        setEmail('');
+        setPassword('');
+        toast({
+          title: "로그인 성공",
+          description: "관리자 PIN을 입력해주세요.",
+        });
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setAuthError('로그인 중 오류가 발생했습니다');
+    } finally {
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Handle PIN verification
+  const handlePinVerify = async () => {
+    if (!pin.trim()) {
+      setAuthError('PIN을 입력해주세요');
+      return;
+    }
+    
+    setIsLoggingIn(true);
+    setAuthError('');
     
     try {
       const isValid = await verifyPin(pin);
       if (isValid) {
-        setIsAuthenticated(true);
-        setPinError('');
+        sessionStorage.setItem('admin_pin_verified', 'true');
+        setAuthStep('authenticated');
+        setPin('');
         toast({
-          title: "로그인 성공",
+          title: "인증 완료",
           description: "관리자 대시보드에 오신 것을 환영합니다.",
         });
       } else {
-        setPinError('잘못된 PIN입니다. (기본 PIN: 1234)');
+        setAuthError('잘못된 PIN입니다');
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setPinError('로그인 중 오류가 발생했습니다. 다시 시도해주세요.');
+      console.error('PIN verification error:', error);
+      setAuthError('PIN 확인 중 오류가 발생했습니다');
     } finally {
       setIsLoggingIn(false);
     }
+  };
+
+  // Handle logout
+  const handleLogout = async () => {
+    sessionStorage.removeItem('admin_pin_verified');
+    await signOut();
+    setAuthStep('login');
+    toast({
+      title: "로그아웃",
+      description: "안전하게 로그아웃되었습니다.",
+    });
   };
 
   const handleSaveGeneral = async () => {
@@ -238,37 +312,67 @@ const Admin = () => {
     setMobileSidebarOpen(false);
   };
 
-  // Login screen
-  if (!isAuthenticated) {
+  // Loading state
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
+
+  // Step 1: Email/Password Login
+  if (authStep === 'login') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
         <Card className="w-full max-w-sm bg-white border-gray-200 shadow-lg">
           <CardHeader className="text-center pb-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-gold flex items-center justify-center mx-auto mb-4">
               <Shield className="w-8 h-8 text-white" />
             </div>
             <CardTitle className="text-2xl text-gray-900">관리자 로그인</CardTitle>
-            <CardDescription className="text-gray-600">PIN을 입력해주세요</CardDescription>
+            <CardDescription className="text-gray-600">이메일과 비밀번호를 입력해주세요</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="PIN 입력"
-              value={pin}
-              onChange={(e) => {
-                setPin(e.target.value);
-                setPinError('');
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && !isLoggingIn && handleLogin()}
-              className="text-center text-lg tracking-widest bg-white border-gray-300 text-gray-900"
-              disabled={isLoggingIn}
-              autoFocus
-            />
-            {pinError && <p className="text-sm text-destructive text-center">{pinError}</p>}
+            <div className="space-y-2">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  type="email"
+                  placeholder="이메일"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setAuthError('');
+                  }}
+                  className="pl-10 bg-white border-gray-300 text-gray-900"
+                  disabled={isLoggingIn}
+                  autoFocus
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Input
+                  type="password"
+                  placeholder="비밀번호"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setAuthError('');
+                  }}
+                  onKeyDown={(e) => e.key === 'Enter' && !isLoggingIn && handleEmailLogin()}
+                  className="pl-10 bg-white border-gray-300 text-gray-900"
+                  disabled={isLoggingIn}
+                />
+              </div>
+            </div>
+            {authError && <p className="text-sm text-destructive text-center">{authError}</p>}
             <Button 
               variant="gold" 
               className="w-full" 
-              onClick={handleLogin}
+              onClick={handleEmailLogin}
               disabled={isLoggingIn}
             >
               {isLoggingIn ? '로그인 중...' : '로그인'}
@@ -281,6 +385,54 @@ const Admin = () => {
             >
               홈으로 돌아가기
             </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Step 2: PIN Verification (after email login)
+  if (authStep === 'pin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <Card className="w-full max-w-sm bg-white border-gray-200 shadow-lg">
+          <CardHeader className="text-center pb-4">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <CardTitle className="text-2xl text-gray-900">2단계 인증</CardTitle>
+            <CardDescription className="text-gray-600">관리자 PIN을 입력해주세요</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Input
+              type="password"
+              placeholder="PIN 입력"
+              value={pin}
+              onChange={(e) => {
+                setPin(e.target.value);
+                setAuthError('');
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && !isLoggingIn && handlePinVerify()}
+              className="text-center text-lg tracking-widest bg-white border-gray-300 text-gray-900"
+              disabled={isLoggingIn}
+              autoFocus
+            />
+            {authError && <p className="text-sm text-destructive text-center">{authError}</p>}
+            <Button 
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white" 
+              onClick={handlePinVerify}
+              disabled={isLoggingIn}
+            >
+              {isLoggingIn ? '확인 중...' : '확인'}
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full text-gray-600 hover:text-gray-900" 
+              onClick={handleLogout}
+              disabled={isLoggingIn}
+            >
+              다른 계정으로 로그인
+            </Button>
             <p className="text-xs text-gray-500 text-center pt-2">
               기본 PIN: 1234
             </p>
@@ -292,7 +444,7 @@ const Admin = () => {
 
   // Dashboard stats
   const dashboardStats = {
-    totalMembers: 0, // TODO: Connect to real data
+    totalMembers: 0,
     totalSales: '₩0',
     newInquiries: unreadInquiries,
     remainingSeats: settings.remainingSeats,
@@ -401,7 +553,7 @@ const Admin = () => {
 
   // Admin dashboard with sidebar
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Blacklist Alert Banner */}
       <BlacklistAlertBanner />
       {/* Mobile Header */}
@@ -442,7 +594,7 @@ const Admin = () => {
           siteName={settings.siteName}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          onLogout={() => setIsAuthenticated(false)}
+          onLogout={handleLogout}
           unreadInquiries={unreadInquiries}
         />
       </div>
@@ -450,12 +602,12 @@ const Admin = () => {
       {/* Main Content */}
       <main 
         className={cn(
-          "min-h-screen pt-14 lg:pt-14 transition-all duration-300 bg-gray-50",
+          "min-h-screen pt-14 lg:pt-14 transition-all duration-300 bg-gray-50 overflow-x-hidden",
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-64"
         )}
       >
         <div className="p-4 lg:p-8 max-w-6xl">
-          {/* Back Button - uses browser history for true back navigation */}
+          {/* Back Button */}
           <div className="mb-6 mt-2">
             <Button
               variant="ghost"

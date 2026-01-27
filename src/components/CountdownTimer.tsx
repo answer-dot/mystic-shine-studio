@@ -35,62 +35,82 @@ export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerPr
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const TimeBlock = ({ value, label }: { value: number; label: string }) => (
-    <div 
-      className="flex flex-col items-center flex-shrink-0"
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        minWidth: compact ? '40px' : '44px'
-      }}
-    >
-      <div 
-        className={`
-          ${compact ? 'text-lg sm:text-xl px-2 py-1' : 'text-xl sm:text-3xl md:text-4xl lg:text-5xl px-2 py-2 sm:px-3 sm:py-2 md:px-4 md:py-3'}
-          font-bold text-primary bg-card rounded-lg sm:rounded-xl border border-border shadow-elevated
-          text-center whitespace-nowrap leading-none tabular-nums
-        `}
-        style={{ display: 'block', width: '100%' }}
-      >
-        {String(value).padStart(2, '0')}
-      </div>
-      <span 
-        className={`${compact ? 'text-[10px]' : 'text-[9px] sm:text-xs md:text-sm'} text-muted-foreground mt-1 sm:mt-1.5 uppercase tracking-wider whitespace-nowrap`}
-      >
-        {label}
-      </span>
-    </div>
-  );
+  // Inline styles to FORCE horizontal layout - no CSS can override this
+  const containerStyle: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+    gap: compact ? '4px' : '8px',
+    width: '100%',
+    overflow: 'visible',
+  };
 
-  const Separator = () => (
-    <span 
-      className={`${compact ? 'text-lg' : 'text-lg sm:text-2xl md:text-4xl'} font-bold text-primary leading-none`}
-      style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}
-    >
-      :
-    </span>
-  );
+  const blockStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    flexShrink: 0,
+    minWidth: compact ? '40px' : '48px',
+  };
+
+  const digitStyle: React.CSSProperties = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: 'bold',
+    fontSize: compact ? '18px' : '24px',
+    padding: compact ? '6px 8px' : '8px 12px',
+    borderRadius: '8px',
+    backgroundColor: 'hsl(var(--card))',
+    border: '1px solid hsl(var(--border))',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    color: 'hsl(var(--primary))',
+    minWidth: compact ? '36px' : '44px',
+    textAlign: 'center' as const,
+    fontVariantNumeric: 'tabular-nums',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: compact ? '10px' : '11px',
+    color: 'hsl(var(--muted-foreground))',
+    marginTop: '4px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em',
+  };
+
+  const separatorStyle: React.CSSProperties = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    fontWeight: 'bold',
+    fontSize: compact ? '18px' : '24px',
+    color: 'hsl(var(--primary))',
+    flexShrink: 0,
+    paddingTop: compact ? '6px' : '8px',
+  };
 
   return (
-    <div 
-      className="flex items-start justify-center gap-1 sm:gap-2 md:gap-3 w-full"
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'row', 
-        flexWrap: 'nowrap',
-        alignItems: 'flex-start',
-        justifyContent: 'center',
-        overflow: 'hidden'
-      }}
-    >
-      <TimeBlock value={timeLeft.days} label="일" />
-      <Separator />
-      <TimeBlock value={timeLeft.hours} label="시간" />
-      <Separator />
-      <TimeBlock value={timeLeft.minutes} label="분" />
-      <Separator />
-      <TimeBlock value={timeLeft.seconds} label="초" />
+    <div style={containerStyle}>
+      <div style={blockStyle}>
+        <div style={digitStyle}>{String(timeLeft.days).padStart(2, '0')}</div>
+        <span style={labelStyle}>일</span>
+      </div>
+      <span style={separatorStyle}>:</span>
+      <div style={blockStyle}>
+        <div style={digitStyle}>{String(timeLeft.hours).padStart(2, '0')}</div>
+        <span style={labelStyle}>시간</span>
+      </div>
+      <span style={separatorStyle}>:</span>
+      <div style={blockStyle}>
+        <div style={digitStyle}>{String(timeLeft.minutes).padStart(2, '0')}</div>
+        <span style={labelStyle}>분</span>
+      </div>
+      <span style={separatorStyle}>:</span>
+      <div style={blockStyle}>
+        <div style={digitStyle}>{String(timeLeft.seconds).padStart(2, '0')}</div>
+        <span style={labelStyle}>초</span>
+      </div>
     </div>
   );
 };
