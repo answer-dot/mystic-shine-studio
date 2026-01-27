@@ -36,7 +36,6 @@ const menuItems = [
   { id: 'general', label: '일반 설정', icon: Settings },
   { id: 'instructor', label: '강사 관리', icon: Users },
   { id: 'courses', label: '강의 관리', icon: BookOpen },
-  { id: 'curriculum', label: '커리큘럼', icon: FileText },
   { id: 'materials', label: '자료실', icon: FolderOpen },
   { id: 'events', label: '이벤트', icon: Calendar },
   { id: 'testimonials', label: '수강생 후기', icon: Star },
