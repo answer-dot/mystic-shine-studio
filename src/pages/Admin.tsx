@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSettings } from '@/hooks/useSettings';
-import { verifyPin, updateAdminPin, CurriculumItem, EventItem, TestimonialItem } from '@/lib/store';
+import { verifyPin, updateAdminPin, EventItem, TestimonialItem } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { DashboardSection } from '@/components/admin/DashboardSection';
 import { GeneralSection, InstructorSection } from '@/components/admin/SettingsSections';
-import { CurriculumSection } from '@/components/admin/CurriculumSection';
 import { EventsSection } from '@/components/admin/EventsSection';
 import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
 import { InquiriesSection } from '@/components/admin/InquiriesSection';
@@ -44,7 +43,6 @@ const Admin = () => {
   const [instructorImageUrl, setInstructorImageUrl] = useState('');
   const [price, setPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
-  const [curriculum, setCurriculum] = useState<CurriculumItem[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
   const [newPin, setNewPin] = useState('');
@@ -63,7 +61,6 @@ const Admin = () => {
       setInstructorImageUrl(settings.instructorImageUrl);
       setPrice(settings.price);
       setOriginalPrice(settings.originalPrice);
-      setCurriculum(settings.curriculum);
       setEvents(settings.events);
       setTestimonials(settings.testimonials || []);
     }
@@ -103,14 +100,6 @@ const Admin = () => {
     toast({
       title: "저장 완료",
       description: "강사 정보가 저장되었습니다.",
-    });
-  };
-
-  const handleSaveCurriculum = () => {
-    updateSettings({ curriculum });
-    toast({
-      title: "저장 완료",
-      description: "커리큘럼이 저장되었습니다.",
     });
   };
 
@@ -163,23 +152,6 @@ const Admin = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const addCurriculumItem = () => {
-    setCurriculum([
-      ...curriculum,
-      { id: Date.now().toString(), title: '', description: '', duration: '', lessons: [] }
-    ]);
-  };
-
-  const updateCurriculumItem = (id: string, field: keyof CurriculumItem, value: string) => {
-    setCurriculum(curriculum.map(item => 
-      item.id === id ? { ...item, [field]: value } : item
-    ));
-  };
-
-  const deleteCurriculumItem = (id: string) => {
-    setCurriculum(curriculum.filter(item => item.id !== id));
   };
 
   const addEventItem = () => {
@@ -308,16 +280,6 @@ const Admin = () => {
         );
       case 'courses':
         return <CoursesSection />;
-      case 'curriculum':
-        return (
-          <CurriculumSection
-            curriculum={curriculum}
-            onAdd={addCurriculumItem}
-            onUpdate={updateCurriculumItem}
-            onDelete={deleteCurriculumItem}
-            onSave={handleSaveCurriculum}
-          />
-        );
       case 'events':
         return (
           <EventsSection
