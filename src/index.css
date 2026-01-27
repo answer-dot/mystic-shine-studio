@@ -84,6 +84,8 @@
     /* Korean Typography - Natural word breaks */
     word-break: keep-all;
     overflow-wrap: break-word;
+    /* Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
 
   /* Apply Korean typography to all text elements */

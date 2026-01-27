@@ -116,7 +116,7 @@ export const Footer = () => {
 
           {/* Bottom */}
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            <p>© 2025 {settings.siteName}. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {settings.siteName}. All rights reserved.</p>
           </div>
         </div>
       </footer>
