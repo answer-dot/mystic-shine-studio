@@ -1,24 +1,32 @@
-import { ArrowRight, Users, Star, Clock } from 'lucide-react';
+import { ArrowRight, Users, Star, Clock, Play, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
 import { useSettings } from '@/hooks/useSettings';
 import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
+import { useCourses } from '@/hooks/useCourses';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const HeroSection = () => {
   const { settings } = useSettings();
   const { primaryCourse } = usePrimaryCourse();
+  const { isEnrolled } = useCourses();
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Check if user is enrolled in the primary course
+  const userIsEnrolled = user && primaryCourse && isEnrolled(primaryCourse.id);
+
   const handleCTAClick = () => {
-    if (user) {
-      // Logged in: go to dashboard
-      navigate('/dashboard');
-    } else {
+    if (!user) {
       // Not logged in: go to signup
       navigate('/auth?mode=signup');
+    } else if (userIsEnrolled) {
+      // Enrolled: go directly to dashboard/course player
+      navigate('/dashboard');
+    } else {
+      // Logged in but not enrolled: scroll to curriculum to encourage purchase
+      document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -26,6 +34,49 @@ export const HeroSection = () => {
     document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Enrolled User: Show compact "Welcome Back" banner instead of full hero
+  if (userIsEnrolled) {
+    return (
+      <section className="relative pt-20 sm:pt-24 pb-8 sm:pb-12 overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+        <div className="absolute top-1/4 left-1/4 w-48 sm:w-64 h-48 sm:h-64 bg-primary/10 rounded-full blur-3xl" />
+
+        <div className="section-container relative z-10">
+          <div className="max-w-3xl mx-auto">
+            <div className="glass-card rounded-2xl p-6 sm:p-8 border border-primary/20">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-green-400 text-sm font-medium mb-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    수강 중
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-bold mb-2">
+                    다시 오신 것을 환영합니다! 👋
+                  </h2>
+                  <p className="text-muted-foreground">
+                    {primaryCourse?.title || '강의'}를 이어서 학습해보세요.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <Button variant="hero" size="lg" onClick={() => navigate('/dashboard')} className="w-full sm:w-auto">
+                    <Play className="w-5 h-5 mr-2" />
+                    이어서 학습하기
+                  </Button>
+                  <Button variant="outline" size="lg" onClick={scrollToCurriculum} className="w-full sm:w-auto">
+                    <BookOpen className="w-5 h-5 mr-2" />
+                    커리큘럼 보기
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Default Hero for non-enrolled users
   return (
     <section className="relative min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 flex items-center overflow-hidden">
       {/* Background gradient */}
@@ -67,15 +118,17 @@ export const HeroSection = () => {
             </div>
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Smart Redirection */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 animate-fade-in px-4">
             <Button variant="hero" size="xl" className="w-full sm:w-auto" onClick={handleCTAClick}>
-              {user ? '내 강의실 가기' : '무료 체험 시작'}
+              {!user ? '무료 체험 시작' : '커리큘럼 보기'}
               <ArrowRight className="w-5 h-5" />
             </Button>
-            <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
-              커리큘럼 보기
-            </Button>
+            {!user && (
+              <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
+                커리큘럼 보기
+              </Button>
+            )}
           </div>
 
           {/* Urgency */}
