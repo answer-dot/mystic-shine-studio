@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,7 +19,9 @@ import {
   X,
   FileText,
   Video,
-  GripVertical
+  GripVertical,
+  Upload,
+  Loader2
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -85,6 +87,57 @@ export const CoursesSection = () => {
     curriculum: [] as CurriculumChapter[],
   });
   const [newFeature, setNewFeature] = useState('');
+  const [uploadingLessonId, setUploadingLessonId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentUploadContext, setCurrentUploadContext] = useState<{ chapterId: string; lessonId: string } | null>(null);
+
+  // Video upload handler
+  const handleVideoUpload = async (file: File, chapterId: string, lessonId: string) => {
+    if (!file) return;
+    
+    setUploadingLessonId(lessonId);
+    
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `videos/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('course-videos')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('course-videos')
+        .getPublicUrl(filePath);
+
+      updateLesson(chapterId, lessonId, 'videoUrl', publicUrl);
+      toast({ title: '동영상이 업로드되었습니다' });
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast({ title: '업로드 실패', description: String(error), variant: 'destructive' });
+    } finally {
+      setUploadingLessonId(null);
+      setCurrentUploadContext(null);
+    }
+  };
+
+  const triggerFileUpload = (chapterId: string, lessonId: string) => {
+    setCurrentUploadContext({ chapterId, lessonId });
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && currentUploadContext) {
+      handleVideoUpload(file, currentUploadContext.chapterId, currentUploadContext.lessonId);
+    }
+    e.target.value = '';
+  };
 
   // Fetch all courses (including unpublished for admin)
   const { data: courses, isLoading } = useQuery({
@@ -380,6 +433,15 @@ export const CoursesSection = () => {
             </Button>
           </DialogTrigger>
           <DialogContent className="!p-0 !overflow-hidden bg-white rounded-xl">
+            {/* Hidden file input for video uploads */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept="video/*"
+              className="hidden"
+            />
+            
             {/* Fixed Header */}
             <div className="flex-shrink-0 p-5 sm:p-6 pb-4 border-b border-gray-100 bg-white rounded-t-xl relative z-10">
               <DialogHeader>
@@ -633,7 +695,8 @@ export const CoursesSection = () => {
                         {/* Lessons */}
                         <div className="p-4 space-y-2">
                           {chapter.lessons.map((lesson, lessonIndex) => (
-                            <div key={lesson.id} className="p-2 bg-gray-50 rounded-lg space-y-2">
+                            <div key={lesson.id} className="p-3 bg-gray-50 rounded-lg space-y-2">
+                              {/* Lesson Title Row */}
                               <div className="flex items-center gap-2">
                                 <Video className="w-4 h-4 text-gray-400 flex-shrink-0" />
                                 <Input
@@ -651,13 +714,30 @@ export const CoursesSection = () => {
                                   <X className="w-3.5 h-3.5" />
                                 </Button>
                               </div>
-                              <div className="flex items-center gap-2 pl-6">
-                                <Input
-                                  value={lesson.videoUrl || ''}
-                                  onChange={(e) => updateLesson(chapter.id, lesson.id, 'videoUrl', e.target.value)}
-                                  placeholder="영상 URL"
-                                  className="flex-1 bg-white border-gray-200 text-sm h-8 min-w-0"
-                                />
+                              
+                              {/* Video URL + Upload Row */}
+                              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pl-6">
+                                <div className="flex-1 flex items-center gap-2">
+                                  <Input
+                                    value={lesson.videoUrl || ''}
+                                    onChange={(e) => updateLesson(chapter.id, lesson.id, 'videoUrl', e.target.value)}
+                                    placeholder="영상 URL 또는 파일 업로드"
+                                    className="flex-1 bg-white border-gray-200 text-sm h-8 min-w-0"
+                                  />
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => triggerFileUpload(chapter.id, lesson.id)}
+                                    disabled={uploadingLessonId === lesson.id}
+                                    className="h-8 px-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50 flex-shrink-0"
+                                  >
+                                    {uploadingLessonId === lesson.id ? (
+                                      <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                      <Upload className="w-4 h-4" />
+                                    )}
+                                  </Button>
+                                </div>
                                 <div className="flex items-center gap-1.5 flex-shrink-0">
                                   <Switch
                                     checked={lesson.isPreview || false}
@@ -667,6 +747,13 @@ export const CoursesSection = () => {
                                   <span className="text-xs text-gray-500 whitespace-nowrap">미리보기</span>
                                 </div>
                               </div>
+                              
+                              {/* Show uploaded file name */}
+                              {lesson.videoUrl && (
+                                <div className="pl-6 text-xs text-emerald-600 truncate">
+                                  ✓ {lesson.videoUrl.includes('course-videos') ? '업로드됨' : 'URL 설정됨'}
+                                </div>
+                              )}
                             </div>
                           ))}
                           <Button
