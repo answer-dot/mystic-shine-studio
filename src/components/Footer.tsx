@@ -98,7 +98,7 @@ export const Footer = () => {
 
       {/* Terms Dialog */}
       <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
-        <DialogContent className="bg-white max-w-2xl max-h-[80vh]">
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]" aria-describedby="terms-description">
           <DialogHeader>
             <DialogTitle className="text-gray-900 flex items-center gap-2">
               <FileText className="w-5 h-5 text-primary" />
@@ -106,7 +106,7 @@ export const Footer = () => {
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="h-[60vh] pr-4">
-            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+            <div id="terms-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
               {termsContent}
             </div>
           </ScrollArea>
@@ -115,7 +115,7 @@ export const Footer = () => {
 
       {/* Privacy Dialog */}
       <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
-        <DialogContent className="bg-white max-w-2xl max-h-[80vh]">
+        <DialogContent className="bg-white max-w-2xl max-h-[80vh]" aria-describedby="privacy-description">
           <DialogHeader>
             <DialogTitle className="text-gray-900 flex items-center gap-2">
               <Shield className="w-5 h-5 text-primary" />
@@ -123,7 +123,7 @@ export const Footer = () => {
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="h-[60vh] pr-4">
-            <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+            <div id="privacy-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
               {privacyContent}
             </div>
           </ScrollArea>
