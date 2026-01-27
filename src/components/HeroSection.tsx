@@ -2,11 +2,13 @@ import { ArrowRight, Users, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
 import { useSettings } from '@/hooks/useSettings';
+import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const HeroSection = () => {
   const { settings } = useSettings();
+  const { primaryCourse } = usePrimaryCourse();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -46,8 +48,7 @@ export const HeroSection = () => {
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto animate-fade-in px-4">
-            타로의 신비로운 세계에 입문하세요. 15년 경력의 마스터가 직접 전수하는 
-            체계적인 커리큘럼으로 전문 리더로 성장하세요.
+            {primaryCourse?.description || '타로의 신비로운 세계에 입문하세요. 15년 경력의 마스터가 직접 전수하는 체계적인 커리큘럼으로 전문 리더로 성장하세요.'}
           </p>
 
           {/* Stats */}
@@ -62,7 +63,7 @@ export const HeroSection = () => {
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">14주</span> 과정</span>
+              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">{primaryCourse?.duration || '14주'}</span> 과정</span>
             </div>
           </div>
 
