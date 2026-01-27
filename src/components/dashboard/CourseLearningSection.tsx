@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -56,6 +56,7 @@ export const CourseLearningSection = ({
   completedAt,
 }: CourseLearningProps) => {
   const [playingLessonId, setPlayingLessonId] = useState<string | null>(null);
+  const [autoPlayInitialized, setAutoPlayInitialized] = useState(false);
   
   // Use the progress hook for enrolled users
   const {
@@ -69,7 +70,19 @@ export const CourseLearningSection = ({
     markLessonComplete,
     issueCertificate,
     getNextLesson,
+    lastWatchedLessonId,
   } = useCourseProgress(courseId, curriculum);
+
+  // Auto-play the resume lesson when entering learning mode
+  React.useEffect(() => {
+    if (!autoPlayInitialized && isEnrolled && curriculum.length > 0) {
+      const resumeLesson = getNextLesson();
+      if (resumeLesson) {
+        setPlayingLessonId(resumeLesson.lessonId);
+      }
+      setAutoPlayInitialized(true);
+    }
+  }, [autoPlayInitialized, isEnrolled, curriculum, getNextLesson]);
 
   const toggleVideo = (lessonId: string) => {
     if (playingLessonId === lessonId) {
