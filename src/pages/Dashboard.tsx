@@ -295,11 +295,11 @@ const Dashboard = () => {
       
       <main className="pt-20 pb-16">
         <div className="section-container">
-          {/* Two-Column Layout - Stack on Mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Two-Column Layout (70:30) - Stack on Mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-10 gap-4">
             
-            {/* ===== LEFT SECTION (Main Content - 2 columns) ===== */}
-            <div className="lg:col-span-2 space-y-6">
+            {/* ===== LEFT SECTION (Main Content - 70%) ===== */}
+            <div className="lg:col-span-7 space-y-3">
               
               {/* Welcome Message */}
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -382,8 +382,8 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* ===== RIGHT SECTION (Sidebar - 1 column) ===== */}
-            <div className="space-y-3">
+            {/* ===== RIGHT SECTION (Sidebar - 30%) ===== */}
+            <div className="lg:col-span-3 space-y-3">
               
               {/* Compact Profile Summary Card */}
               <Card className="bg-card border-border">
