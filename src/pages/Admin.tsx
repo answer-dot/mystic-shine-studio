@@ -20,6 +20,7 @@ import { SecuritySection } from '@/components/admin/SecuritySection';
 import { CoursesSection } from '@/components/admin/CoursesSection';
 import { ReviewsSection } from '@/components/admin/ReviewsSection';
 import { MaterialsSection } from '@/components/admin/MaterialsSection';
+import { CustomersSection } from '@/components/admin/CustomersSection';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -280,6 +281,8 @@ const Admin = () => {
         );
       case 'courses':
         return <CoursesSection />;
+      case 'customers':
+        return <CustomersSection />;
       case 'events':
         return (
           <EventsSection
