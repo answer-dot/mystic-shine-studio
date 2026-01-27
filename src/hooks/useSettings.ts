@@ -58,15 +58,20 @@ export const useSettings = () => {
         }
 
         if (data && data.length > 0) {
+          const localSettings = getSettings();
           const dbSettings: Record<string, unknown> = {};
           data.forEach(row => {
             const key = row.key;
             if (DB_SETTINGS_KEYS.includes(key as typeof DB_SETTINGS_KEYS[number])) {
-              dbSettings[key] = row.value;
+              // For string values stored as JSON strings, unwrap them
+              const value = row.value;
+              dbSettings[key] = typeof value === 'string' ? value : value;
             }
           });
           
-          setSettings(prev => ({ ...prev, ...dbSettings } as SiteSettings));
+          // Merge with local settings, DB values take precedence
+          const mergedSettings = { ...localSettings, ...dbSettings };
+          setSettings(mergedSettings as SiteSettings);
           // Also sync to localStorage for offline access
           saveSettings(dbSettings as Partial<SiteSettings>);
         }
