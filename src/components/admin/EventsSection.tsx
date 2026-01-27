@@ -1,4 +1,4 @@
-import { Calendar, Plus, Trash2, Save, Image } from 'lucide-react';
+import { Calendar, Plus, Trash2, Save, Image, Clock, Users } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -105,6 +105,21 @@ export const EventsSection = ({
                       className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
                     />
                   </div>
+                  
+                  {/* Start Time for Countdown */}
+                  <div className="space-y-2">
+                    <label className="text-xs text-gray-500 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      시작 시간 (카운트다운용)
+                    </label>
+                    <Input
+                      type="datetime-local"
+                      value={item.startTime?.slice(0, 16) || ''}
+                      onChange={(e) => onUpdate(item.id, 'startTime', e.target.value)}
+                      className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
+                    />
+                  </div>
+
                   <div className="space-y-2">
                     <label className="text-xs text-gray-500">상태</label>
                     <select
@@ -117,8 +132,25 @@ export const EventsSection = ({
                       <option value="ended">종료</option>
                     </select>
                   </div>
+
+                  {/* Total Capacity */}
                   <div className="space-y-2">
-                    <label className="text-xs text-gray-500">잔여 좌석</label>
+                    <label className="text-xs text-gray-500 flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      총 정원 (Total Capacity)
+                    </label>
+                    <Input
+                      type="number"
+                      value={item.totalCapacity || 50}
+                      onChange={(e) => onUpdate(item.id, 'totalCapacity', Number(e.target.value))}
+                      placeholder="50"
+                      min={1}
+                      className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs text-gray-500">잔여 좌석 (초기값)</label>
                     <Input
                       type="number"
                       value={item.spots}
@@ -127,7 +159,11 @@ export const EventsSection = ({
                       min={0}
                       className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300"
                     />
+                    <p className="text-xs text-gray-400">
+                      실시간 잔여석은 신청 수에 따라 자동 계산됩니다
+                    </p>
                   </div>
+
                   <div className="space-y-2 sm:col-span-2">
                     <label className="text-xs text-gray-500">설명</label>
                     <Textarea

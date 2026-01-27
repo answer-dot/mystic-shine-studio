@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Calendar, Users, ArrowRight, Sparkles, X, Send } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Calendar, Users, ArrowRight, Sparkles, Send, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -8,6 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useEventRegistrations } from '@/hooks/useEventRegistrations';
+import { EventCountdownTimer } from '@/components/EventCountdownTimer';
 
 // Default placeholder for events without images
 const defaultEventImage = "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1200&h=600&fit=crop&q=80";
@@ -17,12 +19,21 @@ export const EventsSection = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expiredEvents, setExpiredEvents] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     message: ''
   });
+
+  // Get all event titles for registration tracking
+  const eventTitles = useMemo(() => 
+    settings.events.map(e => e.title), 
+    [settings.events]
+  );
+  
+  const { getRegistrationCount } = useEventRegistrations(eventTitles);
 
   const handleApplyClick = (eventTitle: string) => {
     setSelectedEvent(eventTitle);
@@ -58,6 +69,10 @@ export const EventsSection = () => {
     }
   };
 
+  const handleCountdownExpire = (eventId: string) => {
+    setExpiredEvents(prev => new Set([...prev, eventId]));
+  };
+
   const getStatusBadge = (status: string) => {
     if (status === 'ongoing') {
       return (
@@ -90,6 +105,13 @@ export const EventsSection = () => {
     );
   };
 
+  // Calculate remaining seats based on registrations
+  const getRemainingSeats = (event: typeof settings.events[0]) => {
+    const totalCapacity = event.totalCapacity || event.spots || 50;
+    const registrations = getRegistrationCount(event.title);
+    return Math.max(0, totalCapacity - registrations);
+  };
+
   return (
     <section id="events" className="py-20 sm:py-28 bg-gradient-to-b from-surface-overlay to-background">
       <div className="section-container">
@@ -102,84 +124,110 @@ export const EventsSection = () => {
         </div>
 
         <div className="max-w-5xl mx-auto space-y-8">
-          {settings.events.map((event) => (
-            <div 
-              key={event.id}
-              className="group relative rounded-2xl overflow-hidden border border-primary/20 shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
-              style={{
-                boxShadow: event.status === 'ongoing' 
-                  ? '0 0 30px rgba(var(--primary), 0.15), 0 10px 40px -10px rgba(0,0,0,0.3)' 
-                  : undefined
-              }}
-            >
-              {/* Premium gold border glow for ongoing events */}
-              {event.status === 'ongoing' && (
-                <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none z-20" />
-              )}
+          {settings.events.map((event) => {
+            const remainingSeats = getRemainingSeats(event);
+            const totalCapacity = event.totalCapacity || event.spots || 50;
+            const isExpired = expiredEvents.has(event.id);
+            const isClosed = event.status === 'ended' || isExpired || remainingSeats <= 0;
+            const isUrgent = remainingSeats > 0 && remainingSeats <= 5 && !isClosed;
 
-              {/* Full Background Image - Taller on mobile for content visibility */}
-              <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9]">
-                <img 
-                  src={event.imageUrl || defaultEventImage}
-                  alt={event.title}
-                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                
-                {/* Dark gradient overlay - stronger on mobile for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30 sm:from-black/90 sm:via-black/50 sm:to-black/20" />
-                
-                {/* Floating Status Badge - Top Left */}
-                <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10">
-                  {getStatusBadge(event.status)}
-                </div>
+            return (
+              <div 
+                key={event.id}
+                className="group relative rounded-2xl overflow-hidden border border-primary/20 shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500"
+                style={{
+                  boxShadow: event.status === 'ongoing' && !isClosed
+                    ? '0 0 30px rgba(var(--primary), 0.15), 0 10px 40px -10px rgba(0,0,0,0.3)' 
+                    : undefined
+                }}
+              >
+                {/* Premium gold border glow for ongoing events */}
+                {event.status === 'ongoing' && !isClosed && (
+                  <div className="absolute inset-0 rounded-2xl border-2 border-primary/40 pointer-events-none z-20" />
+                )}
 
-                {/* Content Overlay - Bottom */}
-                <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-8 lg:p-10">
-                  {/* Date */}
-                  <div className="flex items-center gap-2 text-xs sm:text-sm text-white/80 mb-2 sm:mb-3">
-                    <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                    <span>{new Date(event.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                {/* Full Background Image - Taller on mobile for content visibility */}
+                <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] lg:aspect-[21/9]">
+                  <img 
+                    src={event.imageUrl || defaultEventImage}
+                    alt={event.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  
+                  {/* Dark gradient overlay - stronger on mobile for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30 sm:from-black/90 sm:via-black/50 sm:to-black/20" />
+                  
+                  {/* Floating Status Badge - Top Left */}
+                  <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex items-center gap-2 flex-wrap">
+                    {getStatusBadge(isClosed ? 'ended' : event.status)}
+                    
+                    {/* Urgent "마감임박!" Tag */}
+                    {isUrgent && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/90 text-white border border-red-400 animate-pulse shadow-lg shadow-red-500/30">
+                        <AlertTriangle className="w-3 h-3" />
+                        마감임박!
+                      </span>
+                    )}
                   </div>
-                  
-                  {/* Title - Responsive sizing */}
-                  <h3 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white group-hover:text-primary transition-colors duration-300 leading-tight">
-                    {event.title}
-                  </h3>
-                  
-                  {/* Description - Line clamped on mobile */}
-                  <p className="text-white/80 text-sm sm:text-lg leading-relaxed mb-4 sm:mb-6 max-w-3xl line-clamp-3 sm:line-clamp-none">
-                    {event.description}
-                  </p>
 
-                  {/* Footer: Spots + CTA */}
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-white/20">
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-                        <Users className="w-4 h-4 text-primary" />
-                        <span className="text-white font-medium">잔여 {event.spots}석</span>
-                      </div>
-                      {event.spots <= 10 && event.status !== 'ended' && (
-                        <span className="text-red-400 text-xs font-medium animate-pulse">마감임박!</span>
-                      )}
+                  {/* Countdown Timer - Top Right */}
+                  {event.startTime && !isClosed && (
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 bg-black/60 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/20">
+                      <EventCountdownTimer 
+                        targetDate={event.startTime} 
+                        onExpire={() => handleCountdownExpire(event.id)}
+                      />
+                    </div>
+                  )}
+
+                  {/* Content Overlay - Bottom */}
+                  <div className="absolute inset-0 flex flex-col justify-end p-4 sm:p-8 lg:p-10">
+                    {/* Date */}
+                    <div className="flex items-center gap-2 text-xs sm:text-sm text-white/80 mb-2 sm:mb-3">
+                      <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
+                      <span>{new Date(event.date).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                     </div>
                     
-                    <Button 
-                      variant={event.status === 'ended' ? 'outline' : 'gold'} 
-                      size="lg"
-                      disabled={event.status === 'ended'}
-                      className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 group/btn"
-                      onClick={event.status !== 'ended' ? () => handleApplyClick(event.title) : undefined}
-                    >
-                      {event.status === 'ended' ? '종료됨' : '신청하기'}
-                      {event.status !== 'ended' && (
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                      )}
-                    </Button>
+                    {/* Title - Responsive sizing */}
+                    <h3 className="text-xl sm:text-3xl lg:text-4xl font-bold mb-2 sm:mb-3 text-white group-hover:text-primary transition-colors duration-300 leading-tight">
+                      {event.title}
+                    </h3>
+                    
+                    {/* Description - Line clamped on mobile */}
+                    <p className="text-white/80 text-sm sm:text-lg leading-relaxed mb-4 sm:mb-6 max-w-3xl line-clamp-3 sm:line-clamp-none">
+                      {event.description}
+                    </p>
+
+                    {/* Footer: Seats + CTA */}
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-white/20">
+                      <div className="flex items-center gap-2 text-sm flex-wrap">
+                        {/* Dynamic Seat Tracking */}
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+                          <Users className="w-4 h-4 text-primary" />
+                          <span className="text-white font-medium">
+                            총 {totalCapacity}석 | <span className={isUrgent ? 'text-red-400 font-bold' : ''}>잔여 {remainingSeats}석</span>
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        variant={isClosed ? 'outline' : 'gold'} 
+                        size="lg"
+                        disabled={isClosed}
+                        className="w-full sm:w-auto text-sm sm:text-base px-6 sm:px-8 group/btn"
+                        onClick={!isClosed ? () => handleApplyClick(event.title) : undefined}
+                      >
+                        {isClosed ? '마감' : '신청하기'}
+                        {!isClosed && (
+                          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
