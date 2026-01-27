@@ -132,9 +132,9 @@ export const CourseMaterialsDownload = ({ courseId, courseName }: CourseMaterial
               {/* Download Button */}
               <Button
                 size="sm"
-                variant="ghost"
+                variant="outline"
                 onClick={() => handleDownload(material.file_url, material.title)}
-                className="flex-shrink-0 opacity-70 group-hover:opacity-100 transition-opacity"
+                className="flex-shrink-0 border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 <Download className="w-4 h-4" />
               </Button>
