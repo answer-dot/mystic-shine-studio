@@ -121,51 +121,51 @@ export const Footer = () => {
         </div>
       </footer>
 
-      {/* Terms Dialog */}
+      {/* Terms Dialog - Fixed mobile/web layout */}
       <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
-        <DialogContent className="bg-white max-w-2xl max-h-[80vh]" aria-describedby="terms-description">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-primary" />
+        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden" aria-describedby="terms-description">
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+            <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
+              <FileText className="w-5 h-5 text-primary flex-shrink-0" />
               이용약관
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="h-[60vh] pr-4">
-            <div id="terms-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+          <ScrollArea className="flex-1 min-h-0">
+            <div id="terms-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
               {termsContent}
             </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
 
-      {/* Privacy Dialog */}
+      {/* Privacy Dialog - Fixed mobile/web layout */}
       <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
-        <DialogContent className="bg-white max-w-2xl max-h-[80vh]" aria-describedby="privacy-description">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-primary" />
+        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden" aria-describedby="privacy-description">
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+            <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
+              <Shield className="w-5 h-5 text-primary flex-shrink-0" />
               개인정보처리방침
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="h-[60vh] pr-4">
-            <div id="privacy-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+          <ScrollArea className="flex-1 min-h-0">
+            <div id="privacy-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
               {privacyContent}
             </div>
           </ScrollArea>
         </DialogContent>
       </Dialog>
 
-      {/* Refund Policy Dialog */}
+      {/* Refund Policy Dialog - Fixed mobile/web layout */}
       <Dialog open={showRefundDialog} onOpenChange={setShowRefundDialog}>
-        <DialogContent className="bg-white max-w-2xl max-h-[80vh]" aria-describedby="refund-description">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900 flex items-center gap-2">
-              <RefreshCcw className="w-5 h-5 text-primary" />
+        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden" aria-describedby="refund-description">
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+            <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
+              <RefreshCcw className="w-5 h-5 text-primary flex-shrink-0" />
               환불 정책
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="h-[60vh] pr-4">
-            <div id="refund-description" className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+          <ScrollArea className="flex-1 min-h-0">
+            <div id="refund-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
               {refundContent}
             </div>
           </ScrollArea>
