@@ -118,13 +118,13 @@ const OverallProgressBar = ({
 
   return (
     <Card className="bg-card border-border">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="font-semibold text-lg">전체 학습 진도율</h3>
-          <span className="text-2xl font-bold text-primary">{totalProgress}%</span>
+      <CardContent className="p-3">
+        <div className="flex items-center justify-between mb-1.5">
+          <h3 className="font-semibold text-sm">전체 학습 진도율</h3>
+          <span className="text-lg font-bold text-primary">{totalProgress}%</span>
         </div>
-        <Progress value={totalProgress} className="h-4" />
-        <p className="text-sm text-muted-foreground mt-2">
+        <Progress value={totalProgress} className="h-2" />
+        <p className="text-xs text-muted-foreground mt-1">
           {enrolledCourses.length}개 강의 수강 중
         </p>
       </CardContent>
@@ -333,27 +333,27 @@ const Dashboard = () => {
 
                 {coursesLoading ? (
                   <Card className="bg-card border-border">
-                    <CardContent className="p-6">
-                      <Skeleton className="h-24 w-full" />
+                    <CardContent className="p-3">
+                      <Skeleton className="h-16 w-full" />
                     </CardContent>
                   </Card>
                 ) : enrolledCourseIds.length === 0 ? (
-                  /* No Course Enrolled - Empty State */
+                  /* No Course Enrolled - Compact Empty State */
                   <Card className="bg-card border-border">
-                    <CardContent className="py-16 text-center">
-                      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-muted flex items-center justify-center">
-                        <BookOpen className="w-10 h-10 text-muted-foreground" />
+                    <CardContent className="py-8 text-center">
+                      <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
+                        <BookOpen className="w-6 h-6 text-muted-foreground" />
                       </div>
-                      <h3 className="text-xl font-bold mb-2">신청한 강의가 없습니다!</h3>
-                      <p className="text-muted-foreground mb-6">
+                      <h3 className="text-base font-bold mb-1">신청한 강의가 없습니다!</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
                         지금 바로 강의를 신청하고 학습을 시작해보세요.
                       </p>
                       <Button 
-                        size="lg"
-                        className="w-full sm:w-auto px-8"
+                        size="sm"
+                        className="px-6"
                         onClick={() => navigate('/')}
                       >
-                        <Play className="w-5 h-5 mr-2" />
+                        <Play className="w-4 h-4 mr-1" />
                         강의 보러가기
                       </Button>
                     </CardContent>
@@ -383,19 +383,19 @@ const Dashboard = () => {
             </div>
 
             {/* ===== RIGHT SECTION (Sidebar - 1 column) ===== */}
-            <div className="space-y-6">
+            <div className="space-y-3">
               
-              {/* Profile Summary Card */}
+              {/* Compact Profile Summary Card */}
               <Card className="bg-card border-border">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <User className="w-5 h-5 text-primary" />
+                <CardHeader className="pb-2 pt-3 px-3">
+                  <CardTitle className="flex items-center gap-1.5 text-sm">
+                    <User className="w-4 h-4 text-primary" />
                     내 정보
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <CardContent className="space-y-2 px-3 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                       {profile?.avatar_url ? (
                         <img 
                           src={profile.avatar_url} 
@@ -403,25 +403,25 @@ const Dashboard = () => {
                           className="w-full h-full rounded-full object-cover"
                         />
                       ) : (
-                        <User className="w-7 h-7 text-primary" />
+                        <User className="w-5 h-5 text-primary" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-semibold text-lg truncate">{displayName}</p>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1 truncate">
-                        <Mail className="w-3 h-3 flex-shrink-0" />
+                      <p className="font-semibold text-sm truncate">{displayName}</p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+                        <Mail className="w-2.5 h-2.5 flex-shrink-0" />
                         <span className="truncate">{user.email}</span>
                       </p>
                     </div>
                   </div>
-                  <div className="pt-3 border-t border-border flex items-center justify-between text-sm">
+                  <div className="pt-2 border-t border-border flex items-center justify-between text-xs">
                     <span className="text-muted-foreground flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
+                      <Calendar className="w-3 h-3" />
                       가입일
                     </span>
                     <span>{new Date(user.created_at).toLocaleDateString('ko-KR')}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">수강 강의</span>
                     <span className="font-semibold text-primary">{enrolledCourseIds.length}개</span>
                   </div>

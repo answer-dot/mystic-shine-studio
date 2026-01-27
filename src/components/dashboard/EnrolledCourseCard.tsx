@@ -92,12 +92,12 @@ export const EnrolledCourseCard = ({
   });
 
   return (
-    <Card className="bg-card border-2 border-border shadow-lg overflow-hidden">
-      {/* Horizontal Split Layout: Image Left, Content Right */}
+    <Card className="bg-card border border-border shadow-md overflow-hidden">
+      {/* Compact Horizontal Split Layout */}
       <div className="flex flex-col md:flex-row">
-        {/* Left Side: Fixed Image Box (16:9 ratio) */}
-        <div className="relative w-full md:w-48 lg:w-56 flex-shrink-0">
-          <div className="aspect-video md:aspect-square lg:aspect-video w-full h-full">
+        {/* Left: Compact Image */}
+        <div className="relative w-full md:w-36 lg:w-44 flex-shrink-0">
+          <div className="aspect-video md:aspect-[4/3] w-full h-full">
             <img 
               src={course.image_url || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&h=300&fit=crop'}
               alt={course.title}
@@ -105,81 +105,74 @@ export const EnrolledCourseCard = ({
             />
           </div>
           {isCompleted && (
-            <div className="absolute top-2 right-2">
-              <Badge className="bg-green-500 text-white text-xs px-2 py-0.5">
-                <CheckCircle className="w-3 h-3 mr-1" />
+            <div className="absolute top-1 right-1">
+              <Badge className="bg-green-500 text-white text-[10px] px-1.5 py-0.5">
+                <CheckCircle className="w-2.5 h-2.5 mr-0.5" />
                 수료
               </Badge>
             </div>
           )}
         </div>
         
-        {/* Right Side: Content Area */}
-        <div className="flex-1 p-4 md:p-5 flex flex-col justify-between">
-          {/* Top Content: Title, Tag, Lesson Count - High Contrast */}
-          <div>
-            {/* Title & Tag Row */}
-            <div className="flex items-start justify-between gap-2 mb-3">
-              <h3 className="font-bold text-xl leading-tight text-foreground">{course.title}</h3>
-              <Badge className="bg-primary text-primary-foreground border-primary text-xs font-bold px-2 py-1 flex-shrink-0">
-                수강 중
-              </Badge>
+        {/* Right: Compact Content */}
+        <div className="flex-1 p-3 flex flex-col justify-between">
+          {/* Title Row */}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <h3 className="font-bold text-base leading-tight text-foreground truncate">{course.title}</h3>
+            <Badge className="bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 flex-shrink-0">
+              수강중
+            </Badge>
+          </div>
+          
+          {/* Compact Meta + Progress Side-by-Side */}
+          <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-1 text-xs text-foreground">
+              <Clock className="w-3 h-3 text-primary" />
+              <span>{course.duration}</span>
             </div>
-            
-            {/* Meta Info: Duration & Lesson Count */}
-            <div className="flex items-center gap-4 text-sm mb-4">
-              <div className="flex items-center gap-1.5 text-foreground">
-                <Clock className="w-4 h-4 text-primary" />
-                <span className="font-medium">{course.duration}</span>
-              </div>
-              <span className="text-muted-foreground">•</span>
-              <span className="font-semibold text-foreground">{totalLessons}개 레슨</span>
-            </div>
-
-            {/* Progress Bar - High Contrast */}
-            <div className="mb-4 p-3 rounded-lg bg-muted/30 border border-border">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-foreground">학습 진도율</span>
-                <span className="text-lg font-bold text-primary">{progressPercentage}%</span>
-              </div>
-              <div className="relative">
-                <Progress value={progressPercentage} className="h-3 bg-muted" />
-              </div>
-              <p className="text-xs text-muted-foreground mt-1.5">{completedCount}/{totalLessons} 레슨 완료</p>
-            </div>
+            <span className="text-muted-foreground text-xs">•</span>
+            <span className="text-xs font-medium text-foreground">{completedCount}/{totalLessons} 완료</span>
           </div>
 
-          {/* Bottom: Action Buttons Side-by-Side - High Contrast */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-auto">
+          {/* Compact Progress Bar */}
+          <div className="mb-2 p-2 rounded bg-muted/20 border border-border/50">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-foreground">진도율</span>
+              <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
+            </div>
+            <Progress value={progressPercentage} className="h-2 bg-muted" />
+          </div>
+
+          {/* Compact Buttons - HIGH CONTRAST */}
+          <div className="flex gap-2">
             <Button 
               size="sm"
-              className="flex-1 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-primary/90" 
+              className="flex-1 h-8 text-xs bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-primary/90" 
               onClick={onStartLearning}
             >
-              <Play className="w-4 h-4 mr-2" />
-              {isCompleted ? '다시 학습하기' : '이어서 학습하기'}
+              <Play className="w-3 h-3 mr-1" />
+              {isCompleted ? '다시 학습' : '이어서 학습'}
             </Button>
             
-            {/* Certificate Button - High Contrast */}
             {isCompleted ? (
               <Button 
                 size="sm"
                 variant="outline"
-                className="flex-1 border-2 border-green-500 text-green-500 font-bold hover:bg-green-500/20"
+                className="flex-1 h-8 text-xs border-2 border-green-500 text-green-400 font-bold hover:bg-green-500/20"
                 onClick={() => certificateIssued ? onStartLearning() : issueCertificate()}
               >
-                <Award className="w-4 h-4 mr-2" />
+                <Award className="w-3 h-3 mr-1" />
                 {certificateIssued ? '수료증 보기' : '수료증 발급'}
               </Button>
             ) : (
               <Button 
                 size="sm"
                 variant="outline"
-                className="flex-1 border-2 border-muted-foreground/50 text-muted-foreground font-medium cursor-not-allowed"
+                className="flex-1 h-8 text-xs border border-white/30 text-white/60 font-medium cursor-not-allowed"
                 disabled
                 title="100% 달성 시 활성화"
               >
-                <Lock className="w-4 h-4 mr-2" />
+                <Lock className="w-3 h-3 mr-1" />
                 수료증 발급
               </Button>
             )}
@@ -187,77 +180,44 @@ export const EnrolledCourseCard = ({
         </div>
       </div>
 
-      {/* Lesson List Toggle */}
+      {/* Compact Lesson List Toggle */}
       {allLessons.length > 0 && (
-        <div className="border-t border-border">
+        <div className="border-t border-border/50">
           <button
             onClick={() => setShowLessonList(!showLessonList)}
-            className="w-full px-4 py-3 flex items-center justify-between text-sm font-medium text-muted-foreground hover:bg-muted/50 transition-colors"
+            className="w-full px-3 py-2 flex items-center justify-between text-xs font-medium text-muted-foreground hover:bg-muted/30 transition-colors"
           >
-            <span className="flex items-center gap-2">
-              📚 강의 목록 ({allLessons.length}개)
-            </span>
-            {showLessonList ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
+            <span>📚 강의 목록 ({allLessons.length}개)</span>
+            {showLessonList ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
           </button>
 
-          {/* Collapsible Lesson List */}
+          {/* Compact Collapsible List */}
           <div className={cn(
-            "overflow-hidden transition-all duration-300",
-            showLessonList ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+            "overflow-hidden transition-all duration-200",
+            showLessonList ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
           )}>
-            <div className="px-4 pb-4 space-y-1 max-h-[500px] overflow-y-auto">
-              {allLessons.map(({ lesson, chapterTitle, chapterIndex, lessonIndex }, index) => {
+            <div className="px-3 pb-2 space-y-0.5 max-h-[350px] overflow-y-auto">
+              {allLessons.map(({ lesson, chapterTitle, chapterIndex }, index) => {
                 const isLessonCompleted = completedLessons.has(lesson.id);
                 
                 return (
                   <div
                     key={lesson.id}
-                    className={cn(
-                      "flex items-center gap-3 p-3 rounded-lg transition-colors",
-                      "hover:bg-muted/50 cursor-pointer"
-                    )}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded text-xs hover:bg-muted/30 cursor-pointer"
                     onClick={onStartLearning}
                   >
-                    {/* Status Icon */}
                     <div className={cn(
-                      "w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-medium",
-                      isLessonCompleted 
-                        ? "bg-green-500/10 text-green-500" 
-                        : "bg-muted text-muted-foreground"
+                      "w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-medium",
+                      isLessonCompleted ? "bg-green-500/20 text-green-400" : "bg-muted text-muted-foreground"
                     )}>
-                      {isLessonCompleted ? (
-                        <CheckCircle className="w-4 h-4" />
-                      ) : (
-                        <span>{index + 1}</span>
-                      )}
+                      {isLessonCompleted ? <CheckCircle className="w-3 h-3" /> : <span>{index + 1}</span>}
                     </div>
-
-                    {/* Lesson Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(
-                        "text-sm truncate",
-                        isLessonCompleted ? "text-muted-foreground" : "text-foreground"
-                      )}>
+                    <div className="flex-1 min-w-0 truncate">
+                      <span className={isLessonCompleted ? "text-muted-foreground" : "text-foreground"}>
                         {lesson.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        Chapter {chapterIndex}: {chapterTitle}
-                      </p>
+                      </span>
                     </div>
-
-                    {/* Duration */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-xs text-muted-foreground">{lesson.duration}</span>
-                      {isLessonCompleted && (
-                        <Badge variant="outline" className="text-xs text-green-500 border-green-500/30">
-                          완료
-                        </Badge>
-                      )}
-                    </div>
+                    <span className="text-[10px] text-muted-foreground flex-shrink-0">{lesson.duration}</span>
                   </div>
                 );
               })}
