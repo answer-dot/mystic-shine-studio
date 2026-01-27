@@ -385,7 +385,7 @@ const defaultSettings: SiteSettings = {
 };
 
 const STORAGE_KEY = 'tarot-site-settings';
-const STORAGE_VERSION = 'v6'; // Increment to reset localStorage - v6: force sync correct siteName
+const STORAGE_VERSION = 'v7'; // Increment to reset localStorage - v7: force clear any cached "1" glitch
 const VERSION_KEY = 'tarot-site-version';
 
 export const getSettings = (): SiteSettings => {
