@@ -23,12 +23,34 @@ export interface SiteSettings {
 }
 
 // Replace placeholders in legal documents with actual site settings
+// Supports multiple placeholder formats for maximum compatibility
 export const replacePlaceholders = (text: string, settings: Partial<SiteSettings>): string => {
+  const siteName = settings.siteName || 'Mystic Tarot Academy';
+  const csEmail = settings.csEmail || 'support@mystictarot.kr';
+  const csPhone = settings.csPhone || '02-1234-5678';
+  const csAddress = settings.csAddress || '서울시 강남구';
+  const currentYear = new Date().getFullYear().toString();
+
   return text
-    .replace(/\{\{SITE_NAME\}\}|\[사이트명\]/g, settings.siteName || 'Mystic Tarot Academy')
-    .replace(/\{\{CS_EMAIL\}\}|고객센터 이메일/g, settings.csEmail || 'support@mystictarot.kr')
-    .replace(/\{\{CS_PHONE\}\}/g, settings.csPhone || '02-1234-5678')
-    .replace(/\{\{CS_ADDRESS\}\}/g, settings.csAddress || '서울시 강남구');
+    // Site name placeholders (multiple formats)
+    .replace(/\{\{SITE_NAME\}\}/g, siteName)
+    .replace(/\[사이트명\]/g, siteName)
+    .replace(/\[SITE_NAME\]/g, siteName)
+    .replace(/{{사이트명}}/g, siteName)
+    // CS Email placeholders
+    .replace(/\{\{CS_EMAIL\}\}/g, csEmail)
+    .replace(/고객센터 이메일 참조/g, csEmail)
+    .replace(/고객센터 이메일/g, csEmail)
+    .replace(/\[CS_EMAIL\]/g, csEmail)
+    // CS Phone placeholders
+    .replace(/\{\{CS_PHONE\}\}/g, csPhone)
+    .replace(/\[CS_PHONE\]/g, csPhone)
+    // CS Address placeholders
+    .replace(/\{\{CS_ADDRESS\}\}/g, csAddress)
+    .replace(/\[CS_ADDRESS\]/g, csAddress)
+    // Year placeholder
+    .replace(/\{\{YEAR\}\}/g, currentYear)
+    .replace(/\[YEAR\]/g, currentYear);
 };
 
 export interface TestimonialItem {
@@ -363,7 +385,7 @@ const defaultSettings: SiteSettings = {
 };
 
 const STORAGE_KEY = 'tarot-site-settings';
-const STORAGE_VERSION = 'v5'; // Increment to reset localStorage with new defaults (v4: fixed site name sync)
+const STORAGE_VERSION = 'v6'; // Increment to reset localStorage - v6: force sync correct siteName
 const VERSION_KEY = 'tarot-site-version';
 
 export const getSettings = (): SiteSettings => {
