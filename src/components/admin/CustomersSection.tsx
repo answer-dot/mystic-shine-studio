@@ -583,7 +583,7 @@ export const CustomersSection = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute top-3 right-3 w-6 h-6 opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500 hover:bg-red-50"
+                            className="absolute top-3 right-3 w-6 h-6 text-gray-400 hover:text-red-500 hover:bg-red-50"
                             onClick={() => handleDeleteNote(note.id)}
                           >
                             <Trash2 className="w-3 h-3" />
