@@ -12,19 +12,32 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { signIn, signUp, user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
-      navigate('/');
+    // Only redirect if auth is done loading AND user exists
+    if (!authLoading && user) {
+      navigate('/dashboard');
     }
-  }, [user, navigate]);
+  }, [user, authLoading, navigate]);
+
+  // Show loading state while auth is initializing
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsSubmitting(true);
 
     try {
       if (isLogin) {
@@ -33,12 +46,12 @@ export default function Auth() {
           toast.error(error.message);
         } else {
           toast.success('로그인 성공!');
-          navigate('/');
+          navigate('/dashboard');
         }
       } else {
         if (!displayName.trim()) {
           toast.error('이름을 입력해주세요');
-          setLoading(false);
+          setIsSubmitting(false);
           return;
         }
         const { error } = await signUp(email, password, displayName);
@@ -52,7 +65,7 @@ export default function Auth() {
     } catch (error) {
       toast.error('오류가 발생했습니다');
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -145,9 +158,9 @@ export default function Auth() {
               type="submit"
               variant="hero"
               className="w-full mt-6"
-              disabled={loading}
+              disabled={isSubmitting}
             >
-              {loading ? '처리중...' : isLogin ? '로그인' : '회원가입'}
+              {isSubmitting ? '처리중...' : isLogin ? '로그인' : '회원가입'}
             </Button>
           </form>
 
