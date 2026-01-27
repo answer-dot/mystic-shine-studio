@@ -248,7 +248,9 @@ export const CoursesSection = () => {
       <div className="space-y-3">
         <div>
           <h1 className="text-xl lg:text-2xl font-bold text-gray-900">강의 관리</h1>
-          <p className="text-sm lg:text-base text-gray-600">코스 목록을 관리합니다 (멀티 코스 지원)</p>
+          <p className="text-sm lg:text-base text-gray-600">
+            ⭐ '메인 강의'로 설정된 코스가 홈페이지에 표시됩니다
+          </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
@@ -378,21 +380,31 @@ export const CoursesSection = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 pt-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={formData.is_published}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
-                  />
-                  <Label className="text-gray-700">공개</Label>
+              <div className="flex flex-col gap-4 pt-4">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={formData.is_published}
+                      onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked })}
+                    />
+                    <Label className="text-gray-700">공개</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={formData.is_featured}
+                      onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
+                    />
+                    <Label className="text-gray-700 flex items-center gap-1">
+                      <Star className="w-4 h-4 text-orange-500" />
+                      메인 강의
+                    </Label>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    checked={formData.is_featured}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: checked })}
-                  />
-                  <Label className="text-gray-700">추천 강의</Label>
-                </div>
+                {formData.is_featured && (
+                  <p className="text-xs text-orange-600 bg-orange-50 p-2 rounded-lg">
+                    ⭐ 이 강의가 홈페이지 메인에 표시됩니다
+                  </p>
+                )}
               </div>
             </div>
 
@@ -460,7 +472,10 @@ export const CoursesSection = () => {
                       {course.is_featured && (
                         <>
                           <span>•</span>
-                          <span className="text-orange-600">추천</span>
+                          <span className="text-orange-600 flex items-center gap-0.5">
+                            <Star className="w-3 h-3" />
+                            메인 강의
+                          </span>
                         </>
                       )}
                     </div>

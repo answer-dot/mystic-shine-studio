@@ -2,11 +2,13 @@ import { Check, Shield, Zap, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
 import { useSettings } from '@/hooks/useSettings';
+import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export const PricingSection = () => {
   const { settings } = useSettings();
+  const { primaryCourse } = usePrimaryCourse();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -20,7 +22,8 @@ export const PricingSection = () => {
     }
   };
 
-  const features = [
+  // Use features from primary course, or fallback to defaults
+  const features = primaryCourse?.features || [
     "14주 완성 체계적 커리큘럼",
     "평생 무제한 영상 시청",
     "주 2회 라이브 Q&A 세션",
@@ -29,6 +32,10 @@ export const PricingSection = () => {
     "수료증 발급",
     "보너스: 비즈니스 가이드북",
   ];
+
+  // Use prices from primary course, or fallback to settings
+  const price = primaryCourse?.price || settings.price;
+  const originalPrice = primaryCourse?.original_price || settings.originalPrice;
 
   return (
     <section id="pricing" className="py-20 sm:py-28 bg-gradient-to-b from-surface-overlay to-background">
@@ -48,6 +55,14 @@ export const PricingSection = () => {
             <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl" />
 
             <div className="relative z-10">
+              {/* Course Title */}
+              {primaryCourse && (
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">{primaryCourse.title}</h3>
+                  <p className="text-sm text-muted-foreground">{primaryCourse.duration} 과정</p>
+                </div>
+              )}
+
               {/* Badge */}
               <div className="flex justify-center mb-6">
                 <span className="px-4 py-1 rounded-full bg-destructive/20 text-destructive text-sm font-bold">
@@ -57,9 +72,9 @@ export const PricingSection = () => {
 
               {/* Price */}
               <div className="text-center mb-8">
-                <p className="text-muted-foreground line-through text-lg mb-2">{settings.originalPrice}</p>
+                <p className="text-muted-foreground line-through text-lg mb-2">{originalPrice}</p>
                 <div className="flex items-center justify-center gap-2">
-                  <span className="text-5xl sm:text-6xl font-extrabold text-gradient-gold">{settings.price}</span>
+                  <span className="text-5xl sm:text-6xl font-extrabold text-gradient-gold">{price}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">일시불 결제시</p>
               </div>
