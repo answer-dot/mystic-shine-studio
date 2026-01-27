@@ -202,31 +202,31 @@ export const ReviewForm = ({ courseId, courseName, onSuccess }: ReviewFormProps)
 
       {/* Coupon Reward Modal */}
       <Dialog open={showCouponModal} onOpenChange={setShowCouponModal}>
-        <DialogContent className="sm:max-w-md bg-card">
+        <DialogContent className="w-[90vw] max-w-md bg-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-primary">
               <Gift className="w-6 h-6" />
               축하합니다! 🎉
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-gray-600">
               후기 작성 감사 쿠폰이 발급되었습니다
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="text-center p-6 rounded-xl bg-gradient-to-br from-primary/10 to-orange-500/10 border border-primary/20">
-              <p className="text-sm text-muted-foreground mb-2">10% 할인 쿠폰</p>
+              <p className="text-sm text-gray-600 mb-2">10% 할인 쿠폰</p>
               <p className="text-2xl font-bold text-primary tracking-wider">
                 {couponCode}
               </p>
-              <p className="text-xs text-muted-foreground mt-2">
+              <p className="text-xs text-gray-500 mt-2">
                 30일 이내 사용 가능
               </p>
             </div>
-            <p className="text-sm text-center text-muted-foreground">
+            <p className="text-sm text-center text-gray-500">
               쿠폰은 마이페이지에서 다시 확인하실 수 있습니다.
             </p>
           </div>
-          <Button onClick={() => setShowCouponModal(false)} className="w-full">
+          <Button onClick={() => setShowCouponModal(false)} className="w-full bg-emerald-500 text-white hover:bg-emerald-600 hover:text-white">
             확인
           </Button>
         </DialogContent>

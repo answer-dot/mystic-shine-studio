@@ -9,18 +9,18 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground",
         outline:
-          "border border-border bg-transparent hover:bg-secondary hover:text-secondary-foreground",
+          "border border-border bg-transparent text-foreground hover:bg-secondary hover:text-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-secondary hover:text-secondary-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        gold: "bg-gradient-to-r from-primary to-orange-500 text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98]",
-        goldOutline: "border-2 border-primary text-primary hover:bg-primary/10",
-        hero: "bg-gradient-to-r from-primary to-orange-500 text-primary-foreground shadow-lg shadow-primary/30 text-base font-bold px-8 py-4 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98]",
+          "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:text-secondary-foreground",
+        ghost: "text-foreground hover:bg-secondary hover:text-foreground",
+        link: "text-primary underline-offset-4 hover:underline hover:text-primary",
+        gold: "bg-gradient-to-r from-primary to-orange-500 text-primary-foreground shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02] hover:text-primary-foreground active:scale-[0.98]",
+        goldOutline: "border-2 border-primary text-primary hover:bg-primary/10 hover:text-primary",
+        hero: "bg-gradient-to-r from-primary to-orange-500 text-primary-foreground shadow-lg shadow-primary/30 text-base font-bold px-8 py-4 hover:shadow-xl hover:shadow-primary/40 hover:scale-[1.02] hover:text-primary-foreground active:scale-[0.98]",
       },
       size: {
         default: "h-10 px-4 py-2",
