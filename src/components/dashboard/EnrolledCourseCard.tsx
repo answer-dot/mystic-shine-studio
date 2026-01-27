@@ -92,7 +92,7 @@ export const EnrolledCourseCard = ({
   });
 
   return (
-    <Card className="bg-card border-border overflow-hidden">
+    <Card className="bg-card border-2 border-border shadow-lg overflow-hidden">
       {/* Horizontal Split Layout: Image Left, Content Right */}
       <div className="flex flex-col md:flex-row">
         {/* Left Side: Fixed Image Box (16:9 ratio) */}
@@ -116,67 +116,70 @@ export const EnrolledCourseCard = ({
         
         {/* Right Side: Content Area */}
         <div className="flex-1 p-4 md:p-5 flex flex-col justify-between">
-          {/* Top Content: Title, Tag, Lesson Count */}
+          {/* Top Content: Title, Tag, Lesson Count - High Contrast */}
           <div>
             {/* Title & Tag Row */}
-            <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="font-bold text-lg leading-tight">{course.title}</h3>
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 text-xs flex-shrink-0">
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <h3 className="font-bold text-xl leading-tight text-foreground">{course.title}</h3>
+              <Badge className="bg-primary text-primary-foreground border-primary text-xs font-bold px-2 py-1 flex-shrink-0">
                 수강 중
               </Badge>
             </div>
             
             {/* Meta Info: Duration & Lesson Count */}
-            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-4">
-              <div className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
-                <span>{course.duration}</span>
+            <div className="flex items-center gap-4 text-sm mb-4">
+              <div className="flex items-center gap-1.5 text-foreground">
+                <Clock className="w-4 h-4 text-primary" />
+                <span className="font-medium">{course.duration}</span>
               </div>
-              <span className="text-border">•</span>
-              <span className="font-medium">{completedCount}/{totalLessons} 레슨</span>
+              <span className="text-muted-foreground">•</span>
+              <span className="font-semibold text-foreground">{totalLessons}개 레슨</span>
             </div>
 
-            {/* Progress Bar (within right content area, not full width) */}
-            <div className="mb-4">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-medium text-muted-foreground">학습 진도율</span>
-                <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
+            {/* Progress Bar - High Contrast */}
+            <div className="mb-4 p-3 rounded-lg bg-muted/30 border border-border">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-foreground">학습 진도율</span>
+                <span className="text-lg font-bold text-primary">{progressPercentage}%</span>
               </div>
-              <Progress value={progressPercentage} className="h-2" />
+              <div className="relative">
+                <Progress value={progressPercentage} className="h-3 bg-muted" />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5">{completedCount}/{totalLessons} 레슨 완료</p>
             </div>
           </div>
 
-          {/* Bottom: Action Buttons Side-by-Side */}
-          <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+          {/* Bottom: Action Buttons Side-by-Side - High Contrast */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-auto">
             <Button 
               size="sm"
-              className="flex-1" 
+              className="flex-1 bg-primary text-primary-foreground font-bold border-2 border-primary hover:bg-primary/90" 
               onClick={onStartLearning}
             >
-              <Play className="w-3.5 h-3.5 mr-1.5" />
+              <Play className="w-4 h-4 mr-2" />
               {isCompleted ? '다시 학습하기' : '이어서 학습하기'}
             </Button>
             
-            {/* Certificate Button */}
+            {/* Certificate Button - High Contrast */}
             {isCompleted ? (
               <Button 
                 size="sm"
                 variant="outline"
-                className="flex-1 border-green-500/50 text-green-500 hover:bg-green-500/10"
+                className="flex-1 border-2 border-green-500 text-green-500 font-bold hover:bg-green-500/20"
                 onClick={() => certificateIssued ? onStartLearning() : issueCertificate()}
               >
-                <Award className="w-3.5 h-3.5 mr-1.5" />
+                <Award className="w-4 h-4 mr-2" />
                 {certificateIssued ? '수료증 보기' : '수료증 발급'}
               </Button>
             ) : (
               <Button 
                 size="sm"
                 variant="outline"
-                className="flex-1 opacity-50 cursor-not-allowed"
+                className="flex-1 border-2 border-muted-foreground/50 text-muted-foreground font-medium cursor-not-allowed"
                 disabled
                 title="100% 달성 시 활성화"
               >
-                <Lock className="w-3.5 h-3.5 mr-1.5" />
+                <Lock className="w-4 h-4 mr-2" />
                 수료증 발급
               </Button>
             )}
