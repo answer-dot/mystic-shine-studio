@@ -13,6 +13,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ReviewForm } from '@/components/ReviewForm';
 import { useUserReviews, useUserCoupons } from '@/hooks/useReviews';
 import { CourseLearningSection } from '@/components/dashboard/CourseLearningSection';
+import { CertificateDownload } from '@/components/dashboard/CertificateDownload';
+import { EnrolledCourseCard } from '@/components/dashboard/EnrolledCourseCard';
+import { useCourseProgress } from '@/hooks/useCourseProgress';
+import { Progress } from '@/components/ui/progress';
 import { 
   BookOpen, 
   MessageSquare, 
@@ -285,7 +289,7 @@ const Dashboard = () => {
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold flex items-center gap-2">
                   <BookOpen className="w-5 h-5 text-primary" />
-                  강의 목록
+                  {enrolledCourseIds.length > 0 ? '내 강의' : '강의 목록'}
                 </h2>
               </div>
 
@@ -299,105 +303,47 @@ const Dashboard = () => {
                     </Card>
                   ))}
                 </div>
-              ) : courses && courses.length > 0 ? (
-                <div className="space-y-4">
-                  {courses.map((course) => {
-                    const isEnrolled = enrolledCourseIds.includes(course.id);
-                    
-                    return (
-                      <Card 
-                        key={course.id} 
-                        className={`bg-card border-border hover:border-primary/50 transition-colors overflow-hidden ${
-                          course.is_featured ? 'ring-1 ring-primary/20' : ''
-                        }`}
-                      >
-                        <div className="flex flex-col sm:flex-row">
-                          {/* Course Image */}
-                          <div className="relative w-full sm:w-48 h-40 sm:h-auto flex-shrink-0">
-                            <img 
-                              src={course.image_url || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=400&h=300&fit=crop'}
-                              alt={course.title}
-                              className="w-full h-full object-cover"
-                            />
-                            {course.is_featured && (
-                              <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground">
-                                추천
-                              </Badge>
-                            )}
-                          </div>
-                          
-                          {/* Course Info */}
-                          <div className="flex-1 p-5">
-                            <div className="flex items-start justify-between mb-2">
-                              <h3 className="font-bold text-lg">{course.title}</h3>
-                              {isEnrolled ? (
-                                <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-green-500/20">
-                                  수강 중
-                                </Badge>
-                              ) : (
-                                <Badge variant="outline" className="text-muted-foreground">
-                                  미등록
-                                </Badge>
-                              )}
-                            </div>
-                            
-                            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-                              {course.description || course.short_description}
-                            </p>
-                            
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" />
-                                <span>{course.duration}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <span className="font-semibold text-primary">{course.price}</span>
-                              </div>
-                            </div>
-                            
-                            {isEnrolled ? (
-                              <Button 
-                                className="w-full sm:w-auto" 
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedCourseId(course.id);
-                                  setActiveTab('learning');
-                                }}
-                              >
-                                <Play className="w-4 h-4 mr-2" />
-                                학습 계속하기
-                              </Button>
-                            ) : (
-                              <Button 
-                                variant="outline" 
-                                className="w-full sm:w-auto" 
-                                size="sm"
-                                onClick={() => navigate('/')}
-                              >
-                                <Lock className="w-4 h-4 mr-2" />
-                                수강 신청
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      </Card>
-                    );
-                  })}
-                </div>
-              ) : (
-                <Card className="bg-card border-border">
-                  <CardContent className="py-12 text-center text-muted-foreground">
-                    <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p>아직 등록된 강의가 없습니다</p>
+              ) : enrolledCourseIds.length === 0 ? (
+                /* No Course Purchased - Show Empty State */
+                <Card className="bg-white border-gray-200 shadow-sm">
+                  <CardContent className="py-16 text-center">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                      <BookOpen className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">신청한 강의가 없습니다!</h3>
+                    <p className="text-gray-500 mb-6">
+                      지금 바로 강의를 신청하고 학습을 시작해보세요.
+                    </p>
                     <Button 
-                      variant="link" 
-                      className="mt-2 text-primary"
+                      size="lg"
+                      className="px-8"
                       onClick={() => navigate('/')}
                     >
-                      강의 둘러보기 <ChevronRight className="w-4 h-4 ml-1" />
+                      <Play className="w-5 h-5 mr-2" />
+                      강의 보러가기
                     </Button>
                   </CardContent>
                 </Card>
+              ) : (
+                /* Course Purchased - Show Progress Cards */
+                <div className="space-y-4">
+                  {courses?.filter(course => enrolledCourseIds.includes(course.id)).map((course) => {
+                    const enrollment = enrollments?.find(e => e.course_id === course.id);
+                    
+                    return (
+                      <EnrolledCourseCard
+                        key={course.id}
+                        course={course}
+                        enrollment={enrollment}
+                        userName={displayName}
+                        onStartLearning={() => {
+                          setSelectedCourseId(course.id);
+                          setActiveTab('learning');
+                        }}
+                      />
+                    );
+                  })}
+                </div>
               )}
             </div>
 
