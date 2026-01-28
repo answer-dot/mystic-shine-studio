@@ -262,8 +262,14 @@ const Admin = () => {
       setConfirmPin('');
       toast({
         title: "PIN 변경 완료",
-        description: "새로운 PIN으로 변경되었습니다.",
+        description: "새로운 PIN으로 변경되었습니다. 보안을 위해 로그아웃됩니다.",
       });
+      
+      // Security: Force logout after PIN change
+      // Clear session storage and sign out to require re-authentication with new PIN
+      sessionStorage.removeItem('admin_pin_verified');
+      await signOut();
+      setAuthStep('login');
     } else {
       toast({
         title: "오류",
