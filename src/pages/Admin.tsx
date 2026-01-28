@@ -27,6 +27,7 @@ import { CustomersSection } from '@/components/admin/CustomersSection';
 import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
 import { EmailSettingsSection } from '@/components/admin/EmailSettingsSection';
 import { NotificationBell } from '@/components/admin/NotificationBell';
+import { ThemeColorPicker } from '@/components/admin/ThemeColorPicker';
 
 type AuthStep = 'login' | 'pin' | 'authenticated';
 
@@ -69,6 +70,9 @@ const Admin = () => {
   const [termsOfService, setTermsOfService] = useState('');
   const [privacyPolicy, setPrivacyPolicy] = useState('');
   const [refundPolicy, setRefundPolicy] = useState('');
+  // 🎨 Theme color states
+  const [primaryColor, setPrimaryColor] = useState('#f97316');
+  const [backgroundColor, setBackgroundColor] = useState('#ffffff');
 
   // Determine auth step based on user state
   useEffect(() => {
@@ -114,6 +118,9 @@ const Admin = () => {
       setTermsOfService(settings.termsOfService || '');
       setPrivacyPolicy(settings.privacyPolicy || '');
       setRefundPolicy(settings.refundPolicy || '');
+      // 🎨 Theme colors 로드
+      setPrimaryColor(settings.primaryColor || '#f97316');
+      setBackgroundColor(settings.backgroundColor || '#ffffff');
     }
   }, [authStep, settings]);
 
@@ -241,6 +248,15 @@ const Admin = () => {
     toast({
       title: "저장 완료",
       description: "약관이 저장되었습니다. 푸터와 회원가입 페이지에 즉시 반영됩니다.",
+    });
+  };
+
+  // 🎨 테마 색상 저장
+  const handleSaveTheme = async () => {
+    await updateSettings({ primaryColor, backgroundColor });
+    toast({
+      title: "테마 저장 완료",
+      description: "색상이 저장되었습니다. 모든 사이트에 실시간으로 반영됩니다.",
     });
   };
 
@@ -561,6 +577,22 @@ const Admin = () => {
             setConfirmPin={setConfirmPin}
             onChangePin={handleChangePin}
           />
+        );
+      case 'theme':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h1 className="text-xl lg:text-2xl font-bold text-gray-900">테마 설정</h1>
+              <p className="text-sm lg:text-base text-gray-600">사이트 전체 색상을 관리합니다</p>
+            </div>
+            <ThemeColorPicker
+              primaryColor={primaryColor}
+              setPrimaryColor={setPrimaryColor}
+              backgroundColor={backgroundColor}
+              setBackgroundColor={setBackgroundColor}
+              onSave={handleSaveTheme}
+            />
+          </div>
         );
       default:
         return null;
