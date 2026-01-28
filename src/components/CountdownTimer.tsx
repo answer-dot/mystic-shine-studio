@@ -10,10 +10,12 @@ interface TimeLeft {
 interface CountdownTimerProps {
   targetDate: string;
   compact?: boolean;
+  onExpire?: () => void;  // Callback when timer reaches 0
 }
 
-export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerProps) => {
+export const CountdownTimer = ({ targetDate, compact = false, onExpire }: CountdownTimerProps) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
@@ -26,6 +28,14 @@ export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerPr
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
+        setIsExpired(false);
+      } else {
+        // Timer expired
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        if (!isExpired) {
+          setIsExpired(true);
+          onExpire?.();
+        }
       }
     };
 
@@ -33,7 +43,7 @@ export const CountdownTimer = ({ targetDate, compact = false }: CountdownTimerPr
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [targetDate, isExpired, onExpire]);
 
   // Inline styles to FORCE horizontal layout - no CSS can override this
   const containerStyle: React.CSSProperties = {
