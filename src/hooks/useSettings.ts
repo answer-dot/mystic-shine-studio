@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getSettings, saveSettings, SiteSettings, CurriculumItem, EventItem, TestimonialItem } from '@/lib/store';
 import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Keys that we store in the database
 const DB_SETTINGS_KEYS = [
@@ -46,8 +47,9 @@ export const useSettings = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const loadAttempted = useRef(false);
+  const queryClient = useQueryClient();
 
-  // Load settings from database on mount
+  // Load settings from database and setup realtime subscription
   useEffect(() => {
     // Prevent multiple load attempts
     if (loadAttempted.current) return;
@@ -98,6 +100,54 @@ export const useSettings = () => {
     };
 
     loadFromDatabase();
+
+    // 🚀 REALTIME SUBSCRIPTION: Listen for site_settings changes
+    const channel = supabase
+      .channel('site-settings-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'site_settings',
+        },
+        (payload) => {
+          console.log('[Realtime] site_settings changed:', payload);
+          
+          // Handle different event types
+          if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+            const newRow = payload.new as { key: string; value: unknown };
+            if (newRow && DB_SETTINGS_KEYS.includes(newRow.key as typeof DB_SETTINGS_KEYS[number])) {
+              const parsedValue = parseDbValue(newRow.value);
+              
+              // Immediately update local state
+              setSettings(prev => ({
+                ...prev,
+                [newRow.key]: parsedValue,
+              }));
+              
+              // Update localStorage
+              saveSettings({ [newRow.key]: parsedValue } as Partial<SiteSettings>);
+              
+              console.log(`[Realtime] Updated ${newRow.key} in real-time`);
+            }
+          } else if (payload.eventType === 'DELETE') {
+            const oldRow = payload.old as { key: string };
+            if (oldRow) {
+              console.log(`[Realtime] Setting ${oldRow.key} was deleted`);
+            }
+          }
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Realtime] site_settings subscription status:', status);
+      });
+
+    // Cleanup subscription on unmount
+    return () => {
+      console.log('[Realtime] Unsubscribing from site_settings');
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const updateSettings = useCallback(async (updates: Partial<SiteSettings>) => {
@@ -130,10 +180,13 @@ export const useSettings = () => {
 
       await Promise.all(upsertPromises);
       console.log('Settings saved to database:', Object.keys(updates));
+      
+      // 🔄 CACHE INVALIDATION: Clear relevant query caches to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ['site-settings'] });
     } catch (error) {
       console.error('Error saving settings to database:', error);
     }
-  }, []);
+  }, [queryClient]);
 
   const refreshSettings = useCallback(async () => {
     setIsLoading(true);
