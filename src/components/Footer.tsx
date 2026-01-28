@@ -1,16 +1,18 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Mail, Phone, MapPin, FileText, Shield, RefreshCcw } from 'lucide-react';
+import { Sparkles, Mail, Phone, MapPin, FileText, Shield, RefreshCcw, MessageSquare } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { replacePlaceholders } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { InquiryModal } from './InquiryModal';
 
 export const Footer = () => {
   const { settings } = useSettings();
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [showRefundDialog, setShowRefundDialog] = useState(false);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
 
   // Apply placeholders to legal documents
   const termsContent = replacePlaceholders(
@@ -83,7 +85,16 @@ export const Footer = () => {
                     className="hover:text-foreground transition-colors inline-flex items-center gap-1"
                   >
                     <RefreshCcw className="w-3 h-3" />
-                    환불 정책
+                  환불 정책
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={() => setShowInquiryModal(true)} 
+                    className="hover:text-foreground transition-colors inline-flex items-center gap-1 text-primary font-medium"
+                  >
+                    <MessageSquare className="w-3 h-3" />
+                    1대1 문의하기
                   </button>
                 </li>
                 <li><Link to="/admin" className="hover:text-foreground transition-colors">관리자</Link></li>
@@ -171,6 +182,9 @@ export const Footer = () => {
           </ScrollArea>
         </DialogContent>
       </Dialog>
+
+      {/* Inquiry Modal */}
+      <InquiryModal open={showInquiryModal} onOpenChange={setShowInquiryModal} />
     </>
   );
 };

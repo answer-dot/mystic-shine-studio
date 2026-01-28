@@ -1,9 +1,10 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, Menu, X, User, LogOut } from 'lucide-react';
+import { Sparkles, Menu, X, User, LogOut, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
+import { InquiryModal } from './InquiryModal';
 
 export const Header = () => {
   const { settings } = useSettings();
@@ -11,6 +12,7 @@ export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
 
   const scrollToSection = (id: string) => {
     // If not on home page, navigate to home first with hash
@@ -75,6 +77,13 @@ export const Header = () => {
             <button onClick={() => scrollToSection('faq')} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               FAQ
             </button>
+            <button 
+              onClick={() => setShowInquiryModal(true)} 
+              className="text-sm text-primary hover:text-primary/80 transition-colors font-medium flex items-center gap-1"
+            >
+              <MessageSquare className="w-4 h-4" />
+              1대1 문의
+            </button>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -137,6 +146,16 @@ export const Header = () => {
             <button onClick={() => scrollToSection('faq')} className="block w-full text-left px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
               FAQ
             </button>
+            <button 
+              onClick={() => {
+                setShowInquiryModal(true);
+                setMobileMenuOpen(false);
+              }} 
+              className="block w-full text-left px-4 py-2 text-primary hover:text-primary/80 hover:bg-primary/10 rounded-lg transition-colors font-medium"
+            >
+              <MessageSquare className="w-4 h-4 inline mr-2" />
+              1대1 문의하기
+            </button>
             
             {user ? (
               <>
@@ -172,6 +191,9 @@ export const Header = () => {
           </nav>
         )}
       </div>
+
+      {/* Inquiry Modal */}
+      <InquiryModal open={showInquiryModal} onOpenChange={setShowInquiryModal} />
     </header>
   );
 };
