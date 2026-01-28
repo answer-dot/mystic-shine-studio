@@ -5,7 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Button } from '@/components/ui/button';
+
 
 const faqs = [
   {
@@ -63,10 +63,6 @@ export const FAQSection = () => {
             ))}
           </Accordion>
 
-          <div className="text-center mt-8">
-            <p className="text-muted-foreground mb-4">더 궁금한 점이 있으신가요?</p>
-            <Button variant="outline">📩 1:1 문의하기</Button>
-          </div>
         </div>
       </div>
     </section>
