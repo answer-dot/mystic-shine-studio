@@ -21,6 +21,7 @@ export interface SiteSettings {
   csPhone: string;
   csAddress: string;
   courseVisible: boolean;  // 강의 노출 여부 스위치
+  eventsVisible: boolean;  // 이벤트 섹션 노출 여부 스위치
 }
 
 // Replace placeholders in legal documents with actual site settings
@@ -285,6 +286,7 @@ const defaultSettings: SiteSettings = {
   csPhone: "02-1234-5678",
   csAddress: "서울시 강남구",
   courseVisible: false,  // 기본값: 강의 숨김 (준비 중)
+  eventsVisible: false,  // 기본값: 이벤트 섹션 숨김 (웨비나 집중)
   curriculum: [
     {
       id: "1",

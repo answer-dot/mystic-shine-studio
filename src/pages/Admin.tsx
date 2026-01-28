@@ -61,6 +61,7 @@ const Admin = () => {
   const [price, setPrice] = useState('');
   const [originalPrice, setOriginalPrice] = useState('');
   const [courseVisible, setCourseVisible] = useState(false);  // 강의 노출 스위치
+  const [eventsVisible, setEventsVisible] = useState(false);  // 이벤트 섹션 노출 스위치
   const [events, setEvents] = useState<EventItem[]>([]);
   const [testimonials, setTestimonials] = useState<TestimonialItem[]>([]);
   const [newPin, setNewPin] = useState('');
@@ -107,6 +108,7 @@ const Admin = () => {
       setPrice(settings.price || '');
       setOriginalPrice(settings.originalPrice || '');
       setCourseVisible(settings.courseVisible === true);  // 강의 노출 상태 로드
+      setEventsVisible(settings.eventsVisible === true);  // 이벤트 섹션 노출 상태 로드
       setEvents(settings.events || []);
       setTestimonials(settings.testimonials || []);
       setTermsOfService(settings.termsOfService || '');
@@ -197,6 +199,7 @@ const Admin = () => {
       price,
       originalPrice,
       courseVisible,  // 강의 노출 스위치 저장
+      eventsVisible,  // 이벤트 섹션 노출 스위치 저장
     });
     toast({
       title: "저장 완료",
@@ -484,6 +487,8 @@ const Admin = () => {
             setOriginalPrice={setOriginalPrice}
             courseVisible={courseVisible}
             setCourseVisible={setCourseVisible}
+            eventsVisible={eventsVisible}
+            setEventsVisible={setEventsVisible}
             onSave={handleSaveGeneral}
           />
         );
