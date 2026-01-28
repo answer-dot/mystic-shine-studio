@@ -1,34 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useSettings } from '@/hooks/useSettings';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, CheckCircle, XCircle, PartyPopper } from 'lucide-react';
 
-// Validation schema
+// Validation schema - only name, email, phone (NO password)
 const registrationSchema = z.object({
   name: z.string().trim().min(2, '이름을 2자 이상 입력해주세요').max(50, '이름은 50자 이하여야 합니다'),
   email: z.string().trim().email('올바른 이메일을 입력해주세요').max(100, '이메일은 100자 이하여야 합니다'),
   phone: z.string().trim().min(10, '전화번호를 정확히 입력해주세요').max(20, '전화번호는 20자 이하여야 합니다'),
+  agreedTerms: z.boolean().refine(val => val === true, { message: '필수 동의 항목입니다' }),
+  agreedPrivacy: z.boolean().refine(val => val === true, { message: '필수 동의 항목입니다' }),
 });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 interface WebinarRegistrationFormProps {
   onSuccess?: () => void;
-  isExpired: boolean;  // 타이머가 0이 됨
+  isExpired: boolean;
 }
 
 export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistrationFormProps) => {
   const { settings, updateSettings } = useSettings();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isRegistered, setIsRegistered] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
 
   // Check if registration is closed (seats = 0 OR time expired)
   const isClosed = settings.remainingSeats <= 0 || isExpired;
@@ -38,12 +42,20 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
+    defaultValues: {
+      agreedTerms: false,
+      agreedPrivacy: false,
+    },
   });
 
+  const agreedTerms = watch('agreedTerms');
+  const agreedPrivacy = watch('agreedPrivacy');
+
   const onSubmit = async (data: RegistrationFormData) => {
-    // Double-check closure status
     if (isClosed) {
       toast({
         title: '신청이 마감되었습니다',
@@ -56,12 +68,11 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
     setIsSubmitting(true);
 
     try {
-      // Check for duplicate registration by email
+      // Check for duplicate registration by email in webinar_registrations table
       const { data: existing, error: checkError } = await supabase
-        .from('inquiries')
+        .from('webinar_registrations')
         .select('id')
         .eq('email', data.email.toLowerCase())
-        .ilike('message', '[웨비나 신청]%')
         .maybeSingle();
 
       if (checkError) {
@@ -78,24 +89,41 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
         return;
       }
 
-      // Submit registration as inquiry with [웨비나 신청] prefix
+      // Parse webinar date for storage
+      let webinarDate: string | null = null;
+      if (settings.webinarDate) {
+        webinarDate = new Date(settings.webinarDate).toISOString();
+      }
+
+      // Submit to dedicated webinar_registrations table (NOT users table)
       const { error: insertError } = await supabase
-        .from('inquiries')
+        .from('webinar_registrations')
         .insert({
           name: data.name.trim(),
           email: data.email.toLowerCase().trim(),
           phone: data.phone.trim(),
-          message: `[웨비나 신청] ${settings.siteName || 'Webinar'} - ${new Date().toLocaleDateString('ko-KR')}`,
-          user_id: null, // Anonymous submission
+          agreed_terms: data.agreedTerms,
+          agreed_privacy: data.agreedPrivacy,
+          webinar_date: webinarDate,
         });
 
       if (insertError) {
         console.error('Registration error:', insertError);
-        toast({
-          title: '신청 실패',
-          description: '잠시 후 다시 시도해주세요.',
-          variant: 'destructive',
-        });
+        
+        // Check if it's a duplicate error
+        if (insertError.code === '23505') {
+          toast({
+            title: '이미 신청하셨습니다',
+            description: '같은 이메일로 중복 신청은 불가합니다.',
+            variant: 'destructive',
+          });
+        } else {
+          toast({
+            title: '신청 실패',
+            description: '잠시 후 다시 시도해주세요.',
+            variant: 'destructive',
+          });
+        }
         setIsSubmitting(false);
         return;
       }
@@ -104,13 +132,10 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
       const newSeats = Math.max(0, settings.remainingSeats - 1);
       await updateSettings({ remainingSeats: newSeats });
 
-      setIsRegistered(true);
       reset();
       
-      toast({
-        title: '🎉 신청 완료!',
-        description: '웨비나 시작 전 이메일로 안내드리겠습니다.',
-      });
+      // Show success dialog popup instead of toast
+      setShowSuccessDialog(true);
 
       onSuccess?.();
     } catch (error) {
@@ -124,19 +149,6 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
       setIsSubmitting(false);
     }
   };
-
-  // Already registered success state
-  if (isRegistered) {
-    return (
-      <div className="text-center py-6">
-        <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
-        <h4 className="text-lg font-bold text-foreground mb-2">신청 완료!</h4>
-        <p className="text-sm text-muted-foreground">
-          웨비나 시작 전 입력하신 이메일로<br />안내 메일을 보내드립니다.
-        </p>
-      </div>
-    );
-  }
 
   // Closed state (seats = 0 or time expired)
   if (isClosed) {
@@ -157,77 +169,145 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="name" className="text-sm font-medium text-foreground">
-          이름 <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="name"
-          placeholder="홍길동"
-          {...register('name')}
+    <>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Name Field */}
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-sm font-medium text-foreground">
+            이름 <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="name"
+            placeholder="홍길동"
+            {...register('name')}
+            disabled={isSubmitting}
+            className="bg-background border-border text-foreground"
+          />
+          {errors.name && (
+            <p className="text-xs text-destructive">{errors.name.message}</p>
+          )}
+        </div>
+
+        {/* Email Field */}
+        <div className="space-y-2">
+          <Label htmlFor="email" className="text-sm font-medium text-foreground">
+            이메일 <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="example@email.com"
+            {...register('email')}
+            disabled={isSubmitting}
+            className="bg-background border-border text-foreground"
+          />
+          {errors.email && (
+            <p className="text-xs text-destructive">{errors.email.message}</p>
+          )}
+        </div>
+
+        {/* Phone Field */}
+        <div className="space-y-2">
+          <Label htmlFor="phone" className="text-sm font-medium text-foreground">
+            전화번호 <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="phone"
+            type="tel"
+            placeholder="010-1234-5678"
+            {...register('phone')}
+            disabled={isSubmitting}
+            className="bg-background border-border text-foreground"
+          />
+          {errors.phone && (
+            <p className="text-xs text-destructive">{errors.phone.message}</p>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          variant="hero"
+          size="lg"
+          className="w-full"
           disabled={isSubmitting}
-          className="bg-background border-border text-foreground"
-        />
-        {errors.name && (
-          <p className="text-xs text-destructive">{errors.name.message}</p>
-        )}
-      </div>
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              신청 중...
+            </>
+          ) : (
+            <>🔮 무료 웨비나 신청하기</>
+          )}
+        </Button>
 
-      <div className="space-y-2">
-        <Label htmlFor="email" className="text-sm font-medium text-foreground">
-          이메일 <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="example@email.com"
-          {...register('email')}
-          disabled={isSubmitting}
-          className="bg-background border-border text-foreground"
-        />
-        {errors.email && (
-          <p className="text-xs text-destructive">{errors.email.message}</p>
-        )}
-      </div>
+        {/* Small Terms & Privacy Checkboxes at Bottom */}
+        <div className="space-y-2 pt-2 border-t border-border/50">
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="agreedTerms"
+              checked={agreedTerms}
+              onCheckedChange={(checked) => setValue('agreedTerms', checked === true)}
+              disabled={isSubmitting}
+              className="mt-0.5"
+            />
+            <label htmlFor="agreedTerms" className="text-xs text-muted-foreground cursor-pointer leading-tight">
+              (필수) 만 14세 이상이며 <span className="underline">이용약관</span>에 동의합니다
+            </label>
+          </div>
+          {errors.agreedTerms && (
+            <p className="text-xs text-destructive ml-6">{errors.agreedTerms.message}</p>
+          )}
 
-      <div className="space-y-2">
-        <Label htmlFor="phone" className="text-sm font-medium text-foreground">
-          전화번호 <span className="text-destructive">*</span>
-        </Label>
-        <Input
-          id="phone"
-          type="tel"
-          placeholder="010-1234-5678"
-          {...register('phone')}
-          disabled={isSubmitting}
-          className="bg-background border-border text-foreground"
-        />
-        {errors.phone && (
-          <p className="text-xs text-destructive">{errors.phone.message}</p>
-        )}
-      </div>
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="agreedPrivacy"
+              checked={agreedPrivacy}
+              onCheckedChange={(checked) => setValue('agreedPrivacy', checked === true)}
+              disabled={isSubmitting}
+              className="mt-0.5"
+            />
+            <label htmlFor="agreedPrivacy" className="text-xs text-muted-foreground cursor-pointer leading-tight">
+              (필수) <span className="underline">개인정보 처리방침</span>에 동의합니다
+            </label>
+          </div>
+          {errors.agreedPrivacy && (
+            <p className="text-xs text-destructive ml-6">{errors.agreedPrivacy.message}</p>
+          )}
+        </div>
+      </form>
 
-      <Button
-        type="submit"
-        variant="hero"
-        size="lg"
-        className="w-full"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            신청 중...
-          </>
-        ) : (
-          <>🔮 무료 웨비나 신청하기</>
-        )}
-      </Button>
-
-      <p className="text-xs text-center text-muted-foreground">
-        신청 시 개인정보 수집에 동의하는 것으로 간주됩니다.
-      </p>
-    </form>
+      {/* Success Confirmation Popup */}
+      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
+        <DialogContent className="sm:max-w-md bg-white text-gray-900">
+          <DialogHeader className="text-center">
+            <div className="mx-auto mb-4">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                <PartyPopper className="w-8 h-8 text-green-600" />
+              </div>
+            </div>
+            <DialogTitle className="text-xl font-bold text-center text-gray-900">
+              신청이 완료되었습니다! 🎉
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center space-y-4 py-4">
+            <p className="text-gray-600">
+              웨비나 시작 전 입력하신 연락처로<br />
+              <strong className="text-gray-900">안내 문자</strong>를 보내드립니다.
+            </p>
+            <p className="text-sm text-gray-500">
+              문자 수신을 위해 연락처를 확인해주세요.
+            </p>
+          </div>
+          <Button 
+            onClick={() => setShowSuccessDialog(false)} 
+            className="w-full bg-green-600 hover:bg-green-700 text-white"
+          >
+            확인
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

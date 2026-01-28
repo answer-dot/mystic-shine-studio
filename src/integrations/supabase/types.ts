@@ -488,6 +488,39 @@ export type Database = {
           },
         ]
       }
+      webinar_registrations: {
+        Row: {
+          agreed_privacy: boolean
+          agreed_terms: boolean
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          webinar_date: string | null
+        }
+        Insert: {
+          agreed_privacy?: boolean
+          agreed_terms?: boolean
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          webinar_date?: string | null
+        }
+        Update: {
+          agreed_privacy?: boolean
+          agreed_terms?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          webinar_date?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
