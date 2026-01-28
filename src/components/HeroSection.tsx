@@ -9,6 +9,12 @@ import { useCourses } from '@/hooks/useCourses';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useWebinarRealtime } from '@/hooks/useWebinarRealtime';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 export const HeroSection = () => {
   const { settings } = useSettings();
@@ -19,6 +25,9 @@ export const HeroSection = () => {
   
   // Real-time webinar notifications
   useWebinarRealtime();
+  
+  // Modal state for registration form
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   
   // Calculate initial timer expired state based on current time vs webinar date
   const getInitialExpiredState = useCallback(() => {
@@ -50,6 +59,11 @@ export const HeroSection = () => {
 
   // Determine if registration is closed
   const isClosed = settings.remainingSeats <= 0 || isTimerExpired;
+
+  // Handle successful registration
+  const handleRegistrationSuccess = () => {
+    setShowRegistrationModal(false);
+  };
 
   // Enrolled User: Show expanded premium "Welcome Back" banner
   if (userIsEnrolled) {
@@ -125,108 +139,144 @@ export const HeroSection = () => {
     );
   }
 
-  // Default Hero for non-enrolled users - WEBINAR FOCUSED
+  // Default Hero for non-enrolled users - WEBINAR FOCUSED (Clean CTA + Modal)
   return (
-    <section className="relative min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 flex items-center overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
-      <div className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-32 sm:w-64 h-32 sm:h-64 bg-orange-500/10 rounded-full blur-3xl" />
+    <>
+      <section className="relative min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 flex items-center overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+        <div className="absolute top-1/4 left-1/4 w-48 sm:w-96 h-48 sm:h-96 bg-primary/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-32 sm:w-64 h-32 sm:h-64 bg-orange-500/10 rounded-full blur-3xl" />
 
-      <div className="section-container relative z-10">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 sm:mb-8 animate-fade-in">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs sm:text-sm text-primary font-medium">2월 특별 오픈 클래스</span>
-          </div>
-
-          {/* Main headline */}
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 animate-fade-in px-2">
-            지식 창업가를 위한{' '}
-            <span className="text-gradient-gold block sm:inline">수익 자동화 시스템</span>
-          </h1>
-
-          <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-6 sm:mb-8 max-w-2xl mx-auto animate-fade-in px-4">
-            {primaryCourse?.description || '타로의 신비로운 세계에 입문하세요. 15년 경력의 마스터가 직접 전수하는 체계적인 커리큘럼으로 전문 리더로 성장하세요.'}
-          </p>
-
-          {/* 🔥 WEBINAR REGISTRATION CARD */}
-          <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-lg mb-8 sm:mb-10 animate-fade-in mx-4 sm:mx-auto border-2 border-primary/30" style={{
-            background: 'linear-gradient(135deg, rgba(20,20,30,0.95) 0%, rgba(15,15,25,0.98) 100%)',
-            boxShadow: '0 0 40px -10px hsl(var(--primary)/0.4)'
-          }}>
-            {/* Webinar Header */}
-            <div className="text-center mb-4">
-              <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
-                🔮 무료 웨비나 시작까지
-              </h3>
-              <p className="text-sm text-muted-foreground">지금 바로 자리를 확보하세요!</p>
+        <div className="section-container relative z-10 w-full">
+          <div className="max-w-4xl mx-auto text-center px-4">
+            {/* Badge - Centered */}
+            <div className="flex justify-center mb-6 sm:mb-8 animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-sm text-primary font-medium">2월 특별 오픈 클래스</span>
+              </div>
             </div>
 
-            {/* Countdown Timer - Large & Prominent */}
-            <div className="w-full mb-4">
-              <CountdownTimer 
-                targetDate={settings.webinarDate} 
-                onExpire={handleTimerExpire}
-              />
+            {/* Main headline - Centered */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-4 sm:mb-6 animate-fade-in text-center">
+              지식 창업가를 위한{' '}
+              <span className="text-gradient-gold block sm:inline">수익 자동화 시스템</span>
+            </h1>
+
+            <p className="text-base sm:text-lg md:text-xl text-muted-foreground mb-8 sm:mb-10 max-w-2xl mx-auto animate-fade-in text-center">
+              {primaryCourse?.description || '타로의 신비로운 세계에 입문하세요. 15년 경력의 마스터가 직접 전수하는 체계적인 커리큘럼으로 전문 리더로 성장하세요.'}
+            </p>
+
+            {/* 🔥 WEBINAR CTA CARD - Only Timer + Button (No Form) */}
+            <div className="flex justify-center animate-fade-in">
+              <div className="glass-card rounded-2xl p-6 sm:p-8 w-full max-w-md border-2 border-primary/30 text-center" style={{
+                background: 'linear-gradient(135deg, rgba(20,20,30,0.95) 0%, rgba(15,15,25,0.98) 100%)',
+                boxShadow: '0 0 40px -10px hsl(var(--primary)/0.4)'
+              }}>
+                {/* Webinar Header */}
+                <div className="mb-4">
+                  <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+                    🔮 무료 웨비나 시작까지
+                  </h3>
+                  <p className="text-sm text-muted-foreground">지금 바로 자리를 확보하세요!</p>
+                </div>
+
+                {/* Countdown Timer - Large & Prominent */}
+                <div className="w-full mb-6">
+                  <CountdownTimer 
+                    targetDate={settings.webinarDate} 
+                    onExpire={handleTimerExpire}
+                  />
+                </div>
+
+                {/* Real-time Seat Counter */}
+                <div className="flex items-center justify-center gap-3 py-3 px-6 rounded-full mb-6 mx-auto" style={{
+                  background: isClosed 
+                    ? 'rgba(239, 68, 68, 0.2)' 
+                    : settings.remainingSeats <= 5 
+                      ? 'rgba(239, 68, 68, 0.15)' 
+                      : 'rgba(34, 197, 94, 0.1)',
+                  border: isClosed 
+                    ? '1px solid rgba(239, 68, 68, 0.4)' 
+                    : settings.remainingSeats <= 5 
+                      ? '1px solid rgba(239, 68, 68, 0.3)' 
+                      : '1px solid rgba(34, 197, 94, 0.3)'
+                }}>
+                  {isClosed ? (
+                    <span className="text-destructive font-bold text-lg">🚫 마감되었습니다</span>
+                  ) : settings.remainingSeats <= 5 ? (
+                    <>
+                      <span className="text-destructive font-bold text-lg animate-pulse">🔥 마감 임박!</span>
+                      <span className="text-sm sm:text-base text-foreground">
+                        잔여 <span className="text-primary font-extrabold text-xl">{settings.remainingSeats}</span>석
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-green-400 font-bold text-base">✓ 신청 가능</span>
+                      <span className="text-sm sm:text-base text-foreground">
+                        잔여 <span className="text-primary font-extrabold text-xl">{settings.remainingSeats}</span>석
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* CTA Button - Opens Modal */}
+                <Button
+                  variant="hero"
+                  size="lg"
+                  className="w-full text-lg font-bold py-6"
+                  onClick={() => setShowRegistrationModal(true)}
+                  disabled={isClosed}
+                  style={{
+                    boxShadow: '0 0 30px -8px hsl(var(--primary)/0.5)'
+                  }}
+                >
+                  {isClosed ? '🚫 마감되었습니다' : '🔮 무료 웨비나 신청하기'}
+                </Button>
+              </div>
             </div>
 
-            {/* Real-time Seat Counter */}
-            <div className="flex items-center justify-center gap-3 py-3 px-6 rounded-full mb-6" style={{
-              background: isClosed 
-                ? 'rgba(239, 68, 68, 0.2)' 
-                : settings.remainingSeats <= 5 
-                  ? 'rgba(239, 68, 68, 0.15)' 
-                  : 'rgba(34, 197, 94, 0.1)',
-              border: isClosed 
-                ? '1px solid rgba(239, 68, 68, 0.4)' 
-                : settings.remainingSeats <= 5 
-                  ? '1px solid rgba(239, 68, 68, 0.3)' 
-                  : '1px solid rgba(34, 197, 94, 0.3)'
-            }}>
-              {isClosed ? (
-                <span className="text-destructive font-bold text-lg">🚫 마감되었습니다</span>
-              ) : settings.remainingSeats <= 5 ? (
-                <>
-                  <span className="text-destructive font-bold text-lg animate-pulse">🔥 마감 임박!</span>
-                  <span className="text-sm sm:text-base text-foreground">
-                    잔여 <span className="text-primary font-extrabold text-xl">{settings.remainingSeats}</span>석
-                  </span>
-                </>
-              ) : (
-                <>
-                  <span className="text-green-400 font-bold text-base">✓ 신청 가능</span>
-                  <span className="text-sm sm:text-base text-foreground">
-                    잔여 <span className="text-primary font-extrabold text-xl">{settings.remainingSeats}</span>석
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Registration Form - No login required! */}
-            <WebinarRegistrationForm 
-              isExpired={isTimerExpired}
-            />
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-6 md:gap-12 animate-fade-in px-2 sm:px-4">
-            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
-              <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">2,847</span> 수강생</span>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
-              <Star className="w-4 h-4 sm:w-5 sm:h-5 text-primary fill-primary" />
-              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">4.9</span> 평점</span>
-            </div>
-            <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
-              <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
-              <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">{primaryCourse?.duration || '14주'}</span> 과정</span>
+            {/* Stats - Centered */}
+            <div className="flex flex-wrap justify-center gap-6 sm:gap-12 mt-10 animate-fade-in">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5 text-primary" />
+                <span className="text-base text-muted-foreground"><span className="font-bold text-foreground">2,847</span> 수강생</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-primary fill-primary" />
+                <span className="text-base text-muted-foreground"><span className="font-bold text-foreground">4.9</span> 평점</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-primary" />
+                <span className="text-base text-muted-foreground"><span className="font-bold text-foreground">{primaryCourse?.duration || '14주'}</span> 과정</span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Registration Modal - Clean Popup */}
+      <Dialog open={showRegistrationModal} onOpenChange={setShowRegistrationModal}>
+        <DialogContent className="sm:max-w-md bg-gradient-to-b from-gray-900 to-gray-950 border-primary/30 text-foreground">
+          <DialogHeader className="text-center pb-2">
+            <DialogTitle className="text-xl font-bold text-center">
+              🔮 무료 웨비나 신청
+            </DialogTitle>
+            <p className="text-sm text-muted-foreground text-center mt-1">
+              아래 정보를 입력하시면 웨비나 안내를 받으실 수 있습니다
+            </p>
+          </DialogHeader>
+          
+          <div className="pt-2">
+            <WebinarRegistrationForm 
+              isExpired={isTimerExpired}
+              onSuccess={handleRegistrationSuccess}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

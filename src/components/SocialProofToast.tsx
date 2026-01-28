@@ -40,23 +40,25 @@ export const SocialProofToast = forwardRef<HTMLDivElement>((_, ref) => {
   if (!visible) return null;
 
   return (
-    <div ref={ref} className="fixed bottom-4 left-4 z-50 animate-slide-up">
-      <div className="glass-card rounded-xl p-4 pr-10 shadow-elevated max-w-sm relative">
+    <div ref={ref} className="fixed top-20 right-4 z-50 animate-fade-in">
+      <div className="glass-card rounded-xl p-3 pr-9 shadow-elevated max-w-xs relative border border-primary/20" style={{
+        background: 'linear-gradient(135deg, rgba(20,20,30,0.95) 0%, rgba(15,15,25,0.98) 100%)'
+      }}>
         <button
           onClick={() => setVisible(false)}
           className="absolute top-2 right-2 p-1 hover:bg-secondary rounded-full transition-colors"
         >
-          <X className="w-4 h-4 text-muted-foreground" />
+          <X className="w-3 h-3 text-muted-foreground" />
         </button>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center">
-            <UserCheck className="w-5 h-5 text-primary-foreground" />
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center flex-shrink-0">
+            <UserCheck className="w-4 h-4 text-primary-foreground" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">
-              <span className="text-primary">{name}</span>님이 웨비나에 등록했습니다!
+            <p className="text-xs font-medium text-foreground">
+              <span className="text-primary">{name}</span>님이 신청했습니다!
             </p>
-            <p className="text-xs text-muted-foreground">{time}분 전</p>
+            <p className="text-[10px] text-muted-foreground">{time}분 전</p>
           </div>
         </div>
       </div>
