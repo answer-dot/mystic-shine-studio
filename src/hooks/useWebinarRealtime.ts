@@ -5,45 +5,76 @@ import { useSettings } from '@/hooks/useSettings';
 
 /**
  * Hook for real-time webinar registration notifications.
- * Shows a toast when someone new registers for the webinar.
+ * Subscribes to webinar_registrations table and shows toast when someone registers.
+ * Also triggers settings refresh to update seat counts in real-time.
  */
 export const useWebinarRealtime = () => {
   const { toast } = useToast();
-  const { settings } = useSettings();
+  const { settings, refetchSettings } = useSettings();
   const lastSeatsRef = useRef<number>(settings.remainingSeats);
+  const isSubscribedRef = useRef(false);
 
   useEffect(() => {
-    // Subscribe to inquiries table for new webinar registrations
+    // Prevent duplicate subscriptions
+    if (isSubscribedRef.current) return;
+    isSubscribedRef.current = true;
+
+    // ✅ Subscribe to webinar_registrations table (CORRECT table)
     const channel = supabase
-      .channel('webinar-registrations')
+      .channel('webinar-registrations-realtime')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'inquiries',
+          table: 'webinar_registrations', // ✅ Correct table!
         },
         (payload) => {
-          // Check if this is a webinar registration
-          const message = (payload.new as { message?: string })?.message || '';
-          if (message.startsWith('[웨비나 신청]')) {
-            // Show toast notification to all users
-            toast({
-              title: '🔥 방금 1명이 신청했습니다!',
-              description: `남은 좌석: ${Math.max(0, settings.remainingSeats)}석`,
-              duration: 4000,
-            });
-          }
+          console.log('[Realtime] New webinar registration:', payload);
+          
+          // Show toast notification to all users
+          toast({
+            title: '🔥 방금 1명이 신청했습니다!',
+            description: '남은 좌석이 줄어들고 있습니다!',
+            duration: 4000,
+          });
+
+          // 🚀 CRITICAL: Refresh settings to update seat count immediately
+          refetchSettings();
         }
       )
       .subscribe((status) => {
-        console.log('[Realtime] Webinar registrations subscription:', status);
+        console.log('[Realtime] webinar_registrations subscription:', status);
+      });
+
+    // ✅ Also subscribe to site_settings for admin changes (date, seats, etc.)
+    const settingsChannel = supabase
+      .channel('site-settings-webinar-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'site_settings',
+        },
+        (payload) => {
+          console.log('[Realtime] site_settings changed:', payload);
+          
+          // Immediately refresh settings to get updated values
+          refetchSettings();
+        }
+      )
+      .subscribe((status) => {
+        console.log('[Realtime] site_settings (webinar) subscription:', status);
       });
 
     return () => {
+      console.log('[Realtime] Cleaning up webinar subscriptions');
+      isSubscribedRef.current = false;
       supabase.removeChannel(channel);
+      supabase.removeChannel(settingsChannel);
     };
-  }, [toast, settings.remainingSeats]);
+  }, [toast, refetchSettings]);
 
   // Track seat changes and show urgent notification when seats are low
   useEffect(() => {
