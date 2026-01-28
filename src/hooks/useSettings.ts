@@ -26,6 +26,8 @@ const DB_SETTINGS_KEYS = [
   'csAddress',
   'courseVisible',  // 강의 노출 여부 스위치
   'eventsVisible',  // 이벤트 섹션 노출 여부 스위치
+  'primaryColor',   // 🎨 메인 테마 색상
+  'backgroundColor', // 🎨 배경 색상
 ] as const;
 
 // Timeout for database operations
