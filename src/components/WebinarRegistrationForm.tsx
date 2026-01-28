@@ -33,6 +33,7 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [isCompleted, setIsCompleted] = useState(false); // Prevent duplicate submissions
 
   // Check if registration is closed (seats = 0 OR time expired)
   const isClosed = settings.remainingSeats <= 0 || isExpired;
@@ -55,13 +56,16 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
   const agreedTerms = watch('agreedTerms');
   const agreedPrivacy = watch('agreedPrivacy');
 
+  // Handle closing success dialog - only then trigger parent callback
+  const handleCloseSuccessDialog = () => {
+    setShowSuccessDialog(false);
+    // Only call onSuccess AFTER user clicks 확인 button
+    onSuccess?.();
+  };
+
   const onSubmit = async (data: RegistrationFormData) => {
-    if (isClosed) {
-      toast({
-        title: '신청이 마감되었습니다',
-        description: '다음 웨비나 일정을 확인해주세요.',
-        variant: 'destructive',
-      });
+    // Prevent duplicate submissions
+    if (isClosed || isSubmitting || isCompleted) {
       return;
     }
 
@@ -134,10 +138,16 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
 
       reset();
       
-      // Show success dialog popup instead of toast
+      // Mark as completed to prevent duplicate submissions
+      setIsCompleted(true);
+      
+      // Show success dialog popup - DO NOT call onSuccess here!
+      // onSuccess will be called when user clicks 확인 button
       setShowSuccessDialog(true);
+      
+      // Keep isSubmitting true to prevent button re-enabling
+      // It will stay disabled because isCompleted is now true
 
-      onSuccess?.();
     } catch (error) {
       console.error('Registration error:', error);
       toast({
@@ -145,7 +155,6 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
         description: '잠시 후 다시 시도해주세요.',
         variant: 'destructive',
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
@@ -259,53 +268,74 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
           )}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Button - Disabled if submitting OR already completed */}
         <Button
           type="submit"
           variant="hero"
           size="lg"
           className="w-full h-14 text-base font-bold mt-4"
-          disabled={isSubmitting}
+          disabled={isSubmitting || isCompleted}
         >
           {isSubmitting ? (
             <>
               <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-              신청 중...
+              처리 중...
             </>
+          ) : isCompleted ? (
+            <>✓ 신청 완료</>
           ) : (
             <>🔮 무료 웨비나 신청하기</>
           )}
         </Button>
       </form>
 
-      {/* Success Confirmation Popup */}
-      <Dialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <DialogContent className="sm:max-w-md bg-white text-gray-900">
-          <DialogHeader className="text-center">
-            <div className="mx-auto mb-4">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                <PartyPopper className="w-8 h-8 text-green-600" />
-              </div>
+      {/* Success Confirmation Popup - Only closes when user clicks 확인 */}
+      <Dialog 
+        open={showSuccessDialog} 
+        onOpenChange={(open) => {
+          // Only allow closing via the 확인 button, not by clicking outside or pressing Escape
+          if (!open) {
+            handleCloseSuccessDialog();
+          }
+        }}
+      >
+        <DialogContent 
+          className="w-[calc(100vw-32px)] max-w-[400px] p-0 border-0 overflow-hidden"
+          style={{ background: '#ffffff' }}
+          onPointerDownOutside={(e) => e.preventDefault()} // Prevent closing by clicking outside
+          onEscapeKeyDown={(e) => e.preventDefault()} // Prevent closing by Escape key
+        >
+          {/* Success Content - No close X button, only 확인 button */}
+          <div className="p-8 text-center">
+            {/* Success Icon */}
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+              <PartyPopper className="w-10 h-10 text-green-600" />
             </div>
-            <DialogTitle className="text-xl font-bold text-center text-gray-900">
+            
+            {/* Title */}
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
               신청이 완료되었습니다! 🎉
-            </DialogTitle>
-          </DialogHeader>
-          <div className="text-center space-y-4 py-4">
-            <p className="text-gray-600">
-              웨비나 시작 전 입력하신 연락처로<br />
-              <strong className="text-gray-900">안내 문자</strong>를 보내드립니다.
-            </p>
-            <p className="text-sm text-gray-500">
-              문자 수신을 위해 연락처를 확인해주세요.
-            </p>
+            </h2>
+            
+            {/* Description */}
+            <div className="space-y-3 mb-8">
+              <p className="text-gray-600 text-base">
+                웨비나 시작 전 입력하신 연락처로<br />
+                <strong className="text-gray-900">안내 문자</strong>를 보내드립니다.
+              </p>
+              <p className="text-sm text-gray-500">
+                문자 수신을 위해 연락처를 확인해주세요.
+              </p>
+            </div>
+            
+            {/* Confirm Button - This is the ONLY way to close the popup */}
+            <Button 
+              onClick={handleCloseSuccessDialog}
+              className="w-full h-14 text-lg font-bold bg-green-600 hover:bg-green-700 text-white rounded-xl"
+            >
+              확인
+            </Button>
           </div>
-          <Button 
-            onClick={() => setShowSuccessDialog(false)} 
-            className="w-full bg-green-600 hover:bg-green-700 text-white"
-          >
-            확인
-          </Button>
         </DialogContent>
       </Dialog>
     </>
