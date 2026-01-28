@@ -22,9 +22,6 @@ export interface SiteSettings {
   csAddress: string;
   courseVisible: boolean;  // 강의 노출 여부 스위치
   eventsVisible: boolean;  // 이벤트 섹션 노출 여부 스위치
-  // 🎨 Theme colors
-  primaryColor: string;    // 메인 테마 색상 (오렌지 계열 기본값)
-  backgroundColor: string; // 배경 색상 (흰색 계열 기본값)
 }
 
 // Replace placeholders in legal documents with actual site settings
@@ -290,9 +287,6 @@ const defaultSettings: SiteSettings = {
   csAddress: "서울시 강남구",
   courseVisible: false,  // 기본값: 강의 숨김 (준비 중)
   eventsVisible: false,  // 기본값: 이벤트 섹션 숨김 (웨비나 집중)
-  // 🎨 테마 색상 기본값
-  primaryColor: "#f97316",    // 오렌지 (Tailwind orange-500)
-  backgroundColor: "#ffffff", // 흰색
   curriculum: [
     {
       id: "1",
