@@ -1,5 +1,5 @@
 import { useRef, forwardRef } from 'react';
-import { Settings, Save, HelpCircle, Upload, X, BookOpen, Eye, EyeOff } from 'lucide-react';
+import { Settings, Save, HelpCircle, Upload, X, BookOpen, Eye, EyeOff, Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -28,6 +28,8 @@ interface GeneralSectionProps {
   setOriginalPrice: (value: string) => void;
   courseVisible: boolean;
   setCourseVisible: (value: boolean) => void;
+  eventsVisible: boolean;
+  setEventsVisible: (value: boolean) => void;
   onSave: () => void;
 }
 
@@ -44,6 +46,8 @@ export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
   setOriginalPrice,
   courseVisible,
   setCourseVisible,
+  eventsVisible,
+  setEventsVisible,
   onSave,
 }, ref) => {
   return (
@@ -99,6 +103,58 @@ export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
               <EyeOff className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-amber-700 text-sm">
                 현재 강의 섹션이 숨겨져 있습니다. 영상/PDF 준비 후 스위치를 켜면 사이트에 즉시 반영됩니다.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 📅 이벤트 섹션 노출 제어 카드 */}
+      <Card className="bg-white border-2 border-blue-200 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-gray-900">
+            <Calendar className="w-5 h-5 text-blue-500" />
+            이벤트 섹션 노출 제어
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            이벤트/웨비나 리스트 섹션을 사이트에 표시할지 선택합니다
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 border border-gray-200">
+            <div className="space-y-1">
+              <Label htmlFor="events-toggle" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                {eventsVisible ? (
+                  <>
+                    <Eye className="w-4 h-4 text-blue-500" />
+                    이벤트 섹션 노출됨
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="w-4 h-4 text-gray-400" />
+                    이벤트 섹션 숨김
+                  </>
+                )}
+              </Label>
+              <p className="text-xs text-gray-500">
+                {eventsVisible 
+                  ? '이벤트/웨비나 목록이 메인 페이지에 표시됩니다' 
+                  : '웨비나 올인 전략: 이벤트 섹션 숨김 상태'}
+              </p>
+            </div>
+            <Switch
+              id="events-toggle"
+              checked={eventsVisible}
+              onCheckedChange={setEventsVisible}
+              className="data-[state=checked]:bg-blue-500"
+            />
+          </div>
+
+          {!eventsVisible && (
+            <Alert className="bg-blue-50 border-blue-200">
+              <EyeOff className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-700 text-sm">
+                현재 이벤트 섹션이 숨겨져 있습니다. 히어로 배너의 웨비나 타이머만 표시됩니다.
               </AlertDescription>
             </Alert>
           )}

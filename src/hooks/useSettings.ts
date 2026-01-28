@@ -25,6 +25,7 @@ const DB_SETTINGS_KEYS = [
   'csPhone',
   'csAddress',
   'courseVisible',  // 강의 노출 여부 스위치
+  'eventsVisible',  // 이벤트 섹션 노출 여부 스위치
 ] as const;
 
 // Timeout for database operations

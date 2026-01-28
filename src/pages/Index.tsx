@@ -42,6 +42,8 @@ const Index = () => {
 
   // 강의 노출 여부 (courseVisible 스위치)
   const isCourseVisible = settings.courseVisible === true;
+  // 이벤트 섹션 노출 여부 (eventsVisible 스위치)
+  const isEventsVisible = settings.eventsVisible === true;
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,9 +71,12 @@ const Index = () => {
         <SafeSection>
           <TestimonialsSection />
         </SafeSection>
-        <SafeSection>
-          <EventsSection />
-        </SafeSection>
+        {/* 이벤트 섹션: eventsVisible이 true일 때만 표시 */}
+        {isEventsVisible && (
+          <SafeSection>
+            <EventsSection />
+          </SafeSection>
+        )}
         <SafeSection>
           <FAQSection />
         </SafeSection>
