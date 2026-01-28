@@ -233,5 +233,8 @@ export const useSettings = () => {
     }
   }, []);
 
-  return { settings, updateSettings, refreshSettings, isLoading, error };
+  // Alias for compatibility
+  const refetchSettings = refreshSettings;
+
+  return { settings, updateSettings, refreshSettings, refetchSettings, isLoading, error };
 };
