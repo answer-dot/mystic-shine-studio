@@ -29,7 +29,14 @@ export const Header = () => {
     if (user) {
       navigate('/dashboard');
     } else {
-      navigate('/auth?mode=signup');
+      // 비로그인 사용자: 웨비나 폼으로 스크롤 (auth 리다이렉트 제거!)
+      if (location.pathname !== '/') {
+        navigate('/');
+      }
+      // 잠시 후 히어로 섹션 상단으로 스크롤 (웨비나 폼 위치)
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     }
     setMobileMenuOpen(false);
   };
@@ -98,7 +105,7 @@ export const Header = () => {
                 onClick={handleAuthAction}
                 className="hidden sm:inline-flex"
               >
-                지금 신청하기
+                무료 웨비나 신청
               </Button>
             )}
             
@@ -159,7 +166,7 @@ export const Header = () => {
                 className="w-full mt-4"
                 onClick={handleAuthAction}
               >
-                지금 신청하기
+                무료 웨비나 신청
               </Button>
             )}
           </nav>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Users, Star, Clock, Play, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CountdownTimer } from './CountdownTimer';
@@ -20,8 +20,20 @@ export const HeroSection = () => {
   // Real-time webinar notifications
   useWebinarRealtime();
   
+  // Calculate initial timer expired state based on current time vs webinar date
+  const getInitialExpiredState = useCallback(() => {
+    if (!settings.webinarDate) return false;
+    const webinarTime = new Date(settings.webinarDate).getTime();
+    return Date.now() >= webinarTime;
+  }, [settings.webinarDate]);
+
   // Track if timer has expired (webinar started)
-  const [isTimerExpired, setIsTimerExpired] = useState(false);
+  const [isTimerExpired, setIsTimerExpired] = useState(getInitialExpiredState);
+
+  // Update expired state when settings change (real-time sync)
+  useEffect(() => {
+    setIsTimerExpired(getInitialExpiredState());
+  }, [getInitialExpiredState]);
 
   const handleTimerExpire = useCallback(() => {
     setIsTimerExpired(true);
