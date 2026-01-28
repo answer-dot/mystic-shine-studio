@@ -13,6 +13,7 @@ import { ContactSection } from '@/components/ContactSection';
 import { Footer } from '@/components/Footer';
 import { SocialProofToast } from '@/components/SocialProofToast';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useSettings } from '@/hooks/useSettings';
 
 // Wrapper component for individual sections to prevent cascading failures
 const SafeSection = ({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) => (
@@ -23,6 +24,7 @@ const SafeSection = ({ children, fallback }: { children: React.ReactNode; fallba
 
 const Index = () => {
   const location = useLocation();
+  const { settings } = useSettings();
 
   // Handle hash navigation when coming from other pages
   useEffect(() => {
@@ -38,6 +40,9 @@ const Index = () => {
     }
   }, [location.hash]);
 
+  // 강의 노출 여부 (courseVisible 스위치)
+  const isCourseVisible = settings.courseVisible === true;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -45,12 +50,19 @@ const Index = () => {
         <SafeSection>
           <HeroSection />
         </SafeSection>
-        <SafeSection>
-          <FreePreviewSection />
-        </SafeSection>
-        <SafeSection>
-          <CurriculumSection />
-        </SafeSection>
+        
+        {/* 강의 섹션: courseVisible이 true일 때만 표시 */}
+        {isCourseVisible && (
+          <>
+            <SafeSection>
+              <FreePreviewSection />
+            </SafeSection>
+            <SafeSection>
+              <CurriculumSection />
+            </SafeSection>
+          </>
+        )}
+        
         <SafeSection>
           <InstructorSection />
         </SafeSection>
@@ -63,9 +75,14 @@ const Index = () => {
         <SafeSection>
           <FAQSection />
         </SafeSection>
-        <SafeSection>
-          <PricingSection />
-        </SafeSection>
+        
+        {/* 가격 섹션: courseVisible이 true일 때만 표시 */}
+        {isCourseVisible && (
+          <SafeSection>
+            <PricingSection />
+          </SafeSection>
+        )}
+        
         <SafeSection>
           <ContactSection />
         </SafeSection>

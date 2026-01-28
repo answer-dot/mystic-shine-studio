@@ -142,8 +142,48 @@ export const HeroSection = () => {
             {primaryCourse?.description || '타로의 신비로운 세계에 입문하세요. 15년 경력의 마스터가 직접 전수하는 체계적인 커리큘럼으로 전문 리더로 성장하세요.'}
           </p>
 
+          {/* 🔥 WEBINAR COUNTDOWN - Primary Focus */}
+          <div className="glass-card rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 max-w-2xl mb-8 sm:mb-10 animate-fade-in mx-4 sm:mx-auto border-2 border-primary/30" style={{
+            background: 'linear-gradient(135deg, rgba(20,20,30,0.95) 0%, rgba(15,15,25,0.98) 100%)',
+            boxShadow: '0 0 40px -10px hsl(var(--primary)/0.4)'
+          }}>
+            <div className="flex flex-col items-center gap-4">
+              {/* Webinar Title */}
+              <div className="text-center">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">
+                  🔮 무료 웨비나 시작까지
+                </h3>
+                <p className="text-sm text-muted-foreground">지금 바로 자리를 확보하세요!</p>
+              </div>
+
+              {/* Countdown Timer - Large & Prominent */}
+              <div className="w-full">
+                <CountdownTimer targetDate={settings.webinarDate} />
+              </div>
+
+              {/* Real-time Seat Counter */}
+              <div className="flex items-center justify-center gap-3 py-3 px-6 rounded-full bg-destructive/10 border border-destructive/30">
+                <span className="text-destructive font-bold text-lg animate-pulse">🔥 마감 임박!</span>
+                <span className="text-sm sm:text-base text-foreground">
+                  잔여 <span className="text-primary font-extrabold text-xl">{settings.remainingSeats}</span>석
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA Buttons - Smart Redirection */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 animate-fade-in px-4">
+            <Button variant="hero" size="xl" className="w-full sm:w-auto" onClick={handleCTAClick}>
+              {!user ? '무료 웨비나 신청하기' : '지금 신청하기'}
+              <ArrowRight className="w-5 h-5" />
+            </Button>
+            {!user && <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
+                커리큘럼 보기
+              </Button>}
+          </div>
+
           {/* Stats */}
-          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-6 md:gap-12 mb-8 sm:mb-10 animate-fade-in px-2 sm:px-4">
+          <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-6 md:gap-12 animate-fade-in px-2 sm:px-4">
             <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">2,847</span> 수강생</span>
@@ -156,28 +196,6 @@ export const HeroSection = () => {
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               <span className="text-xs sm:text-base text-muted-foreground text-center"><span className="font-bold text-foreground">{primaryCourse?.duration || '14주'}</span> 과정</span>
             </div>
-          </div>
-
-          {/* CTA Buttons - Smart Redirection */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12 animate-fade-in px-4">
-            <Button variant="hero" size="xl" className="w-full sm:w-auto" onClick={handleCTAClick}>
-              {!user ? '무료 체험 시작' : '커리큘럼 보기'}
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-            {!user && <Button variant="outline" size="xl" className="w-full sm:w-auto" onClick={scrollToCurriculum}>
-                커리큘럼 보기
-              </Button>}
-          </div>
-
-          {/* Urgency */}
-          <div className="glass-card rounded-xl sm:rounded-2xl p-3 sm:p-6 md:p-8 max-w-xl mb-8 sm:mb-10 animate-fade-in mx-4 sm:mx-auto">
-            <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-              <span className="text-destructive font-semibold animate-pulse text-sm sm:text-base">🔥 마감 임박!</span>
-              <span className="text-xs sm:text-sm text-muted-foreground">
-                잔여 <span className="text-primary font-bold">{settings.remainingSeats}</span>석
-              </span>
-            </div>
-            <CountdownTimer targetDate={settings.webinarDate} />
           </div>
         </div>
       </div>
