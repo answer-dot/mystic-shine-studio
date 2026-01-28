@@ -257,19 +257,26 @@ export const HeroSection = () => {
         </div>
       </section>
 
-      {/* Registration Modal - Clean Popup */}
+      {/* Registration Modal - Clean Popup with proper mobile spacing */}
       <Dialog open={showRegistrationModal} onOpenChange={setShowRegistrationModal}>
-        <DialogContent className="sm:max-w-md bg-gradient-to-b from-gray-900 to-gray-950 border-primary/30 text-foreground">
-          <DialogHeader className="text-center pb-2">
-            <DialogTitle className="text-xl font-bold text-center">
+        <DialogContent 
+          className="w-[calc(100vw-32px)] max-w-[420px] p-0 border-0 overflow-hidden"
+          style={{
+            background: 'linear-gradient(135deg, #1a1a2e 0%, #16161d 100%)',
+          }}
+        >
+          {/* Modal Header - Fixed with padding for close button */}
+          <div className="px-6 pt-8 pb-4 text-center border-b border-white/10">
+            <h2 className="text-xl font-bold text-white mb-1">
               🔮 무료 웨비나 신청
-            </DialogTitle>
-            <p className="text-sm text-muted-foreground text-center mt-1">
-              아래 정보를 입력하시면 웨비나 안내를 받으실 수 있습니다
+            </h2>
+            <p className="text-sm text-gray-400">
+              아래 정보를 입력하시면 안내를 받으실 수 있습니다
             </p>
-          </DialogHeader>
+          </div>
           
-          <div className="pt-2">
+          {/* Modal Body - Scrollable with proper padding */}
+          <div className="px-6 py-6 max-h-[60vh] overflow-y-auto">
             <WebinarRegistrationForm 
               isExpired={isTimerExpired}
               onSuccess={handleRegistrationSuccess}

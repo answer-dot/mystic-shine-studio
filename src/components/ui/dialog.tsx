@@ -36,10 +36,10 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 border border-gray-200 bg-white shadow-xl rounded-xl",
+        "fixed z-50 border border-gray-700 bg-white shadow-2xl rounded-2xl",
         "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
-        "w-[calc(100vw-32px)] max-w-[600px]",
-        "max-h-[90vh]",
+        "w-[calc(100vw-32px)] max-w-[500px]",
+        "max-h-[85vh]",
         "flex flex-col",
         "overflow-hidden",
         "duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -48,9 +48,10 @@ const DialogContent = React.forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 z-50 !w-9 !h-9 !min-w-[36px] !min-h-[36px] !rounded-full !bg-gray-100 hover:!bg-gray-200 !flex !items-center !justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300 focus:ring-offset-2 disabled:pointer-events-none border border-gray-300">
-        <X className="!h-5 !w-5 text-gray-600" strokeWidth={2.5} />
-        <span className="sr-only">Close</span>
+      {/* Close button - positioned with safe margin from edges */}
+      <DialogPrimitive.Close className="absolute right-3 top-3 z-[60] w-8 h-8 min-w-[32px] min-h-[32px] rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 disabled:pointer-events-none border border-white/20">
+        <X className="h-4 w-4 text-white" strokeWidth={2.5} />
+        <span className="sr-only">닫기</span>
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
   </DialogPortal>

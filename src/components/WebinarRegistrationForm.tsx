@@ -170,28 +170,28 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {/* Name Field */}
         <div className="space-y-2">
-          <Label htmlFor="name" className="text-sm font-medium text-foreground">
-            이름 <span className="text-destructive">*</span>
+          <Label htmlFor="name" className="text-sm font-semibold text-white">
+            이름 <span className="text-red-400">*</span>
           </Label>
           <Input
             id="name"
             placeholder="홍길동"
             {...register('name')}
             disabled={isSubmitting}
-            className="bg-background border-border text-foreground"
+            className="h-12 bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:border-primary focus:ring-primary"
           />
           {errors.name && (
-            <p className="text-xs text-destructive">{errors.name.message}</p>
+            <p className="text-xs text-red-400">{errors.name.message}</p>
           )}
         </div>
 
         {/* Email Field */}
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium text-foreground">
-            이메일 <span className="text-destructive">*</span>
+          <Label htmlFor="email" className="text-sm font-semibold text-white">
+            이메일 <span className="text-red-400">*</span>
           </Label>
           <Input
             id="email"
@@ -199,17 +199,17 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
             placeholder="example@email.com"
             {...register('email')}
             disabled={isSubmitting}
-            className="bg-background border-border text-foreground"
+            className="h-12 bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:border-primary focus:ring-primary"
           />
           {errors.email && (
-            <p className="text-xs text-destructive">{errors.email.message}</p>
+            <p className="text-xs text-red-400">{errors.email.message}</p>
           )}
         </div>
 
         {/* Phone Field */}
         <div className="space-y-2">
-          <Label htmlFor="phone" className="text-sm font-medium text-foreground">
-            전화번호 <span className="text-destructive">*</span>
+          <Label htmlFor="phone" className="text-sm font-semibold text-white">
+            전화번호 <span className="text-red-400">*</span>
           </Label>
           <Input
             id="phone"
@@ -217,10 +217,45 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
             placeholder="010-1234-5678"
             {...register('phone')}
             disabled={isSubmitting}
-            className="bg-background border-border text-foreground"
+            className="h-12 bg-white/10 border-white/20 text-white placeholder:text-gray-500 focus:border-primary focus:ring-primary"
           />
           {errors.phone && (
-            <p className="text-xs text-destructive">{errors.phone.message}</p>
+            <p className="text-xs text-red-400">{errors.phone.message}</p>
+          )}
+        </div>
+
+        {/* Terms & Privacy Checkboxes */}
+        <div className="space-y-3 pt-3 border-t border-white/10">
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="agreedTerms"
+              checked={agreedTerms}
+              onCheckedChange={(checked) => setValue('agreedTerms', checked === true)}
+              disabled={isSubmitting}
+              className="mt-0.5 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            />
+            <label htmlFor="agreedTerms" className="text-xs text-gray-300 cursor-pointer leading-relaxed">
+              (필수) 만 14세 이상이며 <span className="underline text-primary">이용약관</span>에 동의합니다
+            </label>
+          </div>
+          {errors.agreedTerms && (
+            <p className="text-xs text-red-400 ml-7">{errors.agreedTerms.message}</p>
+          )}
+
+          <div className="flex items-start gap-3">
+            <Checkbox
+              id="agreedPrivacy"
+              checked={agreedPrivacy}
+              onCheckedChange={(checked) => setValue('agreedPrivacy', checked === true)}
+              disabled={isSubmitting}
+              className="mt-0.5 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+            />
+            <label htmlFor="agreedPrivacy" className="text-xs text-gray-300 cursor-pointer leading-relaxed">
+              (필수) <span className="underline text-primary">개인정보 처리방침</span>에 동의합니다
+            </label>
+          </div>
+          {errors.agreedPrivacy && (
+            <p className="text-xs text-red-400 ml-7">{errors.agreedPrivacy.message}</p>
           )}
         </div>
 
@@ -229,53 +264,18 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
           type="submit"
           variant="hero"
           size="lg"
-          className="w-full"
+          className="w-full h-14 text-base font-bold mt-4"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="w-5 h-5 mr-2 animate-spin" />
               신청 중...
             </>
           ) : (
             <>🔮 무료 웨비나 신청하기</>
           )}
         </Button>
-
-        {/* Small Terms & Privacy Checkboxes at Bottom */}
-        <div className="space-y-2 pt-2 border-t border-border/50">
-          <div className="flex items-start gap-2">
-            <Checkbox
-              id="agreedTerms"
-              checked={agreedTerms}
-              onCheckedChange={(checked) => setValue('agreedTerms', checked === true)}
-              disabled={isSubmitting}
-              className="mt-0.5"
-            />
-            <label htmlFor="agreedTerms" className="text-xs text-muted-foreground cursor-pointer leading-tight">
-              (필수) 만 14세 이상이며 <span className="underline">이용약관</span>에 동의합니다
-            </label>
-          </div>
-          {errors.agreedTerms && (
-            <p className="text-xs text-destructive ml-6">{errors.agreedTerms.message}</p>
-          )}
-
-          <div className="flex items-start gap-2">
-            <Checkbox
-              id="agreedPrivacy"
-              checked={agreedPrivacy}
-              onCheckedChange={(checked) => setValue('agreedPrivacy', checked === true)}
-              disabled={isSubmitting}
-              className="mt-0.5"
-            />
-            <label htmlFor="agreedPrivacy" className="text-xs text-muted-foreground cursor-pointer leading-tight">
-              (필수) <span className="underline">개인정보 처리방침</span>에 동의합니다
-            </label>
-          </div>
-          {errors.agreedPrivacy && (
-            <p className="text-xs text-destructive ml-6">{errors.agreedPrivacy.message}</p>
-          )}
-        </div>
       </form>
 
       {/* Success Confirmation Popup */}
