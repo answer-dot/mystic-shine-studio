@@ -1,9 +1,12 @@
 import { useRef, forwardRef } from 'react';
-import { Settings, Save, HelpCircle, Upload, X } from 'lucide-react';
+import { Settings, Save, HelpCircle, Upload, X, BookOpen, Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Tooltip,
   TooltipContent,
@@ -23,6 +26,8 @@ interface GeneralSectionProps {
   setPrice: (value: string) => void;
   originalPrice: string;
   setOriginalPrice: (value: string) => void;
+  courseVisible: boolean;
+  setCourseVisible: (value: boolean) => void;
   onSave: () => void;
 }
 
@@ -37,6 +42,8 @@ export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
   setPrice,
   originalPrice,
   setOriginalPrice,
+  courseVisible,
+  setCourseVisible,
   onSave,
 }, ref) => {
   return (
@@ -45,6 +52,58 @@ export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
         <h1 className="text-xl lg:text-2xl font-bold text-gray-900">일반 설정</h1>
         <p className="text-sm lg:text-base text-gray-600">사이트 기본 정보를 관리합니다</p>
       </div>
+
+      {/* 🎓 강의 노출 제어 카드 - 최상단 */}
+      <Card className="bg-white border-2 border-emerald-200 shadow-sm">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-gray-900">
+            <BookOpen className="w-5 h-5 text-emerald-500" />
+            강의 노출 제어
+          </CardTitle>
+          <CardDescription className="text-gray-600">
+            강의 콘텐츠(커리큘럼, 맛보기, 가격)를 사이트에 표시할지 선택합니다
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-gray-50 border border-gray-200">
+            <div className="space-y-1">
+              <Label htmlFor="course-toggle" className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                {courseVisible ? (
+                  <>
+                    <Eye className="w-4 h-4 text-emerald-500" />
+                    강의 노출됨
+                  </>
+                ) : (
+                  <>
+                    <EyeOff className="w-4 h-4 text-gray-400" />
+                    강의 숨김
+                  </>
+                )}
+              </Label>
+              <p className="text-xs text-gray-500">
+                {courseVisible 
+                  ? '커리큘럼, 맛보기 영상, 가격 섹션이 사이트에 표시됩니다' 
+                  : '강의 준비가 완료되면 스위치를 켜서 공개하세요'}
+              </p>
+            </div>
+            <Switch
+              id="course-toggle"
+              checked={courseVisible}
+              onCheckedChange={setCourseVisible}
+              className="data-[state=checked]:bg-emerald-500"
+            />
+          </div>
+
+          {!courseVisible && (
+            <Alert className="bg-amber-50 border-amber-200">
+              <EyeOff className="h-4 w-4 text-amber-600" />
+              <AlertDescription className="text-amber-700 text-sm">
+                현재 강의 섹션이 숨겨져 있습니다. 영상/PDF 준비 후 스위치를 켜면 사이트에 즉시 반영됩니다.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
 
       <Card className="bg-white border-gray-200 shadow-sm">
         <CardHeader>
