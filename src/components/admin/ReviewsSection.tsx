@@ -164,12 +164,13 @@ export const ReviewsSection = () => {
 
       {/* Detail Modal with Lightbox */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className="max-w-lg bg-white max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900">후기 상세</DialogTitle>
-            <DialogDescription>
-              {selectedReview && format(new Date(selectedReview.created_at), 'yyyy년 M월 d일 HH:mm', { locale: ko })}
-            </DialogDescription>
+        <DialogContent className="w-[calc(100vw-48px)] max-w-lg p-0">
+          <div className="p-5 sm:p-6 max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto">
+            <DialogHeader className="pb-3">
+              <DialogTitle className="text-gray-900 text-lg pr-8">후기 상세</DialogTitle>
+              <DialogDescription className="text-sm">
+                {selectedReview && format(new Date(selectedReview.created_at), 'yyyy년 M월 d일 HH:mm', { locale: ko })}
+              </DialogDescription>
           </DialogHeader>
           {selectedReview && (
             <div className="space-y-4">
@@ -261,6 +262,7 @@ export const ReviewsSection = () => {
               </div>
             </div>
           )}
+          </div>
         </DialogContent>
       </Dialog>
 

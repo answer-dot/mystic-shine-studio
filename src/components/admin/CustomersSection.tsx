@@ -467,32 +467,32 @@ export const CustomersSection = () => {
 
       {/* Customer Detail Dialog */}
       <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] bg-white border border-gray-200 shadow-2xl overflow-y-auto">
-          <DialogHeader className="border-b border-gray-100 pb-4">
-            <DialogTitle className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center text-lg font-bold text-gray-700">
-                {(selectedCustomer?.display_name || '?')[0]}
-              </div>
-              <div>
-                <span className="text-xl font-bold text-gray-900">
-                  {selectedCustomer?.display_name || '이름 없음'}
-                </span>
-                {selectedCustomer?.is_blacklisted && (
-                  <Badge variant="destructive" className="ml-3">
-                    블랙리스트
-                  </Badge>
-                )}
-              </div>
-            </DialogTitle>
-            <DialogDescription className="text-gray-600 mt-1">
-              가입일:{' '}
-              {selectedCustomer &&
-                format(new Date(selectedCustomer.created_at), 'yyyy년 MM월 dd일', { locale: ko })}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="w-[calc(100vw-48px)] max-w-2xl p-0">
+          <div className="p-5 sm:p-6 max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto">
+            <DialogHeader className="border-b border-gray-100 pb-4">
+              <DialogTitle className="flex items-center gap-4 pr-8">
+                <div className="w-12 h-12 rounded-full bg-gray-100 border-2 border-gray-200 flex items-center justify-center text-lg font-bold text-gray-700">
+                  {(selectedCustomer?.display_name || '?')[0]}
+                </div>
+                <div>
+                  <span className="text-xl font-bold text-gray-900">
+                    {selectedCustomer?.display_name || '이름 없음'}
+                  </span>
+                  {selectedCustomer?.is_blacklisted && (
+                    <Badge variant="destructive" className="ml-3">
+                      블랙리스트
+                    </Badge>
+                  )}
+                </div>
+              </DialogTitle>
+              <DialogDescription className="text-gray-600 mt-1">
+                가입일:{' '}
+                {selectedCustomer &&
+                  format(new Date(selectedCustomer.created_at), 'yyyy년 MM월 dd일', { locale: ko })}
+              </DialogDescription>
+            </DialogHeader>
 
-          <div className="space-y-6 py-6">
-            <div className="space-y-6 py-6">
+            <div className="space-y-6 pt-4">
               {/* Blacklist Section */}
               <Card className="border border-red-200 bg-red-50/30 shadow-sm">
                 <CardHeader className="pb-3">

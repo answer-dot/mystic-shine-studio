@@ -296,13 +296,14 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
 
       {/* Response Dialog */}
       <Dialog open={responseDialogOpen} onOpenChange={setResponseDialogOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900">문의 답변</DialogTitle>
-            <DialogDescription>
-              {selectedInquiry?.name}님의 문의에 답변합니다
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="w-[calc(100vw-48px)] max-w-lg p-0">
+          <div className="p-5 sm:p-6 max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto">
+            <DialogHeader className="pb-3">
+              <DialogTitle className="text-gray-900 text-lg pr-8">문의 답변</DialogTitle>
+              <DialogDescription className="text-sm">
+                {selectedInquiry?.name}님의 문의에 답변합니다
+              </DialogDescription>
+            </DialogHeader>
 
           <div className="space-y-4 py-4">
             {/* Original message */}
@@ -345,26 +346,27 @@ export const InquiriesSection = ({ onUnreadCountChange }: InquiriesSectionProps)
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-4 border-t">
-            <Button
-              variant="outline"
-              onClick={() => setResponseDialogOpen(false)}
-              className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
-            >
-              취소
-            </Button>
-            <Button
-              onClick={handleSendResponse}
-              disabled={!responseText.trim() || responding}
-              className="bg-emerald-600 hover:bg-emerald-700"
-            >
-              {responding ? (
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4 mr-2" />
-              )}
-              답변 저장
-            </Button>
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => setResponseDialogOpen(false)}
+                className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 w-full sm:w-auto"
+              >
+                취소
+              </Button>
+              <Button
+                onClick={handleSendResponse}
+                disabled={!responseText.trim() || responding}
+                className="bg-emerald-600 hover:bg-emerald-700 w-full sm:w-auto"
+              >
+                {responding ? (
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4 mr-2" />
+                )}
+                답변 저장
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

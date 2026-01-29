@@ -203,12 +203,12 @@ export const TestimonialsSection = ({
 
       {/* Upload Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900">후기 이미지 업로드</DialogTitle>
-          </DialogHeader>
+        <DialogContent className="w-[calc(100vw-48px)] max-w-md p-0">
+          <div className="p-5 sm:p-6 space-y-4">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-gray-900 text-lg">후기 이미지 업로드</DialogTitle>
+            </DialogHeader>
           
-          <div className="space-y-4">
             <input
               ref={fileInputRef}
               type="file"

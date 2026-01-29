@@ -172,16 +172,17 @@ export const AdminReviewGallery = ({ open, onOpenChange }: AdminReviewGalleryPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl bg-white max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-gray-900 flex items-center gap-2">
-            <ImageIcon className="w-5 h-5 text-primary" />
-            갤러리 후기 등록
-          </DialogTitle>
-          <DialogDescription>
-            카카오톡 캡처 등 고객 후기 이미지를 직접 등록합니다
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="w-[calc(100vw-48px)] max-w-2xl p-0">
+        <div className="p-5 sm:p-6 max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="pb-3">
+            <DialogTitle className="text-gray-900 flex items-center gap-2 text-lg pr-8">
+              <ImageIcon className="w-5 h-5 text-primary" />
+              갤러리 후기 등록
+            </DialogTitle>
+            <DialogDescription className="text-sm">
+              카카오톡 캡처 등 고객 후기 이미지를 직접 등록합니다
+            </DialogDescription>
+          </DialogHeader>
 
         <div className="space-y-6 py-4">
           {/* Customer Name */}
@@ -295,31 +296,32 @@ export const AdminReviewGallery = ({ open, onOpenChange }: AdminReviewGalleryPro
               className="bg-white border-gray-300"
             />
           </div>
-        </div>
+          </div>
 
-        <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={() => {
-              resetForm();
-              onOpenChange(false);
-            }}
-            disabled={isUploading}
-            className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
-          >
-            취소
-          </Button>
-          <Button onClick={handleSubmit} disabled={isUploading}>
-            {isUploading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                업로드 중...
-              </>
-            ) : (
-              "등록하기"
-            )}
-          </Button>
-        </DialogFooter>
+          <DialogFooter className="gap-2 pt-4 border-t border-gray-100 flex-col-reverse sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={() => {
+                resetForm();
+                onOpenChange(false);
+              }}
+              disabled={isUploading}
+              className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 w-full sm:w-auto"
+            >
+              취소
+            </Button>
+            <Button onClick={handleSubmit} disabled={isUploading} className="w-full sm:w-auto">
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  업로드 중...
+                </>
+              ) : (
+                "등록하기"
+              )}
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
