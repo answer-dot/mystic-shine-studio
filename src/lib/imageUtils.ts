@@ -79,3 +79,11 @@ export const formatFileSize = (bytes: number): string => {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
+
+/**
+ * Optimize image file for upload (compress and resize)
+ */
+export const optimizeImage = async (file: File): Promise<File> => {
+  const blob = await compressImage(file, 1200, 1200, 0.85);
+  return new File([blob], file.name, { type: 'image/jpeg' });
+};

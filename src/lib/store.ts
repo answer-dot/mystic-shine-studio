@@ -61,6 +61,7 @@ export interface TestimonialItem {
   role: string;
   content: string;
   rating: number;
+  image?: string;
 }
 
 export interface LessonItem {
