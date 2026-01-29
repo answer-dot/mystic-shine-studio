@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Send, User, Mail, MessageSquare, Phone, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,9 +26,10 @@ const inquirySchema = z.object({
 interface InquiryModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultSubject?: string; // 문의 유형 자동 설정용
 }
 
-export const InquiryModal = ({ open, onOpenChange }: InquiryModalProps) => {
+export const InquiryModal = ({ open, onOpenChange, defaultSubject = '' }: InquiryModalProps) => {
   const { settings } = useSettings();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -36,10 +37,17 @@ export const InquiryModal = ({ open, onOpenChange }: InquiryModalProps) => {
     name: '',
     email: '',
     phone: '',
-    subject: '',
+    subject: defaultSubject,
     message: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // defaultSubject가 변경되면 formData 업데이트
+  React.useEffect(() => {
+    if (defaultSubject) {
+      setFormData(prev => ({ ...prev, subject: defaultSubject }));
+    }
+  }, [defaultSubject]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
