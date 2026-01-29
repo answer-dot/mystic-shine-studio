@@ -1,18 +1,34 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles, Menu, X, User, LogOut, MessageSquare } from 'lucide-react';
+import { Sparkles, Menu, X, User, LogOut, MessageSquare, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/hooks/useSettings';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
 import { InquiryModal } from './InquiryModal';
+import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 export const Header = () => {
   const { settings } = useSettings();
   const { user, signOut } = useAuth();
+  const { primaryCourse } = usePrimaryCourse();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [showCurriculumNotice, setShowCurriculumNotice] = useState(false);
+
+  const handleCurriculumClick = () => {
+    // Check if curriculum exists
+    const curriculum = primaryCourse?.curriculum || [];
+    if (curriculum.length === 0) {
+      setShowCurriculumNotice(true);
+      setMobileMenuOpen(false);
+      return;
+    }
+    scrollToSection('curriculum');
+  };
 
   const scrollToSection = (id: string) => {
     // If not on home page, navigate to home first with hash
@@ -62,7 +78,7 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <button onClick={() => scrollToSection('curriculum')} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={handleCurriculumClick} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               커리큘럼
             </button>
             <button onClick={() => scrollToSection('instructor')} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -131,7 +147,7 @@ export const Header = () => {
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
           <nav className="md:hidden py-4 space-y-2 animate-fade-in">
-            <button onClick={() => scrollToSection('curriculum')} className="block w-full text-left px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
+            <button onClick={handleCurriculumClick} className="block w-full text-left px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
               커리큘럼
             </button>
             <button onClick={() => scrollToSection('instructor')} className="block w-full text-left px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors">
@@ -194,6 +210,34 @@ export const Header = () => {
 
       {/* Inquiry Modal */}
       <InquiryModal open={showInquiryModal} onOpenChange={setShowInquiryModal} />
+      
+      {/* Curriculum Notice Modal */}
+      <Dialog open={showCurriculumNotice} onOpenChange={setShowCurriculumNotice}>
+        <DialogContent className="bg-white w-[calc(100vw-48px)] max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-primary" />
+              커리큘럼 안내
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center">
+            <p className="text-gray-700 leading-relaxed">
+              현재 커리큘럼 업데이트 중입니다.
+            </p>
+            <p className="text-gray-700 leading-relaxed mt-2">
+              곧 공개될 예정이니 조금만 기다려주세요! 🙏
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <Button 
+              onClick={() => setShowCurriculumNotice(false)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              확인
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </header>
   );
 };
