@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Settings, User, Mail, FileText, Save, Upload, X, BookOpen, Eye, EyeOff, Calendar, Shield, RefreshCcw, Info, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { replacePlaceholders, SiteSettings } from '@/lib/store';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -47,6 +48,11 @@ interface SiteSettingsTabsProps {
   refundPolicy: string;
   setRefundPolicy: (value: string) => void;
   onSaveLegal: () => void;
+  
+  // CS Info for legal placeholders
+  csEmail?: string;
+  csPhone?: string;
+  csAddress?: string;
 }
 
 export const SiteSettingsTabs = ({
@@ -71,11 +77,27 @@ export const SiteSettingsTabs = ({
   privacyPolicy, setPrivacyPolicy,
   refundPolicy, setRefundPolicy,
   onSaveLegal,
+  // CS Info
+  csEmail,
+  csPhone,
+  csAddress,
 }: SiteSettingsTabsProps) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showApiKey, setShowApiKey] = useState(false);
   const [legalTab, setLegalTab] = useState('terms');
+  const [showLegalPreview, setShowLegalPreview] = useState(false);
+
+  // 미리보기용 치환 함수
+  const getPreviewText = (text: string) => {
+    const siteSettings: Partial<SiteSettings> = {
+      siteName,
+      csEmail: csEmail || '',
+      csPhone: csPhone || '',
+      csAddress: csAddress || '',
+    };
+    return replacePlaceholders(text, siteSettings);
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -508,6 +530,27 @@ export const SiteSettingsTabs = ({
 
         {/* ===== 약관 관리 탭 ===== */}
         <TabsContent value="legal" className="mt-6 space-y-6">
+          {/* 미리보기 토글 버튼 */}
+          <div className="flex justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowLegalPreview(!showLegalPreview)}
+            >
+              {showLegalPreview ? (
+                <>
+                  <EyeOff className="w-4 h-4 mr-2" />
+                  원본 보기
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4 mr-2" />
+                  미리보기
+                </>
+              )}
+            </Button>
+          </div>
+
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-900">
@@ -515,7 +558,10 @@ export const SiteSettingsTabs = ({
                 법적 문서 관리
               </CardTitle>
               <CardDescription className="text-gray-600">
-                회원가입 시 표시되는 약관과 푸터에 링크되는 문서를 편집합니다.
+                {showLegalPreview 
+                  ? '사용자에게 표시될 최종 문서입니다. 플레이스홀더가 실제 값으로 치환됩니다.'
+                  : '회원가입 시 표시되는 약관과 푸터에 링크되는 문서를 편집합니다.'
+                }
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -523,7 +569,7 @@ export const SiteSettingsTabs = ({
                 <TabsList className="grid w-full grid-cols-3 bg-gray-100">
                   <TabsTrigger 
                     value="terms" 
-                    className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 text-xs sm:text-sm"
+                    className="flex items-center gap-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     <FileText className="w-4 h-4" />
                     <span className="hidden sm:inline">이용약관</span>
@@ -531,7 +577,7 @@ export const SiteSettingsTabs = ({
                   </TabsTrigger>
                   <TabsTrigger 
                     value="privacy" 
-                    className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 text-xs sm:text-sm"
+                    className="flex items-center gap-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     <Shield className="w-4 h-4" />
                     <span className="hidden sm:inline">개인정보처리방침</span>
@@ -539,7 +585,7 @@ export const SiteSettingsTabs = ({
                   </TabsTrigger>
                   <TabsTrigger 
                     value="refund" 
-                    className="flex items-center gap-2 data-[state=active]:bg-white data-[state=active]:text-gray-900 text-xs sm:text-sm"
+                    className="flex items-center gap-2 text-xs sm:text-sm data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                   >
                     <RefreshCcw className="w-4 h-4" />
                     <span className="hidden sm:inline">환불정책</span>
@@ -549,46 +595,73 @@ export const SiteSettingsTabs = ({
                 
                 <TabsContent value="terms" className="mt-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">이용약관 내용</label>
-                    <Textarea
-                      value={termsOfService}
-                      onChange={(e) => setTermsOfService(e.target.value)}
-                      placeholder="이용약관 내용을 입력하세요..."
-                      rows={16}
-                      className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300 font-mono text-sm"
-                    />
+                    <label className="text-sm font-medium text-gray-700">
+                      이용약관 내용 {showLegalPreview && <span className="text-primary">(미리보기)</span>}
+                    </label>
+                    {showLegalPreview ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-md p-4 min-h-[350px] max-h-[450px] overflow-y-auto text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                        {getPreviewText(termsOfService)}
+                      </div>
+                    ) : (
+                      <Textarea
+                        value={termsOfService}
+                        onChange={(e) => setTermsOfService(e.target.value)}
+                        placeholder="이용약관 내용을 입력하세요..."
+                        rows={16}
+                        className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300 font-mono text-sm"
+                      />
+                    )}
                   </div>
                 </TabsContent>
                 
                 <TabsContent value="privacy" className="mt-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">개인정보처리방침 내용</label>
-                    <Textarea
-                      value={privacyPolicy}
-                      onChange={(e) => setPrivacyPolicy(e.target.value)}
-                      placeholder="개인정보처리방침 내용을 입력하세요..."
-                      rows={16}
-                      className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300 font-mono text-sm"
-                    />
+                    <label className="text-sm font-medium text-gray-700">
+                      개인정보처리방침 내용 {showLegalPreview && <span className="text-primary">(미리보기)</span>}
+                    </label>
+                    {showLegalPreview ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-md p-4 min-h-[350px] max-h-[450px] overflow-y-auto text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                        {getPreviewText(privacyPolicy)}
+                      </div>
+                    ) : (
+                      <Textarea
+                        value={privacyPolicy}
+                        onChange={(e) => setPrivacyPolicy(e.target.value)}
+                        placeholder="개인정보처리방침 내용을 입력하세요..."
+                        rows={16}
+                        className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300 font-mono text-sm"
+                      />
+                    )}
                   </div>
                 </TabsContent>
 
                 <TabsContent value="refund" className="mt-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">환불정책 내용</label>
-                    <Textarea
-                      value={refundPolicy}
-                      onChange={(e) => setRefundPolicy(e.target.value)}
-                      placeholder="환불정책 내용을 입력하세요..."
-                      rows={16}
-                      className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300 font-mono text-sm"
-                    />
+                    <label className="text-sm font-medium text-gray-700">
+                      환불정책 내용 {showLegalPreview && <span className="text-primary">(미리보기)</span>}
+                    </label>
+                    {showLegalPreview ? (
+                      <div className="bg-gray-50 border border-gray-200 rounded-md p-4 min-h-[350px] max-h-[450px] overflow-y-auto text-sm text-gray-900 whitespace-pre-wrap leading-relaxed">
+                        {getPreviewText(refundPolicy)}
+                      </div>
+                    ) : (
+                      <Textarea
+                        value={refundPolicy}
+                        onChange={(e) => setRefundPolicy(e.target.value)}
+                        placeholder="환불정책 내용을 입력하세요..."
+                        rows={16}
+                        className="bg-white border-gray-300 text-gray-900 resize-none focus:border-gray-400 focus:ring-slate-300 font-mono text-sm"
+                      />
+                    )}
                   </div>
                 </TabsContent>
               </Tabs>
 
               <div className="pt-2 flex justify-end">
-                <Button variant="gold" onClick={onSaveLegal}>
+                <Button 
+                  onClick={onSaveLegal}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
                   <Save className="w-4 h-4 mr-2" />
                   저장하기
                 </Button>

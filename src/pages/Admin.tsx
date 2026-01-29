@@ -560,6 +560,9 @@ const Admin = () => {
             refundPolicy={refundPolicy}
             setRefundPolicy={setRefundPolicy}
             onSaveLegal={handleSaveLegal}
+            csEmail={settings.csEmail}
+            csPhone={settings.csPhone}
+            csAddress={settings.csAddress}
           />
         );
       case 'webinar':
