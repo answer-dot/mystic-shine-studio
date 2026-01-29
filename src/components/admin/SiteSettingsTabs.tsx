@@ -508,20 +508,6 @@ export const SiteSettingsTabs = ({
 
         {/* ===== 약관 관리 탭 ===== */}
         <TabsContent value="legal" className="mt-6 space-y-6">
-          {/* Placeholder Guide */}
-          <Alert className="bg-blue-50 border-blue-200">
-            <Info className="w-4 h-4 text-blue-600" />
-            <AlertDescription className="text-blue-800 text-sm">
-              <strong>동적 플레이스홀더 안내:</strong> 아래 플레이스홀더를 사용하면 사이트 설정에 따라 자동으로 변경됩니다.
-              <ul className="mt-2 ml-4 list-disc space-y-1">
-                <li><code className="bg-blue-100 px-1 rounded">{'{{SITE_NAME}}'}</code> → 사이트 이름</li>
-                <li><code className="bg-blue-100 px-1 rounded">{'{{CS_EMAIL}}'}</code> → 고객센터 이메일</li>
-                <li><code className="bg-blue-100 px-1 rounded">{'{{CS_PHONE}}'}</code> → 고객센터 전화번호</li>
-                <li><code className="bg-blue-100 px-1 rounded">{'{{CS_ADDRESS}}'}</code> → 사업장 주소</li>
-              </ul>
-            </AlertDescription>
-          </Alert>
-
           <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-900">
