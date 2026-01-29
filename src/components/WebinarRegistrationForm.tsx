@@ -373,35 +373,47 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
 
       {/* Terms Dialog - Same as Footer */}
       <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
-        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden z-[60]" aria-describedby="webinar-terms-description">
-          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+        <DialogContent 
+          className="bg-white w-[90vw] max-w-2xl p-0 z-[60] !overflow-visible" 
+          aria-describedby="webinar-terms-description"
+          style={{ maxHeight: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}
+        >
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100 pt-8">
             <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
               <FileText className="w-5 h-5 text-primary flex-shrink-0" />
               이용약관
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="flex-1 min-h-0">
-            <div id="webinar-terms-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
-              {termsContent}
-            </div>
-          </ScrollArea>
+          <div 
+            id="webinar-terms-description" 
+            className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 200px)', minHeight: 0 }}
+          >
+            {termsContent}
+          </div>
         </DialogContent>
       </Dialog>
 
       {/* Privacy Dialog - Same as Footer */}
       <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
-        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden z-[60]" aria-describedby="webinar-privacy-description">
-          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+        <DialogContent 
+          className="bg-white w-[90vw] max-w-2xl p-0 z-[60] !overflow-visible" 
+          aria-describedby="webinar-privacy-description"
+          style={{ maxHeight: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}
+        >
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100 pt-8">
             <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
               <Shield className="w-5 h-5 text-primary flex-shrink-0" />
               개인정보처리방침
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="flex-1 min-h-0">
-            <div id="webinar-privacy-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
-              {privacyContent}
-            </div>
-          </ScrollArea>
+          <div 
+            id="webinar-privacy-description" 
+            className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words overflow-y-auto"
+            style={{ maxHeight: 'calc(100vh - 200px)', minHeight: 0 }}
+          >
+            {privacyContent}
+          </div>
         </DialogContent>
       </Dialog>
     </>
