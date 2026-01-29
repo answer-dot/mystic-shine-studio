@@ -15,10 +15,6 @@ interface SiteSettingsTabsProps {
   // General settings
   siteName: string;
   setSiteName: (value: string) => void;
-  price: string;
-  setPrice: (value: string) => void;
-  originalPrice: string;
-  setOriginalPrice: (value: string) => void;
   courseVisible: boolean;
   setCourseVisible: (value: boolean) => void;
   eventsVisible: boolean;
@@ -56,8 +52,6 @@ interface SiteSettingsTabsProps {
 export const SiteSettingsTabs = ({
   // General
   siteName, setSiteName,
-  price, setPrice,
-  originalPrice, setOriginalPrice,
   courseVisible, setCourseVisible,
   eventsVisible, setEventsVisible,
   onSaveGeneral,
@@ -291,24 +285,6 @@ export const SiteSettingsTabs = ({
                     />
                     <p className="text-xs text-gray-500 mt-1">헤더, 푸터, 법적 문서에 즉시 반영됩니다</p>
                   </div>
-                </div>
-                <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
-                  <label className="text-sm font-medium text-gray-700 lg:w-24 lg:flex-shrink-0">판매가</label>
-                  <Input
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="₩490,000"
-                    className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 w-full lg:w-40"
-                  />
-                </div>
-                <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
-                  <label className="text-sm font-medium text-gray-700 lg:w-24 lg:flex-shrink-0">정가</label>
-                  <Input
-                    value={originalPrice}
-                    onChange={(e) => setOriginalPrice(e.target.value)}
-                    placeholder="₩890,000"
-                    className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 w-full lg:w-40"
-                  />
                 </div>
               </div>
               <div className="pt-2 flex justify-end">

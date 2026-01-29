@@ -534,10 +534,6 @@ const Admin = () => {
           <SiteSettingsTabs
             siteName={siteName}
             setSiteName={setSiteName}
-            price={price}
-            setPrice={setPrice}
-            originalPrice={originalPrice}
-            setOriginalPrice={setOriginalPrice}
             courseVisible={courseVisible}
             setCourseVisible={setCourseVisible}
             eventsVisible={eventsVisible}
