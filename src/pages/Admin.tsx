@@ -14,9 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 // Admin components
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { DashboardSection } from '@/components/admin/DashboardSection';
-import { GeneralSection, InstructorSection } from '@/components/admin/SettingsSections';
+import { SiteSettingsTabs } from '@/components/admin/SiteSettingsTabs';
 import { WebinarSection } from '@/components/admin/WebinarSection';
-import { LegalSettingsSection } from '@/components/admin/LegalSettingsSection';
 import { EventsSection } from '@/components/admin/EventsSection';
 import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
 import { InquiriesSection } from '@/components/admin/InquiriesSection';
@@ -26,7 +25,6 @@ import { ReviewsSection } from '@/components/admin/ReviewsSection';
 import { MaterialsSection } from '@/components/admin/MaterialsSection';
 import { CustomersSection } from '@/components/admin/CustomersSection';
 import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
-import { EmailSettingsSection } from '@/components/admin/EmailSettingsSection';
 import { NotificationBell } from '@/components/admin/NotificationBell';
 
 type AuthStep = 'login' | 'pin' | 'authenticated';
@@ -70,7 +68,9 @@ const Admin = () => {
   const [termsOfService, setTermsOfService] = useState('');
   const [privacyPolicy, setPrivacyPolicy] = useState('');
   const [refundPolicy, setRefundPolicy] = useState('');
-
+  const [resendApiKey, setResendApiKey] = useState('');
+  const [isEmailLoading, setIsEmailLoading] = useState(true);
+  const [isEmailSaving, setIsEmailSaving] = useState(false);
   // Determine auth step based on user state
   useEffect(() => {
     if (authLoading) return;
@@ -93,6 +93,25 @@ const Admin = () => {
   useEffect(() => {
     if (authStep === 'authenticated') {
       refreshSettings();
+      // Load email API key
+      const loadEmailApiKey = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('site_settings')
+            .select('value')
+            .eq('key', 'resendApiKey')
+            .maybeSingle();
+
+          if (!error && data) {
+            setResendApiKey((data.value as string) || '');
+          }
+        } catch (error) {
+          console.error('Failed to load API key:', error);
+        } finally {
+          setIsEmailLoading(false);
+        }
+      };
+      loadEmailApiKey();
     }
   }, [authStep, refreshSettings]);
 
@@ -252,6 +271,34 @@ const Admin = () => {
       title: "저장 완료",
       description: "약관이 저장되었습니다. 푸터와 회원가입 페이지에 즉시 반영됩니다.",
     });
+  };
+
+  const handleSaveEmail = async () => {
+    setIsEmailSaving(true);
+    try {
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert(
+          { key: 'resendApiKey', value: resendApiKey },
+          { onConflict: 'key' }
+        );
+
+      if (error) throw error;
+
+      toast({
+        title: "저장 완료",
+        description: "이메일 설정이 저장되었습니다.",
+      });
+    } catch (error) {
+      console.error('Failed to save API key:', error);
+      toast({
+        title: "저장 실패",
+        description: "API 키 저장에 실패했습니다. 다시 시도해주세요.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEmailSaving(false);
+    }
   };
 
   const handleChangePin = async () => {
@@ -482,9 +529,9 @@ const Admin = () => {
             onNavigate={handleSectionChange}
           />
         );
-      case 'general':
+      case 'settings':
         return (
-          <GeneralSection
+          <SiteSettingsTabs
             siteName={siteName}
             setSiteName={setSiteName}
             price={price}
@@ -495,7 +542,28 @@ const Admin = () => {
             setCourseVisible={setCourseVisible}
             eventsVisible={eventsVisible}
             setEventsVisible={setEventsVisible}
-            onSave={handleSaveGeneral}
+            onSaveGeneral={handleSaveGeneral}
+            instructorName={instructorName}
+            setInstructorName={setInstructorName}
+            instructorTitle={instructorTitle}
+            setInstructorTitle={setInstructorTitle}
+            instructorBio={instructorBio}
+            setInstructorBio={setInstructorBio}
+            instructorImageUrl={instructorImageUrl}
+            setInstructorImageUrl={setInstructorImageUrl}
+            onSaveInstructor={handleSaveInstructor}
+            resendApiKey={resendApiKey}
+            setResendApiKey={setResendApiKey}
+            onSaveEmail={handleSaveEmail}
+            isEmailLoading={isEmailLoading}
+            isEmailSaving={isEmailSaving}
+            termsOfService={termsOfService}
+            setTermsOfService={setTermsOfService}
+            privacyPolicy={privacyPolicy}
+            setPrivacyPolicy={setPrivacyPolicy}
+            refundPolicy={refundPolicy}
+            setRefundPolicy={setRefundPolicy}
+            onSaveLegal={handleSaveLegal}
           />
         );
       case 'webinar':
@@ -506,20 +574,6 @@ const Admin = () => {
             remainingSeats={remainingSeats}
             setRemainingSeats={setRemainingSeats}
             onSave={handleSaveWebinar}
-          />
-        );
-      case 'instructor':
-        return (
-          <InstructorSection
-            instructorName={instructorName}
-            setInstructorName={setInstructorName}
-            instructorTitle={instructorTitle}
-            setInstructorTitle={setInstructorTitle}
-            instructorBio={instructorBio}
-            setInstructorBio={setInstructorBio}
-            instructorImageUrl={instructorImageUrl}
-            setInstructorImageUrl={setInstructorImageUrl}
-            onSave={handleSaveInstructor}
           />
         );
       case 'courses':
@@ -553,20 +607,6 @@ const Admin = () => {
       case 'inquiries':
         return (
           <InquiriesSection onUnreadCountChange={setUnreadInquiries} />
-        );
-      case 'email':
-        return <EmailSettingsSection />;
-      case 'legal':
-        return (
-          <LegalSettingsSection
-            termsOfService={termsOfService}
-            setTermsOfService={setTermsOfService}
-            privacyPolicy={privacyPolicy}
-            setPrivacyPolicy={setPrivacyPolicy}
-            refundPolicy={refundPolicy}
-            setRefundPolicy={setRefundPolicy}
-            onSave={handleSaveLegal}
-          />
         );
       case 'security':
         return (

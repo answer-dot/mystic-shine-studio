@@ -34,9 +34,8 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
-  { id: 'general', label: '사이트 정보', icon: Settings },
+  { id: 'settings', label: '사이트 설정', icon: Settings },
   { id: 'webinar', label: '웨비나 설정', icon: Video },
-  { id: 'instructor', label: '강사 관리', icon: Users },
   { id: 'customers', label: '고객 관리', icon: Users },
   { id: 'courses', label: '강의 관리', icon: BookOpen },
   { id: 'materials', label: '자료실', icon: FolderOpen },
@@ -44,8 +43,6 @@ const menuItems = [
   { id: 'testimonials', label: '수강생 후기', icon: Star },
   { id: 'reviews', label: '리뷰 관리', icon: MessageCircle },
   { id: 'inquiries', label: '문의 내역', icon: MessageSquare },
-  { id: 'email', label: '이메일 설정', icon: Mail },
-  { id: 'legal', label: '약관 관리', icon: Shield },
   { id: 'security', label: '보안', icon: Shield },
 ];
 
