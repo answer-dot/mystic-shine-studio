@@ -1,18 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, Mail, Phone, MapPin, FileText, Shield, RefreshCcw, MessageSquare } from 'lucide-react';
+import { Sparkles, Mail, Phone, MapPin, FileText, Shield, RefreshCcw, MessageSquare, AlertCircle } from 'lucide-react';
 import { useSettings } from '@/hooks/useSettings';
 import { replacePlaceholders } from '@/lib/store';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { InquiryModal } from './InquiryModal';
+import { usePrimaryCourse } from '@/hooks/usePrimaryCourse';
+import { Button } from '@/components/ui/button';
 
 export const Footer = () => {
   const { settings } = useSettings();
+  const { primaryCourse } = usePrimaryCourse();
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
   const [showRefundDialog, setShowRefundDialog] = useState(false);
   const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [showCurriculumNotice, setShowCurriculumNotice] = useState(false);
 
   // Apply placeholders to legal documents
   const termsContent = replacePlaceholders(
@@ -27,6 +31,14 @@ export const Footer = () => {
     settings.refundPolicy || '환불정책 내용이 등록되지 않았습니다.',
     settings
   );
+
+  const handleCurriculumClick = (e: React.MouseEvent) => {
+    const curriculum = primaryCourse?.curriculum || [];
+    if (curriculum.length === 0) {
+      e.preventDefault();
+      setShowCurriculumNotice(true);
+    }
+  };
 
   return (
     <>
@@ -50,7 +62,7 @@ export const Footer = () => {
             <div>
               <h4 className="font-semibold mb-4">빠른 메뉴</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#curriculum" className="hover:text-foreground transition-colors">커리큘럼</a></li>
+                <li><a href="#curriculum" onClick={handleCurriculumClick} className="hover:text-foreground transition-colors">커리큘럼</a></li>
                 <li><a href="#instructor" className="hover:text-foreground transition-colors">강사 소개</a></li>
                 <li><a href="#testimonials" className="hover:text-foreground transition-colors">수강생 후기</a></li>
                 <li><a href="#faq" className="hover:text-foreground transition-colors">자주 묻는 질문</a></li>
@@ -185,6 +197,34 @@ export const Footer = () => {
 
       {/* Inquiry Modal */}
       <InquiryModal open={showInquiryModal} onOpenChange={setShowInquiryModal} />
+
+      {/* Curriculum Notice Modal */}
+      <Dialog open={showCurriculumNotice} onOpenChange={setShowCurriculumNotice}>
+        <DialogContent className="bg-white w-[calc(100vw-48px)] max-w-md p-6">
+          <DialogHeader>
+            <DialogTitle className="text-gray-900 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-primary" />
+              커리큘럼 안내
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-center">
+            <p className="text-gray-700 leading-relaxed">
+              현재 커리큘럼 업데이트 중입니다.
+            </p>
+            <p className="text-gray-700 leading-relaxed mt-2">
+              곧 공개될 예정이니 조금만 기다려주세요! 🙏
+            </p>
+          </div>
+          <div className="flex justify-center">
+            <Button 
+              onClick={() => setShowCurriculumNotice(false)}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              확인
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
