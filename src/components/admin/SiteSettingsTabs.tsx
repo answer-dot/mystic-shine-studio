@@ -125,7 +125,6 @@ export const SiteSettingsTabs = ({
             value="general" 
             className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-medium text-gray-600 
               data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm
-              data-[state=active]:border-b-2 data-[state=active]:border-orange-500
               transition-all duration-200"
           >
             <Settings className="w-4 h-4 flex-shrink-0" />
@@ -136,7 +135,6 @@ export const SiteSettingsTabs = ({
             value="instructor" 
             className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-medium text-gray-600 
               data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm
-              data-[state=active]:border-b-2 data-[state=active]:border-orange-500
               transition-all duration-200"
           >
             <User className="w-4 h-4 flex-shrink-0" />
@@ -147,7 +145,6 @@ export const SiteSettingsTabs = ({
             value="email" 
             className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-medium text-gray-600 
               data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm
-              data-[state=active]:border-b-2 data-[state=active]:border-orange-500
               transition-all duration-200"
           >
             <Mail className="w-4 h-4 flex-shrink-0" />
@@ -158,7 +155,6 @@ export const SiteSettingsTabs = ({
             value="legal" 
             className="flex items-center justify-center gap-1.5 px-2 py-2.5 text-xs sm:text-sm font-medium text-gray-600 
               data-[state=active]:bg-white data-[state=active]:text-gray-900 data-[state=active]:shadow-sm
-              data-[state=active]:border-b-2 data-[state=active]:border-orange-500
               transition-all duration-200"
           >
             <FileText className="w-4 h-4 flex-shrink-0" />
