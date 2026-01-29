@@ -227,13 +227,14 @@ export const MaterialsSection = () => {
 
       {/* Upload Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md bg-white max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-gray-900">자료 업로드</DialogTitle>
-            <DialogDescription className="text-gray-600">
-              수강생에게 제공할 PDF, ZIP 등의 파일을 업로드합니다
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="w-[calc(100vw-48px)] max-w-md p-0">
+          <div className="p-5 sm:p-6 max-h-[calc(100vh-120px)] sm:max-h-[80vh] overflow-y-auto">
+            <DialogHeader className="pb-3">
+              <DialogTitle className="text-gray-900 text-lg pr-8">자료 업로드</DialogTitle>
+              <DialogDescription className="text-gray-600 text-sm">
+                수강생에게 제공할 PDF, ZIP 등의 파일을 업로드합니다
+              </DialogDescription>
+            </DialogHeader>
 
           <div className="space-y-4 py-4">
             <div className="space-y-2">
@@ -306,31 +307,32 @@ export const MaterialsSection = () => {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
-            <Button 
-              variant="outline" 
-              onClick={() => { resetForm(); setIsDialogOpen(false); }}
-              className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900"
-            >
-              취소
-            </Button>
-            <Button 
-              onClick={() => uploadMutation.mutate()}
-              disabled={isUploading || !selectedFile || !formData.courseId || !formData.title}
-              className="bg-gradient-to-r from-primary to-orange-400 text-black hover:shadow-lg hover:shadow-primary/30"
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  업로드 중...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  업로드
-                </>
-              )}
-            </Button>
+            <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 pt-4 border-t">
+              <Button 
+                variant="outline" 
+                onClick={() => { resetForm(); setIsDialogOpen(false); }}
+                className="border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 w-full sm:w-auto"
+              >
+                취소
+              </Button>
+              <Button 
+                onClick={() => uploadMutation.mutate()}
+                disabled={isUploading || !selectedFile || !formData.courseId || !formData.title}
+                className="bg-gradient-to-r from-primary to-orange-400 text-black hover:shadow-lg hover:shadow-primary/30 w-full sm:w-auto"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    업로드 중...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-4 h-4 mr-2" />
+                    업로드
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
