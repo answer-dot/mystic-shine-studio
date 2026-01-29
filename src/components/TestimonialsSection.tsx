@@ -302,8 +302,9 @@ export const TestimonialsSection = () => {
       {/* All Reviews Modal */}
       <Dialog open={showAllReviewsModal} onOpenChange={setShowAllReviewsModal}>
         <DialogContent 
-          className="bg-white w-[calc(100vw-48px)] max-w-2xl max-h-[calc(100vh-80px)] p-0 flex flex-col overflow-hidden" 
+          className="bg-white w-[calc(100vw-48px)] max-w-2xl p-0 !overflow-visible" 
           aria-describedby="all-reviews-description"
+          style={{ maxHeight: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}
         >
           <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100 pt-8">
             <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
@@ -314,7 +315,7 @@ export const TestimonialsSection = () => {
               </span>
             </DialogTitle>
           </DialogHeader>
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <ScrollArea className="flex-1" style={{ minHeight: 0, maxHeight: 'calc(100vh - 200px)' }}>
             <div id="all-reviews-description" className="p-4 sm:p-6 space-y-4">
               {testimonials.map((testimonial) => (
                 <div 
@@ -371,7 +372,7 @@ export const TestimonialsSection = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </>
