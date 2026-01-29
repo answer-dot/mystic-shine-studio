@@ -7,10 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useSettings } from '@/hooks/useSettings';
-import { Loader2, CheckCircle, XCircle, PartyPopper } from 'lucide-react';
+import { replacePlaceholders } from '@/lib/store';
+import { Loader2, CheckCircle, XCircle, PartyPopper, FileText, Shield } from 'lucide-react';
 
 // Validation schema - only name, email, phone (NO password)
 const registrationSchema = z.object({
@@ -34,6 +36,18 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false); // Prevent duplicate submissions
+  const [showTermsDialog, setShowTermsDialog] = useState(false);
+  const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+
+  // Apply placeholders to legal documents
+  const termsContent = replacePlaceholders(
+    settings.termsOfService || '이용약관 내용이 등록되지 않았습니다.',
+    settings
+  );
+  const privacyContent = replacePlaceholders(
+    settings.privacyPolicy || '개인정보처리방침 내용이 등록되지 않았습니다.',
+    settings
+  );
 
   // Check if registration is closed (seats = 0 OR time expired)
   const isClosed = settings.remainingSeats <= 0 || isExpired;
@@ -233,7 +247,7 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
           )}
         </div>
 
-        {/* Terms & Privacy Checkboxes */}
+        {/* Terms & Privacy Checkboxes with View Buttons */}
         <div className="space-y-3 pt-3 border-t border-white/10">
           <div className="flex items-start gap-3">
             <Checkbox
@@ -243,9 +257,18 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
               disabled={isSubmitting}
               className="mt-0.5 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
-            <label htmlFor="agreedTerms" className="text-xs text-gray-300 cursor-pointer leading-relaxed">
-              (필수) 만 14세 이상이며 <span className="underline text-primary">이용약관</span>에 동의합니다
-            </label>
+            <div className="flex-1 flex items-center justify-between gap-2">
+              <label htmlFor="agreedTerms" className="text-xs text-gray-300 cursor-pointer leading-relaxed">
+                (필수) 만 14세 이상이며 이용약관에 동의합니다
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowTermsDialog(true)}
+                className="text-xs text-primary underline hover:text-primary/80 whitespace-nowrap flex-shrink-0"
+              >
+                [약관 보기]
+              </button>
+            </div>
           </div>
           {errors.agreedTerms && (
             <p className="text-xs text-red-400 ml-7">{errors.agreedTerms.message}</p>
@@ -259,9 +282,18 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
               disabled={isSubmitting}
               className="mt-0.5 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
-            <label htmlFor="agreedPrivacy" className="text-xs text-gray-300 cursor-pointer leading-relaxed">
-              (필수) <span className="underline text-primary">개인정보 처리방침</span>에 동의합니다
-            </label>
+            <div className="flex-1 flex items-center justify-between gap-2">
+              <label htmlFor="agreedPrivacy" className="text-xs text-gray-300 cursor-pointer leading-relaxed">
+                (필수) 개인정보 처리방침에 동의합니다
+              </label>
+              <button
+                type="button"
+                onClick={() => setShowPrivacyDialog(true)}
+                className="text-xs text-primary underline hover:text-primary/80 whitespace-nowrap flex-shrink-0"
+              >
+                [보기]
+              </button>
+            </div>
           </div>
           {errors.agreedPrivacy && (
             <p className="text-xs text-red-400 ml-7">{errors.agreedPrivacy.message}</p>
@@ -336,6 +368,40 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
               확인
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Terms Dialog - Same as Footer */}
+      <Dialog open={showTermsDialog} onOpenChange={setShowTermsDialog}>
+        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden z-[60]" aria-describedby="webinar-terms-description">
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+            <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
+              <FileText className="w-5 h-5 text-primary flex-shrink-0" />
+              이용약관
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="flex-1 min-h-0">
+            <div id="webinar-terms-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
+              {termsContent}
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      {/* Privacy Dialog - Same as Footer */}
+      <Dialog open={showPrivacyDialog} onOpenChange={setShowPrivacyDialog}>
+        <DialogContent className="bg-white w-[90vw] max-w-2xl h-auto max-h-[85vh] p-0 flex flex-col overflow-hidden z-[60]" aria-describedby="webinar-privacy-description">
+          <DialogHeader className="flex-shrink-0 p-4 sm:p-6 border-b border-gray-100">
+            <DialogTitle className="text-gray-900 flex items-center gap-2 text-base sm:text-lg">
+              <Shield className="w-5 h-5 text-primary flex-shrink-0" />
+              개인정보처리방침
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="flex-1 min-h-0">
+            <div id="webinar-privacy-description" className="p-4 sm:p-6 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed break-words">
+              {privacyContent}
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </>
