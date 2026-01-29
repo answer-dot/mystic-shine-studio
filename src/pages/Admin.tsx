@@ -15,6 +15,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { DashboardSection } from '@/components/admin/DashboardSection';
 import { GeneralSection, InstructorSection } from '@/components/admin/SettingsSections';
+import { WebinarSection } from '@/components/admin/WebinarSection';
 import { LegalSettingsSection } from '@/components/admin/LegalSettingsSection';
 import { EventsSection } from '@/components/admin/EventsSection';
 import { TestimonialsSection } from '@/components/admin/TestimonialsSection';
@@ -194,16 +195,25 @@ const Admin = () => {
   const handleSaveGeneral = async () => {
     await updateSettings({
       siteName,
-      webinarDate,
-      remainingSeats,
       price,
       originalPrice,
-      courseVisible,  // 강의 노출 스위치 저장
-      eventsVisible,  // 이벤트 섹션 노출 스위치 저장
+      courseVisible,
+      eventsVisible,
     });
     toast({
       title: "저장 완료",
-      description: "일반 설정이 저장되었습니다. 메인 사이트에 즉시 반영됩니다.",
+      description: "사이트 정보가 저장되었습니다. 메인 사이트에 즉시 반영됩니다.",
+    });
+  };
+
+  const handleSaveWebinar = async () => {
+    await updateSettings({
+      webinarDate,
+      remainingSeats,
+    });
+    toast({
+      title: "저장 완료",
+      description: "웨비나 설정이 저장되었습니다. 타이머와 좌석 수가 즉시 반영됩니다.",
     });
   };
 
@@ -477,10 +487,6 @@ const Admin = () => {
           <GeneralSection
             siteName={siteName}
             setSiteName={setSiteName}
-            webinarDate={webinarDate}
-            setWebinarDate={setWebinarDate}
-            remainingSeats={remainingSeats}
-            setRemainingSeats={setRemainingSeats}
             price={price}
             setPrice={setPrice}
             originalPrice={originalPrice}
@@ -490,6 +496,16 @@ const Admin = () => {
             eventsVisible={eventsVisible}
             setEventsVisible={setEventsVisible}
             onSave={handleSaveGeneral}
+          />
+        );
+      case 'webinar':
+        return (
+          <WebinarSection
+            webinarDate={webinarDate}
+            setWebinarDate={setWebinarDate}
+            remainingSeats={remainingSeats}
+            setRemainingSeats={setRemainingSeats}
+            onSave={handleSaveWebinar}
           />
         );
       case 'instructor':
