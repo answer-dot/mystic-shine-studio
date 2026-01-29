@@ -15,7 +15,8 @@ import {
   ExternalLink,
   MessageCircle,
   FolderOpen,
-  Mail
+  Mail,
+  Video
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -33,7 +34,8 @@ interface AdminSidebarProps {
 
 const menuItems = [
   { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
-  { id: 'general', label: '일반 설정', icon: Settings },
+  { id: 'general', label: '사이트 정보', icon: Settings },
+  { id: 'webinar', label: '웨비나 설정', icon: Video },
   { id: 'instructor', label: '강사 관리', icon: Users },
   { id: 'customers', label: '고객 관리', icon: Users },
   { id: 'courses', label: '강의 관리', icon: BookOpen },

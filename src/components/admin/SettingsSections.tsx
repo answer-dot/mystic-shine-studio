@@ -18,10 +18,6 @@ import defaultInstructorImage from '@/assets/instructor-profile.jpg';
 interface GeneralSectionProps {
   siteName: string;
   setSiteName: (value: string) => void;
-  webinarDate: string;
-  setWebinarDate: (value: string) => void;
-  remainingSeats: number;
-  setRemainingSeats: (value: number) => void;
   price: string;
   setPrice: (value: string) => void;
   originalPrice: string;
@@ -36,10 +32,6 @@ interface GeneralSectionProps {
 export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
   siteName,
   setSiteName,
-  webinarDate,
-  setWebinarDate,
-  remainingSeats,
-  setRemainingSeats,
   price,
   setPrice,
   originalPrice,
@@ -167,7 +159,7 @@ export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
             <Settings className="w-5 h-5 text-gray-500" />
             사이트 정보
           </CardTitle>
-          <CardDescription className="text-gray-600">사이트 이름과 웨비나 정보를 설정합니다</CardDescription>
+          <CardDescription className="text-gray-600">사이트 이름과 가격 정보를 설정합니다</CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
           {/* Vertical layout on mobile, horizontal on desktop */}
@@ -183,25 +175,6 @@ export const GeneralSection = forwardRef<HTMLDivElement, GeneralSectionProps>(({
                 />
                 <p className="text-xs text-gray-500 mt-1">헤더, 푸터, 법적 문서에 즉시 반영됩니다</p>
               </div>
-            </div>
-            <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
-              <label className="text-sm font-medium text-gray-700 lg:w-24 lg:flex-shrink-0">웨비나 날짜</label>
-              <Input
-                type="datetime-local"
-                value={webinarDate.slice(0, 16)}
-                onChange={(e) => setWebinarDate(e.target.value)}
-                className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 lg:flex-1"
-              />
-            </div>
-            <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
-              <label className="text-sm font-medium text-gray-700 lg:w-24 lg:flex-shrink-0">잔여 좌석</label>
-              <Input
-                type="number"
-                value={remainingSeats}
-                onChange={(e) => setRemainingSeats(Number(e.target.value))}
-                min={0}
-                className="bg-white border-gray-300 text-gray-900 focus:border-gray-400 focus:ring-slate-300 w-full lg:w-32"
-              />
             </div>
             <div className="space-y-2 lg:space-y-0 lg:flex lg:items-center lg:gap-4">
               <label className="text-sm font-medium text-gray-700 lg:w-24 lg:flex-shrink-0">판매가</label>
