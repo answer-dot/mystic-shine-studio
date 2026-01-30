@@ -116,8 +116,8 @@ export const SecuritySection = forwardRef<HTMLDivElement, SecuritySectionProps>(
         </CardContent>
       </Card>
 
-      {/* PIN Change Card */}
-      <Card className="bg-white border-gray-200 shadow-sm">
+      {/* PIN Change Card - 임시 비활성화 */}
+      <Card className="bg-white border-gray-200 shadow-sm opacity-60">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-gray-900">
             <Shield className="w-5 h-5 text-orange-500" />
@@ -131,10 +131,10 @@ export const SecuritySection = forwardRef<HTMLDivElement, SecuritySectionProps>(
               <label className="text-sm font-medium text-gray-700">새 PIN</label>
               <Input
                 type="password"
-                value={newPin}
-                onChange={(e) => setNewPin(e.target.value)}
+                value=""
+                disabled
                 placeholder="새 PIN 입력"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                className="bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
               />
               <p className="text-xs text-gray-500">최소 4자리 이상 입력해주세요</p>
             </div>
@@ -142,13 +142,17 @@ export const SecuritySection = forwardRef<HTMLDivElement, SecuritySectionProps>(
               <label className="text-sm font-medium text-gray-700">PIN 확인</label>
               <Input
                 type="password"
-                value={confirmPin}
-                onChange={(e) => setConfirmPin(e.target.value)}
+                value=""
+                disabled
                 placeholder="PIN 다시 입력"
-                className="bg-white border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500"
+                className="bg-gray-100 border-gray-300 text-gray-500 cursor-not-allowed"
               />
             </div>
-            <Button variant="gold" onClick={onChangePin}>
+            <Button 
+              variant="gold" 
+              onClick={() => toast.info('관리자 요청으로 변경 가능합니다')}
+              className="opacity-70"
+            >
               <Shield className="w-4 h-4 mr-2" />
               PIN 변경
             </Button>
