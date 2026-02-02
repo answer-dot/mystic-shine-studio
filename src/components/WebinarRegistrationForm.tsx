@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useSettings } from '@/hooks/useSettings';
 import { replacePlaceholders } from '@/lib/store';
+import { useSpamProtection } from '@/hooks/useSpamProtection';
 import { Loader2, CheckCircle, XCircle, PartyPopper, FileText, Shield } from 'lucide-react';
 
 // Validation schema - only name, email, phone (NO password)
@@ -33,11 +34,15 @@ interface WebinarRegistrationFormProps {
 export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistrationFormProps) => {
   const { settings, updateSettings } = useSettings();
   const { toast } = useToast();
+  const { validateSubmission, recordSubmission } = useSpamProtection();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false); // Prevent duplicate submissions
   const [showTermsDialog, setShowTermsDialog] = useState(false);
   const [showPrivacyDialog, setShowPrivacyDialog] = useState(false);
+  
+  // 허니팟 필드 (봇 탐지용 - 사용자에게 보이지 않음)
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   // Apply placeholders to legal documents
   const termsContent = replacePlaceholders(
@@ -80,6 +85,20 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
   const onSubmit = async (data: RegistrationFormData) => {
     // Prevent duplicate submissions
     if (isClosed || isSubmitting || isCompleted) {
+      return;
+    }
+
+    // 스팸 방어 체크
+    const honeypotValue = honeypotRef.current?.value || '';
+    const spamCheck = validateSubmission(honeypotValue, data.email, data.phone);
+    
+    if (spamCheck.blocked) {
+      // 허니팟에 걸린 경우 조용히 성공한 척
+      if (spamCheck.reason === 'honeypot') {
+        setIsCompleted(true);
+        setShowSuccessDialog(true);
+        return;
+      }
       return;
     }
 
@@ -150,6 +169,9 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
       const newSeats = Math.max(0, settings.remainingSeats - 1);
       await updateSettings({ remainingSeats: newSeats });
 
+      // 스팸 방어: 제출 성공 기록
+      recordSubmission(data.email, data.phone);
+      
       reset();
       
       // Mark as completed to prevent duplicate submissions
@@ -194,6 +216,17 @@ export const WebinarRegistrationForm = ({ onSuccess, isExpired }: WebinarRegistr
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {/* 허니팟 필드 - 봇 탐지용 (사용자에게 완전히 숨김) */}
+        <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+          <input
+            ref={honeypotRef}
+            type="text"
+            name="website_url"
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
+        
         {/* Name Field */}
         <div className="space-y-2">
           <Label htmlFor="name" className="text-sm font-semibold text-white">

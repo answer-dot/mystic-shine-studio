@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Send, User, Mail, MessageSquare, Phone, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { useSettings } from '@/hooks/useSettings';
+import { useSpamProtection } from '@/hooks/useSpamProtection';
 
 const inquirySchema = z.object({
   name: z.string().trim().min(1, "이름을 입력해주세요").max(100, "이름은 100자 이하로 입력해주세요"),
@@ -31,6 +32,7 @@ interface InquiryModalProps {
 
 export const InquiryModal = ({ open, onOpenChange, defaultSubject = '' }: InquiryModalProps) => {
   const { settings } = useSettings();
+  const { validateSubmission, recordSubmission } = useSpamProtection();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -41,6 +43,9 @@ export const InquiryModal = ({ open, onOpenChange, defaultSubject = '' }: Inquir
     message: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // 허니팟 필드 (봇 탐지용 - 사용자에게 보이지 않음)
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   // defaultSubject가 변경되면 formData 업데이트
   React.useEffect(() => {
@@ -73,6 +78,19 @@ export const InquiryModal = ({ open, onOpenChange, defaultSubject = '' }: Inquir
       return;
     }
 
+    // 스팸 방어 체크
+    const honeypotValue = honeypotRef.current?.value || '';
+    const spamCheck = validateSubmission(honeypotValue, result.data.email, result.data.phone);
+    
+    if (spamCheck.blocked) {
+      // 허니팟에 걸린 경우 조용히 성공한 척
+      if (spamCheck.reason === 'honeypot') {
+        setIsSubmitted(true);
+        return;
+      }
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -90,6 +108,9 @@ export const InquiryModal = ({ open, onOpenChange, defaultSubject = '' }: Inquir
 
       if (error) throw error;
 
+      // 스팸 방어: 제출 성공 기록
+      recordSubmission(result.data.email, result.data.phone);
+      
       setIsSubmitted(true);
     } catch (error) {
       console.error('Failed to submit inquiry:', error);
@@ -166,9 +187,19 @@ export const InquiryModal = ({ open, onOpenChange, defaultSubject = '' }: Inquir
               )}
             </div>
 
-            {/* Form */}
             <div className="px-6 py-6 max-h-[60vh] overflow-y-auto">
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* 허니팟 필드 - 봇 탐지용 (사용자에게 완전히 숨김) */}
+                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, overflow: 'hidden' }}>
+                  <input
+                    ref={honeypotRef}
+                    type="text"
+                    name="company_website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+                
                 {/* Name */}
                 <div className="space-y-2">
                   <Label className="text-white flex items-center gap-2 text-sm">
