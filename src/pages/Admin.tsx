@@ -27,7 +27,7 @@ import { CustomersSection } from '@/components/admin/CustomersSection';
 import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
 import { NotificationBell } from '@/components/admin/NotificationBell';
 
-type AuthStep = 'login' | 'authenticated';
+type AuthStep = 'login' | 'checking_admin' | 'not_admin' | 'authenticated';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -39,9 +39,9 @@ const Admin = () => {
   const [authStep, setAuthStep] = useState<AuthStep>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [pin, setPin] = useState('');
   const [authError, setAuthError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   
   // Dashboard state
   const [currentSection, setCurrentSection] = useState('dashboard');
@@ -71,16 +71,45 @@ const Admin = () => {
   const [resendApiKey, setResendApiKey] = useState('');
   const [isEmailLoading, setIsEmailLoading] = useState(true);
   const [isEmailSaving, setIsEmailSaving] = useState(false);
-  // Determine auth step based on user state
-  // PIN 기능 비활성화: 로그인 성공 시 바로 authenticated로 전환
+  // Check admin role when user is logged in
+  const checkAdminRole = async (userId: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from('admin_roles')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Admin role check error:', error);
+        return false;
+      }
+      
+      return !!data;
+    } catch (err) {
+      console.error('Admin role check exception:', err);
+      return false;
+    }
+  };
+
+  // Determine auth step based on user state and admin role
   useEffect(() => {
     if (authLoading) return;
     
     if (user) {
-      // User is logged in - admin role check is handled by RLS policies
-      setAuthStep('authenticated');
+      // User is logged in - check admin role
+      setAuthStep('checking_admin');
+      checkAdminRole(user.id).then((adminStatus) => {
+        setIsAdmin(adminStatus);
+        if (adminStatus) {
+          setAuthStep('authenticated');
+        } else {
+          setAuthStep('not_admin');
+        }
+      });
     } else {
       setAuthStep('login');
+      setIsAdmin(null);
     }
   }, [user, authLoading]);
 
@@ -327,10 +356,50 @@ const Admin = () => {
   };
 
   // Loading state
-  if (authLoading) {
+  if (authLoading || authStep === 'checking_admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500 mx-auto"></div>
+          <p className="text-gray-600 text-sm">권한 확인 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Not authorized - show access denied screen
+  if (authStep === 'not_admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+        <Card className="w-full max-w-sm bg-white border-gray-200 shadow-lg">
+          <CardHeader className="text-center pb-4">
+            <div className="w-16 h-16 rounded-2xl bg-red-500 flex items-center justify-center mx-auto mb-4">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <CardTitle className="text-2xl text-gray-900">접근 권한 없음</CardTitle>
+            <CardDescription className="text-gray-600">관리자 권한이 없는 계정입니다</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-gray-500 text-center">
+              이 페이지는 관리자만 접근할 수 있습니다.<br />
+              관리자 계정으로 로그인하거나 홈으로 돌아가주세요.
+            </p>
+            <Button 
+              variant="gold" 
+              className="w-full" 
+              onClick={() => navigate('/')}
+            >
+              홈으로 돌아가기
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="w-full text-gray-600 hover:text-gray-900" 
+              onClick={handleLogout}
+            >
+              다른 계정으로 로그인
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
