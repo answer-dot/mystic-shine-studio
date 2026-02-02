@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useSettings } from '@/hooks/useSettings';
-import { verifyPin, updateAdminPin, EventItem, TestimonialItem } from '@/lib/store';
+import { EventItem, TestimonialItem } from '@/lib/store';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,7 +27,7 @@ import { CustomersSection } from '@/components/admin/CustomersSection';
 import { BlacklistAlertBanner } from '@/components/admin/BlacklistAlertBanner';
 import { NotificationBell } from '@/components/admin/NotificationBell';
 
-type AuthStep = 'login' | 'pin' | 'authenticated';
+type AuthStep = 'login' | 'authenticated';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -72,20 +72,15 @@ const Admin = () => {
   const [isEmailLoading, setIsEmailLoading] = useState(true);
   const [isEmailSaving, setIsEmailSaving] = useState(false);
   // Determine auth step based on user state
+  // PIN 기능 비활성화: 로그인 성공 시 바로 authenticated로 전환
   useEffect(() => {
     if (authLoading) return;
     
     if (user) {
-      // User is logged in, check if they passed PIN
-      const pinVerified = sessionStorage.getItem('admin_pin_verified');
-      if (pinVerified === 'true') {
-        setAuthStep('authenticated');
-      } else {
-        setAuthStep('pin');
-      }
+      // User is logged in - admin role check is handled by RLS policies
+      setAuthStep('authenticated');
     } else {
       setAuthStep('login');
-      sessionStorage.removeItem('admin_pin_verified');
     }
   }, [user, authLoading]);
 
@@ -138,6 +133,7 @@ const Admin = () => {
   }, [authStep, settings]);
 
   // Handle email/password login
+  // PIN 기능 비활성화: 로그인 성공 시 바로 authenticated로 전환
   const handleEmailLogin = async () => {
     if (!email.trim() || !password.trim()) {
       setAuthError('이메일과 비밀번호를 입력해주세요');
@@ -152,13 +148,13 @@ const Admin = () => {
       if (error) {
         setAuthError(error.message || '로그인에 실패했습니다');
       } else {
-        // After login, move to PIN verification
-        setAuthStep('pin');
+        // Login success - directly authenticated (no PIN step)
+        setAuthStep('authenticated');
         setEmail('');
         setPassword('');
         toast({
           title: "로그인 성공",
-          description: "관리자 PIN을 입력해주세요.",
+          description: "관리자 대시보드에 오신 것을 환영합니다.",
         });
       }
     } catch (error) {
@@ -169,40 +165,19 @@ const Admin = () => {
     }
   };
 
-  // Handle PIN verification
+  // @deprecated - PIN 기능 비활성화됨
+  // 이 함수는 더 이상 사용되지 않습니다
   const handlePinVerify = async () => {
-    if (!pin.trim()) {
-      setAuthError('PIN을 입력해주세요');
-      return;
-    }
-    
-    setIsLoggingIn(true);
-    setAuthError('');
-    
-    try {
-      const isValid = await verifyPin(pin);
-      if (isValid) {
-        sessionStorage.setItem('admin_pin_verified', 'true');
-        setAuthStep('authenticated');
-        setPin('');
-        toast({
-          title: "인증 완료",
-          description: "관리자 대시보드에 오신 것을 환영합니다.",
-        });
-      } else {
-        setAuthError('잘못된 PIN입니다');
-      }
-    } catch (error) {
-      console.error('PIN verification error:', error);
-      setAuthError('PIN 확인 중 오류가 발생했습니다');
-    } finally {
-      setIsLoggingIn(false);
-    }
+    console.warn('handlePinVerify is deprecated - PIN authentication has been disabled');
+    toast({
+      title: "기능 비활성화",
+      description: "PIN 인증이 비활성화되었습니다.",
+      variant: "destructive",
+    });
   };
 
   // Handle logout
   const handleLogout = async () => {
-    sessionStorage.removeItem('admin_pin_verified');
     await signOut();
     setAuthStep('login');
     toast({
@@ -301,45 +276,15 @@ const Admin = () => {
     }
   };
 
+  // @deprecated - PIN 기능 비활성화됨
+  // handleChangePin은 더 이상 사용되지 않습니다
   const handleChangePin = async () => {
-    if (newPin.length < 4) {
-      toast({
-        title: "오류",
-        description: "PIN은 최소 4자리여야 합니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (newPin !== confirmPin) {
-      toast({
-        title: "오류",
-        description: "PIN이 일치하지 않습니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    const success = await updateAdminPin(newPin);
-    if (success) {
-      setNewPin('');
-      setConfirmPin('');
-      toast({
-        title: "PIN 변경 완료",
-        description: "새로운 PIN으로 변경되었습니다. 보안을 위해 로그아웃됩니다.",
-      });
-      
-      // Security: Force logout after PIN change
-      // Clear session storage and sign out to require re-authentication with new PIN
-      sessionStorage.removeItem('admin_pin_verified');
-      await signOut();
-      setAuthStep('login');
-    } else {
-      toast({
-        title: "오류",
-        description: "PIN 변경에 실패했습니다. 다시 시도해주세요.",
-        variant: "destructive",
-      });
-    }
+    console.warn('handleChangePin is deprecated - PIN authentication has been disabled');
+    toast({
+      title: "기능 비활성화",
+      description: "PIN 인증이 비활성화되었습니다.",
+      variant: "destructive",
+    });
   };
 
   const addEventItem = () => {
@@ -460,56 +405,7 @@ const Admin = () => {
     );
   }
 
-  // Step 2: PIN Verification (after email login)
-  if (authStep === 'pin') {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-        <Card className="w-full max-w-sm bg-white border-gray-200 shadow-lg">
-          <CardHeader className="text-center pb-4">
-            <div className="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-white" />
-            </div>
-            <CardTitle className="text-2xl text-gray-900">2단계 인증</CardTitle>
-            <CardDescription className="text-gray-600">관리자 PIN을 입력해주세요</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              type="password"
-              placeholder="PIN 입력"
-              value={pin}
-              onChange={(e) => {
-                setPin(e.target.value);
-                setAuthError('');
-              }}
-              onKeyDown={(e) => e.key === 'Enter' && !isLoggingIn && handlePinVerify()}
-              className="text-center text-lg tracking-widest bg-white border-gray-300 text-gray-900"
-              disabled={isLoggingIn}
-              autoFocus
-            />
-            {authError && <p className="text-sm text-destructive text-center">{authError}</p>}
-            <Button 
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white" 
-              onClick={handlePinVerify}
-              disabled={isLoggingIn}
-            >
-              {isLoggingIn ? '확인 중...' : '확인'}
-            </Button>
-            <Button 
-              variant="ghost" 
-              className="w-full text-gray-600 hover:text-gray-900" 
-              onClick={handleLogout}
-              disabled={isLoggingIn}
-            >
-              다른 계정으로 로그인
-            </Button>
-            <p className="text-xs text-gray-500 text-center pt-2">
-              기본 PIN: 1234
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
+  // PIN 인증 단계가 제거되었습니다 - 로그인 성공 시 바로 대시보드로 이동
 
   // Dashboard stats
   const dashboardStats = {

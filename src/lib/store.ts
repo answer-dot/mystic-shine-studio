@@ -421,45 +421,17 @@ export const saveSettings = (settings: Partial<SiteSettings>): void => {
 
 import { supabase } from '@/integrations/supabase/client';
 
-export const verifyPin = async (pin: string): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase
-      .from('admin_settings')
-      .select('value')
-      .eq('key', 'admin_pin')
-      .maybeSingle();
-    
-    console.log('PIN verification - Data:', data, 'Error:', error);
-    
-    if (error) {
-      console.error('PIN verification error:', error);
-      // Fallback to default PIN if database fails
-      return pin === '1234';
-    }
-    
-    if (!data) {
-      // No PIN in database, use default
-      return pin === '1234';
-    }
-    
-    return pin === data.value;
-  } catch (err) {
-    console.error('PIN verification exception:', err);
-    // Fallback to default PIN on any error
-    return pin === '1234';
-  }
+// PIN 기능이 비활성화되었습니다.
+// 관리자 접근은 로그인 + admin role (is_admin(auth.uid())) 기반으로만 허용됩니다.
+
+// @deprecated - PIN 기능 비활성화됨. 항상 false 반환.
+export const verifyPin = async (_pin: string): Promise<boolean> => {
+  console.warn('verifyPin is deprecated - PIN authentication has been disabled');
+  return false;
 };
 
-export const updateAdminPin = async (newPin: string): Promise<boolean> => {
-  const { error } = await supabase
-    .from('admin_settings')
-    .update({ value: newPin })
-    .eq('key', 'admin_pin');
-  
-  if (error) {
-    console.error('Failed to update PIN:', error);
-    return false;
-  }
-  
-  return true;
+// @deprecated - PIN 기능 비활성화됨. 항상 false 반환.
+export const updateAdminPin = async (_newPin: string): Promise<boolean> => {
+  console.warn('updateAdminPin is deprecated - PIN authentication has been disabled');
+  return false;
 };
